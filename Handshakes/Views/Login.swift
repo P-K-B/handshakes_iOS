@@ -8,6 +8,7 @@
 import SwiftUI
 import UIKit
 import PhoneNumberKit
+import PDFKit
 
 struct PhoneNumberTextFieldView: UIViewRepresentable {
     
@@ -64,6 +65,11 @@ struct Login: View {
     @State private var code: String = ""
     let phoneNumberKit = PhoneNumberKit()
     @State private var loading: Bool = false
+    @State private var showAgreement: Bool = true
+    @State private var userAgreement: Bool = false
+    @State private var showAgreementFile: Bool = false
+    let documentURL = URL(string: "http://www.africau.edu/images/default/sample.pdf")!
+    
     
     @State var res: StatusResponse?
     
@@ -110,9 +116,37 @@ struct Login: View {
         .onTapGesture {
             self.endEditing()
         }
+        .popover(isPresented: $showAgreementFile) {
+            PDFView
+        }
+    }
+    
+    var PDFView:some View{
+        VStack{
+            HStack{
+                Button(action:{showAgreementFile = false}, label: {
+                    HStack{
+                        Spacer()
+                        Image(systemName: "xmark.circle")
+                            .padding()
+                    }
+                })
+            }
+            PDFKitView(url: documentURL)
+        }
     }
     
     var numberView : some View {
+        VStack{
+            numberField
+            
+            if (validNumber){
+                codeField
+            }
+        }
+    }
+    
+    var numberField: some View{
         VStack{
             Text(welcomeText)
                 .font(Font.custom("SFProDisplay-Regular", size: 20))
@@ -124,139 +158,203 @@ struct Login: View {
                 .padding(.horizontal, 15)
                 .background(.ultraThinMaterial, in: RoundedRectangle(cornerRadius: 20, style: .continuous))
                 .padding()
-            
-            if (validNumber){
-                SuperTextField(
-                    placeholder: Text("0000").foregroundColor(.secondary),
-                    all: .constant(Alignment (horizontal: .leading, vertical: .center)),
-                    text: $code
-                )
-                    .font(Font.custom("SFProDisplay-Regular", size: 20))
-                    .frame(minWidth: 0, maxWidth: .infinity, minHeight: 60, maxHeight: 60)
-                    .keyboardType(.phonePad)
-                
-                    .padding(.horizontal, 15)
-                    .background(.ultraThinMaterial, in: RoundedRectangle(cornerRadius: 20, style: .continuous))
-                    .padding()
-            }
         }
     }
+    
+    var codeField: some View{
+        SuperTextField(
+            placeholder: Text("0000").foregroundColor(.secondary),
+            all: .constant(Alignment (horizontal: .leading, vertical: .center)),
+            text: $code
+        )
+            .font(Font.custom("SFProDisplay-Regular", size: 20))
+            .frame(minWidth: 0, maxWidth: .infinity, minHeight: 60, maxHeight: 60)
+            .keyboardType(.phonePad)
+        
+            .padding(.horizontal, 15)
+            .background(.ultraThinMaterial, in: RoundedRectangle(cornerRadius: 20, style: .continuous))
+            .padding()
+    }
+    
+    
+    
     var codeView : some View {
         VStack{
             if (!validNumber){
-                Button {
-                    Task {
-                        do{
-                            //                                    Send code
-                            let validatedPhoneNumber = try self.phoneNumberKit.parse(self.phoneNumber)
-                            do{
-                                let number = self.phoneNumberKit.format(validatedPhoneNumber, toType: .international)
-                                self.loading = true
-                                try API().SignInUpCall(firstName: "firstName", lastName: "lastName", phone: number
-                                ) { (reses) in
-                                    
-                                    
-                                    withAnimation(){
+                if (showAgreement){
+                    AgreementView
+                        .padding()
+                }
+                sign_in_button
+                    .padding()
+            }
+            else{
+                VStack{
+                    HStack {
+                        //                            Resend code
+                        resend_button
+                        //                            Code validation
+                        confirm_code_button
+                    }
+                    .padding()
+                }
+            }
+        }
+    }
+    
+    var AgreementView: some View{
+        HStack{
+            Image(systemName: userAgreement ? "checkmark.square" : "square")
+                .foregroundColor(userAgreement ? Color.theme.accent : Color.secondary)
+                .onTapGesture {
+                    self.userAgreement.toggle()
+                }
+                .font(Font.custom("SFProDisplay-Regular", size: 20))
+            Button(action:{
+                showAgreementFile = true
+            },
+                   label: {
+                Text("User Agreement")
+                    .font(Font.custom("SFProDisplay-Regular", size: 20))
+            }
+            )
+                .foregroundColor(.black)
+            //            Toggle("User Agreement", isOn: $userAgreement)
+            //                .toggleStyle(.checkbox)
+        }
+    }
+    
+    var sign_in_button: some View{
+        Button {
+            Task {
+                do{
+                    //                                    Send code
+                    let validatedPhoneNumber = try self.phoneNumberKit.parse(self.phoneNumber)
+                    do{
+                        let number = self.phoneNumberKit.format(validatedPhoneNumber, toType: .international)
+                        self.loading = true
+                        try API().SignInUpCall(firstName: "firstName", lastName: "lastName", phone: number, agreement: userAgreement
+                        ) { (reses) in
+                            print(reses)
+                            withAnimation(){
+                                if (reses.status_code == 0){
+                                    if ((reses.payload?.meta.is_new_user) != nil){
+                                        self.showAgreement = true
+                                        self.welcomeText="Accept \"User Agreement\""
+
+                                    }
+                                    else{
                                         self.validNumber = true
                                         self.welcomeText="Enter code from SMS"
-                                        self.code=""
-                                        self.loading = false
+
                                     }
+                                    self.code=""
+                                    self.loading = false
                                 }
                             }
-                            catch{
-                                self.validationError = true
-                                self.errorDesc = Text("Error while fetching data")
+                        }
+                    }
+                    catch{
+                        self.validationError = true
+                        self.errorDesc = Text("Error while fetching data")
+                        self.loading = false
+                    }
+                }
+                catch {
+                    self.validationError = true
+                    self.errorDesc = Text("Please enter a valid phone number")
+                    self.loading = false
+                }
+            }
+        } label: {
+            if (!loading){
+                Text("Sign in")
+                    .frame(minWidth: 70)
+                    .padding(.vertical, 10)
+                    .padding(.horizontal, 30)
+                    .background(Color.accentColor)
+                    .foregroundColor(.white)
+                    .cornerRadius(100)
+            }
+            else{
+                ProgressView()
+                    .frame(minWidth: 70)
+                    .padding(.vertical, 10)
+                    .padding(.horizontal, 30)
+                    .background(Color.accentColor)
+                    .foregroundColor(.white)
+                    .cornerRadius(100)
+            }
+            
+        }
+    }
+    
+    var resend_button: some View{
+        Button {
+            Task {
+                do{
+                    //                                print("Code is: \(self.code)")
+                    //                                self.loading = true
+                    let validatedPhoneNumber = try self.phoneNumberKit.parse(self.phoneNumber)
+                    let number = self.phoneNumberKit.format(validatedPhoneNumber, toType: .international)
+                    try API().VerifySingUpCallResend(phone:number){ (reses) in
+                        print(reses)
+                    }
+                }
+                catch {
+                    self.validationError = true
+                    self.errorDesc = Text("Error while fetching data")
+                }
+            }
+        } label: {
+            Text("Resend")
+                .buttonStyleLogin(fontSize: 15, color: Color.secondary)
+        }
+    }
+    
+    var confirm_code_button: some View{
+        Button {
+            Task {
+                self.loading = true
+                if (!userAgreement){
+                    self.validationError = true
+                    self.errorDesc = Text("Please read and agree with \"User Agreement\"")
+                    self.loading = false
+                }
+                do{
+                    print("Code is: \(self.code)")
+                    let validatedPhoneNumber = try self.phoneNumberKit.parse(self.phoneNumber)
+                    let number = self.phoneNumberKit.format(validatedPhoneNumber, toType: .international)
+                    try API().VerifySingUpCall(code: self.code, phone:number){ (reses) in
+                        print(reses)
+                        if (reses.status_code == 0){
+                            jwt=reses.payload?.jwt.jwt ?? ""
+                            withAnimation(){
+                                self.loggedIn = true;
                                 self.loading = false
                             }
                         }
-                        catch {
+                        else{
                             self.validationError = true
-                            self.errorDesc = Text("Please enter a valid phone number")
+                            self.errorDesc = Text(reses.status_text ?? "")
                             self.loading = false
                         }
                     }
-                } label: {
-                    if (!loading){
-                    Text("Sign in")
-                            .frame(minWidth: 70)
-                            .padding(.vertical, 10)
-                            .padding(.horizontal, 30)
-                            .background(Color.accentColor)
-                            .foregroundColor(.white)
-                            .cornerRadius(100)
-                    }
-                    else{
-                        ProgressView()
-                            .frame(minWidth: 70)
-                            .padding(.vertical, 10)
-                            .padding(.horizontal, 30)
-                            .background(Color.accentColor)
-                            .foregroundColor(.white)
-                            .cornerRadius(100)
-                    }
-                    
                 }
-                .padding()
+                catch {
+                    self.validationError = true
+                    self.errorDesc = Text("Error while fetching data")
+                    self.loading = false
+                }
+            }
+        } label: {
+            if (!loading){
+                Text("Confirm")
+                    .buttonStyleLogin(fontSize: 20, color: Color.accentColor)
             }
             else{
-                HStack {
-                    //                            Resend code
-                    
-                    Button {
-                        Task {
-                            do{
-//                                print("Code is: \(self.code)")
-//                                self.loading = true
-                                let validatedPhoneNumber = try self.phoneNumberKit.parse(self.phoneNumber)
-                                let number = self.phoneNumberKit.format(validatedPhoneNumber, toType: .international)
-                                try API().VerifySingUpCallResend(phone:number){ (reses) in
-                                }
-                            }
-                            catch {
-                                self.validationError = true
-                                self.errorDesc = Text("Error while fetching data")
-                            }
-                        }
-                    } label: {
-                        Text("Resend")
-                            .buttonStyleLogin(fontSize: 15, color: Color.secondary)
-                    }
-                    //                            Code validation
-                    Button {
-                        Task {
-                            do{
-                                print("Code is: \(self.code)")
-                                self.loading = true
-                                let validatedPhoneNumber = try self.phoneNumberKit.parse(self.phoneNumber)
-                                let number = self.phoneNumberKit.format(validatedPhoneNumber, toType: .international)
-                                try API().VerifySingUpCall(code: self.code, phone:number){ (reses) in
-                                    jwt=reses.payload?.jwt.jwt ?? ""
-                                    withAnimation(){
-                                        self.loggedIn = true;
-                                        self.loading = false
-                                    }
-                                }
-                            }
-                            catch {
-                                self.validationError = true
-                                self.errorDesc = Text("Error while fetching data")
-                                self.loading = false
-                            }
-                        }
-                    } label: {
-                        if (!loading){
-                        Text("Confirm")
-                            .buttonStyleLogin(fontSize: 20, color: Color.accentColor)
-                        }
-                        else{
-                            ProgressView()
-                                .buttonStyleLogin(fontSize: 20, color: Color.accentColor)
-                        }
-                    }
-                    
-                }
-                .padding()
+                ProgressView()
+                    .buttonStyleLogin(fontSize: 20, color: Color.accentColor)
             }
         }
     }
@@ -291,5 +389,41 @@ extension View {
 struct Login_Previews: PreviewProvider {
     static var previews: some View {
         Login()
+    }
+}
+
+
+struct PDFKitRepresentedView: UIViewRepresentable {
+    let url: URL
+    
+    init(_ url: URL) {
+        self.url = url
+    }
+    
+    func makeUIView(context: UIViewRepresentableContext<PDFKitRepresentedView>) -> PDFKitRepresentedView.UIViewType {
+        // Create a `PDFView` and set its `PDFDocument`.
+        let pdfView = PDFView()
+        pdfView.document = PDFDocument(url: self.url)
+        pdfView.autoresizesSubviews = true
+        pdfView.autoresizingMask = [.flexibleWidth, .flexibleHeight, .flexibleTopMargin, .flexibleLeftMargin]
+        pdfView.displayDirection = .vertical
+        
+        pdfView.autoScales = true
+        pdfView.displayMode = .singlePageContinuous
+        pdfView.displaysPageBreaks = true
+        
+        return pdfView
+    }
+    
+    func updateUIView(_ uiView: UIView, context: UIViewRepresentableContext<PDFKitRepresentedView>) {
+        // Update the view.
+    }
+}
+
+struct PDFKitView: View {
+    var url: URL
+    
+    var body: some View {
+        PDFKitRepresentedView(url)
     }
 }

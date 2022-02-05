@@ -20,7 +20,7 @@ class API {
     var signInUpCall: AnyCancellable?
 
     
-    func SignInUpCall(firstName: String, lastName: String, phone:String, completion: @escaping (StatusResponse) -> ()) throws {
+    func SignInUpCall(firstName: String, lastName: String, phone:String, agreement: Bool, completion: @escaping (StatusResponse) -> ()) throws {
         guard let url = URL(string: "https://hand.freekiller.net/api/session") else { fatalError("Missing URL") }
         var urlRequest = URLRequest(url: url)
         
@@ -30,7 +30,7 @@ class API {
         urlRequest.setValue("application/json", forHTTPHeaderField: "Content-Type")
 //        urlRequest.setValue( "Bearer \(jwt)", forHTTPHeaderField: "Authorization")
         
-        let json = SingInUp(first_name: firstName, last_name: lastName, phone: phone)
+        let json = SingInUp(first_name: firstName, last_name: lastName, phone: phone, agreement_accepted: agreement)
 //        print(json)
         let jsonData = try JSONEncoder().encode(json)
         print(json)
@@ -43,6 +43,8 @@ class API {
                       response.statusCode >= 200 && response.statusCode < 300 else{
                           throw URLError(.badServerResponse)
                       }
+//                print("Data:")
+//                print(String(data: output.data, encoding: String.Encoding.utf8))
                 return output.data
             }
             .receive(on: DispatchQueue.main)
@@ -55,6 +57,7 @@ class API {
                     print (error.localizedDescription)
                 }
             } receiveValue: { statusResponce in
+                print(statusResponce)
                 DispatchQueue.main.async {
                     completion(statusResponce)
                 }
@@ -82,11 +85,16 @@ class API {
         verifySingUpCall = URLSession.shared.dataTaskPublisher(for: urlRequest).subscribe(on: DispatchQueue.global(qos: .default))
             .tryMap { (output) -> Data in
                 print(output.response)
-                guard let response = output.response as? HTTPURLResponse,
-                      response.statusCode >= 200 && response.statusCode < 300 else{
+                guard let response = output.response as? HTTPURLResponse else{
                           throw URLError(.badServerResponse)
                       }
-                return output.data
+                if response.statusCode >= 200 && response.statusCode < 300 {
+                    return output.data
+                }
+                if response.statusCode == 400 {
+                    return output.data
+                }
+                throw URLError(.badServerResponse)
             }
             .receive(on: DispatchQueue.main)
             .decode(type: SingInSMSResponse.self, decoder: JSONDecoder())
@@ -285,7 +293,17 @@ class API {
 
 
 struct StatusResponse: Decodable {
+    var payload: SessionPayload?
     var status_code: Int
+    var status_text: String?
+}
+
+struct SessionPayload: Decodable{
+    var meta: NewUser
+}
+
+struct NewUser: Decodable{
+    var is_new_user: Bool
 }
 
 struct SingInSMSResponse: Decodable {
@@ -309,6 +327,7 @@ struct SingInUp: Codable {
     var first_name: String
     var last_name: String
     var phone: String
+    var agreement_accepted: Bool?
 }
 
 struct VerifySingUp: Codable {
