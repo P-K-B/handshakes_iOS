@@ -61,64 +61,90 @@ class ContactsService{
         print(jwt)
         if let data = UserDefaults.standard.data(forKey: "ContactsData") {
             if let decoded = try? JSONDecoder().decode([FetchedContact].self, from: data) {
+//                Update contacts
                 self.contacts = decoded
+//                Get all contacts
                 CList().requestAccess(){
                     (data, err) in
+//                    Has changed contacts
                     if (self.contacts != data){
                         print("New contacts found")
-                        //                        let new = self.contacts.difference(from: data)
                         let compareSetNew = Set(self.contacts)
                         let compareSetDeleted = Set(data)
-                        
                         let new = data.filter { !compareSetNew.contains($0) }
                         let deleted = self.contacts.filter { !compareSetDeleted.contains($0) }
-                        var newNumbers: [String] = []
-                        var deletedNumbers: [String] = []
-                        for contact in new {
-                            for num in contact.telephone{
-                                newNumbers.append(num.phone)
-                            }
-                        }
-                        //                        newNumbers.append("111")
-                        for contact in deleted {
-                            for num in contact.telephone{
-                                deletedNumbers.append(num.phone)
-                            }
-                        }
-                        //                        deletedNumbers.append("222")
-                        let compareSetNew2 = Set(newNumbers)
-                        let compareSetDeleted2 = Set(deletedNumbers)
+                        print("New contacts")
+                        print(new)
+                        print("Deleted contacts")
+                        print(deleted)
+//                        for contact in new {
+//                            for num in contact.telephone{
+//                                newNumbers.append(num.phone)
+//                            }
+//                        }
+//                        for contact in deleted {
+//                            for num in contact.telephone{
+//                                deletedNumbers.append(num.phone)
+//                            }
+//                        }
+//                        let compareSetNew2 = Set(newNumbers)
+//                        let compareSetDeleted2 = Set(deletedNumbers)
+//                        let new2 = newNumbers.filter { !compareSetDeleted2.contains($0) }
+//                        let deleted2 = deletedNumbers.filter { !compareSetNew2.contains($0) }
+//                        print("New numbers")
+//                        print (new2)
+//                        print("Deleted numbers")
+//                        print (deleted2)
                         
-                        let new2 = newNumbers.filter { !compareSetDeleted2.contains($0) }
-                        let deleted2 = deletedNumbers.filter { !compareSetNew2.contains($0) }
-                        print (new2)
-                        print (deleted2)
-                        if (!new2.isEmpty){
+                        print("Equal contacts")
+                        let a = new.enumerated().filter{$0.element.telephone.contains(where: {$0.phone == "+7 903 668-90-41"})}.map{ $0.offset }
+                        print(a)
+                        
+        //                Upload new contacts
+                        if (!new.isEmpty){
                             do{
-                                try API().UploadContacts(contacts: new2){
-                                    (reses) in
-                                    print(reses)
-                                }
+//                                try API().UploadContacts(contacts: new){
+//                                    (reses) in
+//                                    print(reses)
+//                                }
                                 
                             }
                             catch{
                                 print ("Error")
                             }
                         }
-                        if (!deleted2.isEmpty){
+        //                Uploda deleted conatcs
+                        if (!deleted.isEmpty){
                             do{
-                                try API().DeleteContacts(contacts: deleted2){
-                                    (reses) in
-                                    print(reses)
-                                }
+//                                try API().DeleteContacts(contacts: deleted){
+//                                    (reses) in
+//                                    print(reses)
+//                                }
                                 
                             }
                             catch{
                                 print ("Error")
                             }
                         }
-                        self.contacts = data
-                        print("Contacts updated!")
+//                        Delete old contacts
+                        for contact in deleted {
+                            let index = self.contacts.enumerated().filter{$0.element == contact}.map{ $0.offset }
+                            print("Delete at")
+                            print(index)
+                            if (!index.isEmpty){
+                                self.contacts.remove(at: index[0])
+                            }
+                        }
+//                        Add new contacts
+                        for contact in new{
+                            let index = data.enumerated().filter{$0.element == contact}.map{ $0.offset }
+                            if (!index.isEmpty){
+                                print("Insert at")
+                                print(index)
+                                self.contacts.insert(contact, at: index[0])
+                            }
+
+                        }
                         self.save()
                     }
                     self.updated = true
@@ -129,36 +155,47 @@ class ContactsService{
             }
         }
         self.contacts = []
+//        First fetch contacts
+//        Get all contacts
         CList().requestAccess(){
             (data, err) in
+//            Has changed contacts
             if (self.contacts != data){
                 print("New contacts found")
                 let compareSetNew = Set(self.contacts)
                 let compareSetDeleted = Set(data)
-                
                 let new = data.filter { !compareSetNew.contains($0) }
                 let deleted = self.contacts.filter { !compareSetDeleted.contains($0) }
                 var newNumbers: [String] = []
                 var deletedNumbers: [String] = []
+                print("New contacts")
+                print(new)
+                print("Deleted contacts")
+                print(deleted)
                 for contact in new {
                     for num in contact.telephone{
                         newNumbers.append(num.phone)
                     }
                 }
-                //                newNumbers.append("111")
                 for contact in deleted {
                     for num in contact.telephone{
                         deletedNumbers.append(num.phone)
                     }
                 }
-                //                deletedNumbers.append("222")
                 let compareSetNew2 = Set(newNumbers)
                 let compareSetDeleted2 = Set(deletedNumbers)
-                
                 let new2 = newNumbers.filter { !compareSetDeleted2.contains($0) }
                 let deleted2 = deletedNumbers.filter { !compareSetNew2.contains($0) }
+                print("New numbers")
                 print (new2)
+                print("Deleted numbers")
                 print (deleted2)
+                
+                print("Equal contacts")
+                let a = new.enumerated().filter{$0.element.telephone.contains(where: {$0.phone == "+7 903 668-90-42"})}.map{ $0.offset }
+                print(a)
+                
+//                Upload new contacts
                 if (!new2.isEmpty){
                     do{
                         try API().UploadContacts(contacts: new2){
@@ -171,6 +208,7 @@ class ContactsService{
                         print ("Error")
                     }
                 }
+//                Uploda deleted conatcs
                 if (!deleted2.isEmpty){
                     do{
                         try API().DeleteContacts(contacts: deleted2){

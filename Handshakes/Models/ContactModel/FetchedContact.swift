@@ -17,8 +17,46 @@ struct FetchedContact: Hashable, Codable, Identifiable {
     var shortSearch: String
     var longSearch: String
     
-    //    var groups: [FetchedGroup]
-    
+////    extra
+////    name
+//    let type: String?
+//    let property: String?
+//    let prefix: String?
+//    let middleName: String?
+//    let prevFamilyName: String?
+//    let nameSuffix: String?
+//    let nickname: String?
+//    let phoneticGivenName: String?
+//    let phoneticMiddleName: String?
+//    let pgoneticFamilyName: String?
+////    job
+//    let department: String?
+//    let organization: String?
+//    let phoneticOrganization: String?
+//
+////    addresses
+//    let postalAddresses: String?
+//    let urlAddresses: [String]?
+//    let instantMessageAddresses: [String]?
+//
+////    Social Profiles
+//    let socialProfiles: [String]?
+//
+////    Birthday
+//    let birthday: String?
+//    let nonGregorianBirthday: String?
+//    let dates: [String]?
+//
+////    Notes (Permition needed)
+//    let noteKey: String?
+//
+////    Images
+//    let imageData: String?
+//    let thumbnailImageData: String?
+//    let imageDataAvailable: String?
+//
+////    Relationships
+//    let relations: [String]?
 }
 
 struct FetchedGroup: Hashable, Codable, Identifiable {
@@ -125,7 +163,120 @@ class CList: Decodable, Encodable {
         
         //                contacts = []
         
-        let keys = [CNContactIdentifierKey, CNContactGivenNameKey, CNContactFamilyNameKey, CNContactPhoneNumbersKey, CNContactJobTitleKey, CNGroupNameKey, CNGroupIdentifierKey, CNContainerNameKey, CNContainerTypeKey, CNContactOrganizationNameKey, CNContactEmailAddressesKey]
+//        let keys = [CNContactIdentifierKey, CNContactGivenNameKey, CNContactFamilyNameKey, CNContactPhoneNumbersKey, CNContactJobTitleKey, CNGroupNameKey, CNGroupIdentifierKey, CNContainerNameKey, CNContainerTypeKey, CNContactOrganizationNameKey, CNContactEmailAddressesKey]
+        
+        let keys = [
+//        Contact Identification
+         CNContactIdentifierKey,
+//        The contact’s unique identifier.
+         CNContactTypeKey,
+//        The type of contact.
+         CNContactPropertyAttribute,
+//        The contact's name component property key.
+        
+//        Name
+         CNContactNamePrefixKey,
+//        The prefix for the contact's name.
+         CNContactGivenNameKey,
+//        The contact's given name.
+         CNContactMiddleNameKey,
+//        The contact's middle name.
+         CNContactFamilyNameKey,
+//        The contact's family name.
+         CNContactPreviousFamilyNameKey,
+//        The contact's previous family name.
+         CNContactNameSuffixKey,
+//        The contact's name suffix.
+         CNContactNicknameKey,
+//        The contact's nickname.
+         CNContactPhoneticGivenNameKey,
+//        The phonetic spelling of the contact's given name.
+         CNContactPhoneticMiddleNameKey,
+//        The phonetic spelling of the contact's middle name.
+         CNContactPhoneticFamilyNameKey,
+//        The phonetic spelling of the contact's family name.
+        
+//        Work
+         CNContactJobTitleKey,
+//        The contact's job title.
+         CNContactDepartmentNameKey,
+//        The contact's department name.
+         CNContactOrganizationNameKey,
+//        The contact's organization name.
+         CNContactPhoneticOrganizationNameKey,
+//        The phonetic spelling of the contact's organization name.
+        
+//        Addresses
+         CNContactPostalAddressesKey,
+//        The postal addresses of the contact.
+         CNContactEmailAddressesKey,
+//        The email addresses of the contact.
+         CNContactUrlAddressesKey,
+//        The URL addresses of the contact.
+         CNContactInstantMessageAddressesKey,
+//        The instant message addresses of the contact.
+        
+//        Phone
+         CNContactPhoneNumbersKey,
+//        A phone numbers of a contact.
+        
+//        Social Profiles
+         CNContactSocialProfilesKey,
+//        A social profiles of a contact.
+        
+//        Birthday
+         CNContactBirthdayKey,
+//        The birthday of a contact.
+         CNContactNonGregorianBirthdayKey,
+//        The non-Gregorian birthday of the contact.
+         CNContactDatesKey,
+//        Dates associated with a contact.
+        
+//        Notes (Permition needed)
+//         CNContactNoteKey,
+//        A note associated with a contact.
+//        com.apple.developer.contacts.notes
+//        A Boolean value that indicates whether the app may access the notes stored in contacts.
+        
+//        Images
+         CNContactImageDataKey,
+//        Image data for a contact.
+         CNContactThumbnailImageDataKey,
+//        Thumbnail data for a contact.
+         CNContactImageDataAvailableKey,
+//        Image data availability for a contact.
+        
+//        Relationships
+         CNContactRelationsKey,
+//        The relationships of the contact.
+        
+//        Groups and Containers
+         CNGroupNameKey,
+//        The name of the group.
+         CNGroupIdentifierKey,
+//        The identifier of the group.
+         CNContainerNameKey,
+//        The name of the container.
+         CNContainerTypeKey,
+//        The type of the container.
+
+//        Instant Messaging Keys
+         CNInstantMessageAddressServiceKey,
+//        Instant message address service key.
+         CNInstantMessageAddressUsernameKey,
+//        Instant message address username key.
+
+//        Social Profile Keys
+         CNSocialProfileServiceKey,
+//        The social profile service.
+         CNSocialProfileURLStringKey,
+//        The social profile URL.
+         CNSocialProfileUsernameKey,
+//        The social profile user name.
+         CNSocialProfileUserIdentifierKey
+//        The social profile user identifier.
+         ]
+        
         let request = CNContactFetchRequest(keysToFetch: keys as [CNKeyDescriptor])
         request.sortOrder = CNContactSortOrder.userDefault
         
@@ -140,6 +291,7 @@ class CList: Decodable, Encodable {
             do {
                 
                 try store.enumerateContacts(with: request, usingBlock: { (contact, stopPointer) in
+                    print(contact.socialProfiles)
                     var i=0
                     var lsn=""
                     var nn:[Number] = []

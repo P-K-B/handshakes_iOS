@@ -16,9 +16,9 @@ struct HandshakesApp: App {
     @AppStorage("loggedIn") var loggedIn: Bool = false
     
     init() {
-        if (jwt != ""){
+//        if (jwt != ""){
             loggedIn = true
-        }
+//        }
     }
     
     var body: some Scene {
