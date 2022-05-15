@@ -39,6 +39,8 @@ struct History: View {
     @Binding var windowManager: WindowManager
     @AppStorage("selectedTab") var selectedTab: Tab = .search
 
+    @EnvironmentObject private var contactsManager: ContactsDataView
+
     
     var body: some View {
         if (!windowManager.isSearchingNumber){
@@ -118,7 +120,7 @@ struct History: View {
                         selectedTab = .search
                     }
                     let row = historyData.history[0]
-                    try API().GetPath(row: row){ (reses) in
+                    try API().GetPath(row: row, contactsManager: contactsManager){ (reses) in
 //                        print(reses)
                         historyData.history[historyData.history.firstIndex(of: row)!] = reses
                         historyData.save()

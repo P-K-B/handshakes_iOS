@@ -46,9 +46,9 @@ struct ContactView: View {
                                         ProgressView()
                                     }
                                 }
-                                else{
+//                                else{
                                     ContactsList
-                                }
+//                                }
 
                         }
                         .safeAreaInset(edge: .top, content: {
@@ -64,7 +64,7 @@ struct ContactView: View {
                 }
             }
             else{
-                ContactDetail(contact: contactsManager.contacts[windowManager.contactDetailsIndex], historyData: $historyData, windowManager: $windowManager)
+                ContactDetail(contact: contactsManager.contacts.first(where: {$0.id == windowManager.contactDetailsIndex})!, historyData: $historyData, windowManager: $windowManager)
             }
         }
         .alert(isPresented: $err) {
@@ -96,7 +96,7 @@ struct ContactView: View {
                         ZStack{
                             Button (action:{
                                 withAnimation{
-                                    windowManager.contactDetailsIndex = contactsManager.contacts.firstIndex(of: contact)!
+                                    windowManager.contactDetailsIndex = contact.id
                                     windowManager.isContactDetails = true
                                 }
                             }) {

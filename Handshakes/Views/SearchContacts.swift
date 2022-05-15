@@ -43,7 +43,7 @@ struct SearchContacts: View {
                             withAnimation(){
                                 close = false
                             }
-                            windowManager.contactDetailsIndex = contactsManager.contacts.firstIndex(of: contact)!
+                            windowManager.contactDetailsIndex = contact.id
                             windowManager.isContactDetails = true
                         }
                     }){

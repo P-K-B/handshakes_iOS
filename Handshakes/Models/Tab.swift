@@ -46,7 +46,7 @@ struct WindowManager: Encodable, Decodable {
     var searchingNumberIndex: Int
     var isSearchingNumber: Bool
     
-    var contactDetailsIndex: Int
+    var contactDetailsIndex: String
     var isContactDetails: Bool
     var isContactDetailsSearch: Bool
     
@@ -63,7 +63,7 @@ struct WindowManager: Encodable, Decodable {
         self.searchingNumberIndex = -1
         self.isSearchingNumber = false
         
-        self.contactDetailsIndex = -1
+        self.contactDetailsIndex = ""
         self.isContactDetails = false
         self.isContactDetailsSearch = false
     }

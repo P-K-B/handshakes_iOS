@@ -233,12 +233,12 @@ struct Login: View {
                     do{
                         let number = self.phoneNumberKit.format(validatedPhoneNumber, toType: .international)
                         self.loading = true
-                        try API().SignInUpCall(firstName: "firstName", lastName: "lastName", phone: number, agreement: userAgreement
+                        try API().SignInUpCall(phone: number, agreement: userAgreement, token: "123"
                         ) { (reses) in
                             print(reses)
                             withAnimation(){
                                 if (reses.status_code == 0){
-                                    if ((reses.payload?.meta.is_new_user) != nil){
+                                    if ((reses.payload?.meta?.is_new_user) != nil){
                                         self.showAgreement = true
                                         self.welcomeText="Accept \"User Agreement\""
 
@@ -325,7 +325,7 @@ struct Login: View {
                     print("Code is: \(self.code)")
                     let validatedPhoneNumber = try self.phoneNumberKit.parse(self.phoneNumber)
                     let number = self.phoneNumberKit.format(validatedPhoneNumber, toType: .international)
-                    try API().VerifySingUpCall(code: self.code, phone:number){ (reses) in
+                    try API().VerifySingUpCall(code: self.code, phone:number, token: ""){ (reses) in
                         print(reses)
                         if (reses.status_code == 0){
                             jwt=reses.payload?.jwt.jwt ?? ""

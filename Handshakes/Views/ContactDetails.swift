@@ -28,6 +28,7 @@ struct ContactDetail: View {
     @State private var code: String = ""
     let phoneNumberKit = PhoneNumberKit()
     @State private var hasBack: Bool = true
+    @EnvironmentObject private var contactsManager: ContactsDataView
 
     
     var body: some View {
@@ -100,10 +101,15 @@ struct ContactDetail: View {
                                     }
                                     
                                     let row = historyData.history[0]
-                                    try API().GetPath(row: row){ (reses) in
-                //                        print(reses)
-                                        historyData.history[historyData.history.firstIndex(of: row)!] = reses
-                                        historyData.save()
+                                    do {
+                                        try API().GetPath(row: row, contactsManager: contactsManager){ (reses) in
+                                            print(reses)
+                                            historyData.history[historyData.history.firstIndex(of: row)!] = reses
+                                            historyData.save()
+                                        }
+                                    }
+                                    catch{
+                                        print("Error")
                                     }
 //                                    try await API1234().Load(row: row) { (reses) in
 //                                        historyData.history[historyData.history.firstIndex(of: row)!] = reses
@@ -128,6 +134,14 @@ struct ContactDetail: View {
                             
                         }
                         
+                        ForEach (contact.guid, id: \.self){ number in
+                            
+
+                            HStack{
+                                Text(number)
+                            }
+                            
+                        }
                         
                     }
                     //                                    .listStyle(PlainListStyle())

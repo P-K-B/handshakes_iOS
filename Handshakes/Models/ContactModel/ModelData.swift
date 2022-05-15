@@ -26,7 +26,7 @@ class ContactsDataView: ObservableObject {
     private var cansellables = Set<AnyCancellable>()
     
     init(){
-        self.contacts = [FetchedContact(id: "1", firstName: "Kirill", lastName: "Burchenko", job: "PKB", telephone: [Number(id: 1, title: "work", phone: "+7 916 009-81-09")], emails: [], company: "PKB", filterindex: "", shortSearch: "", longSearch: "")]
+        //        self.contacts = [FetchedContact(id: "1", firstName: "Kirill", lastName: "Burchenko", telephone: [Number(id: 1, title: "work", phone: "+7 916 009-81-09")], filterindex: "", shortSearch: "", longSearch: "", guid: [])]
         //        self.updated = true
         addDataSubscriber()
     }
@@ -56,186 +56,292 @@ class ContactsService{
     @Published var err: Bool = false
     var contactsUploadSunscription: AnyCancellable?
     @AppStorage("jwt") var jwt: String = ""
-
+    var uploadedDone: Bool = false
+    var deletedDone: Bool = false
+    
     init() {
         print(jwt)
         if let data = UserDefaults.standard.data(forKey: "ContactsData") {
             if let decoded = try? JSONDecoder().decode([FetchedContact].self, from: data) {
-//                Update contacts
+                //                Update contacts
                 self.contacts = decoded
-//                Get all contacts
+                self.updated = true
+                self.err = err
+                //                Get all contacts
                 CList().requestAccess(){
                     (data, err) in
-//                    Has changed contacts
-                    if (self.contacts != data){
+                    var bcp = self.contacts
+                    var index = 0
+                    while index < bcp.count {
+                        bcp[index].guid = []
+                        index+=1
+                    }
+                    //                    Has changed contacts
+                    //                    print(bcp)
+                    //                    print(data)
+                    if (bcp != data){
+                        self.updated = false
+                        self.err = err
+                        //                        sleep(5)
                         print("New contacts found")
-                        let compareSetNew = Set(self.contacts)
+                        let compareSetNew = Set(bcp)
                         let compareSetDeleted = Set(data)
-                        let new = data.filter { !compareSetNew.contains($0) }
-                        let deleted = self.contacts.filter { !compareSetDeleted.contains($0) }
+                        var new = data.filter { !compareSetNew.contains($0) }
+                        let deleted = bcp.filter { !compareSetDeleted.contains($0) }
                         print("New contacts")
                         print(new)
                         print("Deleted contacts")
                         print(deleted)
-//                        for contact in new {
-//                            for num in contact.telephone{
-//                                newNumbers.append(num.phone)
-//                            }
-//                        }
-//                        for contact in deleted {
-//                            for num in contact.telephone{
-//                                deletedNumbers.append(num.phone)
-//                            }
-//                        }
-//                        let compareSetNew2 = Set(newNumbers)
-//                        let compareSetDeleted2 = Set(deletedNumbers)
-//                        let new2 = newNumbers.filter { !compareSetDeleted2.contains($0) }
-//                        let deleted2 = deletedNumbers.filter { !compareSetNew2.contains($0) }
-//                        print("New numbers")
-//                        print (new2)
-//                        print("Deleted numbers")
-//                        print (deleted2)
                         
-                        print("Equal contacts")
-                        let a = new.enumerated().filter{$0.element.telephone.contains(where: {$0.phone == "+7 903 668-90-41"})}.map{ $0.offset }
-                        print(a)
+                        //                Upload new contacts
                         
-        //                Upload new contacts
-                        if (!new.isEmpty){
-                            do{
-//                                try API().UploadContacts(contacts: new){
-//                                    (reses) in
-//                                    print(reses)
-//                                }
-                                
-                            }
-                            catch{
-                                print ("Error")
-                            }
-                        }
-        //                Uploda deleted conatcs
+                        //                Uploda deleted conatcs
                         if (!deleted.isEmpty){
                             do{
-//                                try API().DeleteContacts(contacts: deleted){
-//                                    (reses) in
-//                                    print(reses)
-//                                }
+                                try API().DeleteContacts(contacts: deleted){
+                                    (reses) in
+                                    print(reses)
+                                    for contact in deleted {
+                                        let index = bcp.enumerated().filter{$0.element == contact}.map{ $0.offset }
+                                        if (!index.isEmpty){
+                                            print("Delete at")
+                                            print(index)
+                                            withAnimation{
+                                                if (!data.enumerated().filter{$0.element.id == contact.id}.map{ $0.offset }.isEmpty){
+                                                    print("Updated contact")
+                                                }
+                                                else{
+                                                    print("Deleted contact")
+                                                    self.contacts.remove(at: index[0])
+                                                }
+                                            }
+                                        }
+                                    }
+                                    self.deletedDone = true
+                                    if (self.uploadedDone && self.deletedDone){
+                                        self.save()
+                                        self.updated = true
+                                    }
+                                    if (!new.isEmpty){
+                                        do{
+                                            try API().UploadContacts(contacts: new){
+                                                (reses) in
+                                                print(reses)
+                                                
+                                                for contact in new{
+                                                    let index = data.enumerated().filter{$0.element == contact}.map{ $0.offset }
+                                                    if (!index.isEmpty){
+                                                        print("Insert at")
+                                                        print(index)
+                                                        for number in contact.telephone{
+                                                            for guid in reses.payload.contacts.filter({ $0.value.phone == number.phone }){
+                                                                new[new.enumerated().filter{$0.element.id == contact.id}.map{ $0.offset }[0]].guid.append(guid.key)
+                                                            }
+                                                        }
+                                                        //                                                        withAnimation{
+                                                        if (self.contacts[index[0]].id == contact.id){
+                                                            print("Updated contact")
+                                                            self.contacts[index[0]] = new[new.enumerated().filter{$0.element.id == contact.id}.map{ $0.offset }[0]]
+                                                        }
+                                                        else{
+                                                            print("New contact")
+                                                            self.contacts.insert(new[new.enumerated().filter{$0.element.id == contact.id}.map{ $0.offset }[0]], at: index[0])
+                                                        }
+                                                        //                                                        }
+                                                    }
+                                                    
+                                                }
+                                                self.uploadedDone = true
+                                                if (self.uploadedDone && self.deletedDone){
+                                                    self.save()
+                                                    self.updated = true
+                                                }
+                                            }
+                                        }
+                                        catch{
+                                            print ("Error")
+                                        }
+                                    }
+                                    else{
+                                        self.uploadedDone = true
+                                    }
+                                }
                                 
                             }
                             catch{
                                 print ("Error")
                             }
                         }
-//                        Delete old contacts
-                        for contact in deleted {
-                            let index = self.contacts.enumerated().filter{$0.element == contact}.map{ $0.offset }
-                            print("Delete at")
-                            print(index)
-                            if (!index.isEmpty){
-                                self.contacts.remove(at: index[0])
+                        else{
+                            self.deletedDone = true
+                            if (!new.isEmpty){
+                                do{
+                                    try API().UploadContacts(contacts: new){
+                                        (reses) in
+                                        print(reses)
+                                        
+                                        for contact in new{
+                                            let index = data.enumerated().filter{$0.element == contact}.map{ $0.offset }
+                                            if (!index.isEmpty){
+                                                //                                                print("Insert at")
+                                                //                                                print(index)
+                                                for number in contact.telephone{
+                                                    for guid in reses.payload.contacts.filter({ $0.value.phone == number.phone }){
+                                                        new[new.enumerated().filter{$0.element.id == contact.id}.map{ $0.offset }[0]].guid.append(guid.key)
+                                                    }
+                                                }
+                                                withAnimation{
+                                                    if (self.contacts[index[0]].id == contact.id){
+                                                        //                                                        print("Updated contact")
+                                                        self.contacts[index[0]] = new[new.enumerated().filter{$0.element.id == contact.id}.map{ $0.offset }[0]]
+                                                    }
+                                                    else{
+                                                        //                                                        print("New contact")
+                                                        self.contacts.insert(new[new.enumerated().filter{$0.element.id == contact.id}.map{ $0.offset }[0]], at: index[0])
+                                                    }
+                                                }
+                                            }
+                                            
+                                        }
+                                        self.uploadedDone = true
+                                        if (self.uploadedDone && self.deletedDone){
+                                            self.save()
+                                            self.updated = true
+                                        }
+                                    }
+                                }
+                                catch{
+                                    print ("Error")
+                                }
+                            }
+                            else{
+                                self.uploadedDone = true
                             }
                         }
-//                        Add new contacts
-                        for contact in new{
-                            let index = data.enumerated().filter{$0.element == contact}.map{ $0.offset }
-                            if (!index.isEmpty){
-                                print("Insert at")
-                                print(index)
-                                self.contacts.insert(contact, at: index[0])
-                            }
-
-                        }
-                        self.save()
+                        //                        Delete old contacts
+                        //                        Add new contacts
+                        
+                        
+                        self.err = err
                     }
-                    self.updated = true
-                    self.err = err
                 }
                 print("Contacts loaded")
+                //                print(self.contacts)
                 return
             }
         }
         self.contacts = []
-//        First fetch contacts
-//        Get all contacts
+        //        First fetch contacts
+        //        Get all contacts
         CList().requestAccess(){
             (data, err) in
-//            Has changed contacts
-            if (self.contacts != data){
+            //            reset guid
+            var bcp = self.contacts
+            for var contact in bcp{
+                contact.guid = []
+            }
+            //                    Has changed contacts
+            if (bcp != data){
+                self.updated = false
+                self.err = err
+                //                sleep(5)
                 print("New contacts found")
                 let compareSetNew = Set(self.contacts)
                 let compareSetDeleted = Set(data)
-                let new = data.filter { !compareSetNew.contains($0) }
+                var new = data.filter { !compareSetNew.contains($0) }
                 let deleted = self.contacts.filter { !compareSetDeleted.contains($0) }
-                var newNumbers: [String] = []
-                var deletedNumbers: [String] = []
                 print("New contacts")
-                print(new)
+//                print(new)
                 print("Deleted contacts")
-                print(deleted)
-                for contact in new {
-                    for num in contact.telephone{
-                        newNumbers.append(num.phone)
-                    }
-                }
-                for contact in deleted {
-                    for num in contact.telephone{
-                        deletedNumbers.append(num.phone)
-                    }
-                }
-                let compareSetNew2 = Set(newNumbers)
-                let compareSetDeleted2 = Set(deletedNumbers)
-                let new2 = newNumbers.filter { !compareSetDeleted2.contains($0) }
-                let deleted2 = deletedNumbers.filter { !compareSetNew2.contains($0) }
-                print("New numbers")
-                print (new2)
-                print("Deleted numbers")
-                print (deleted2)
+//                print(deleted)
+                self.deletedDone = true
                 
-                print("Equal contacts")
-                let a = new.enumerated().filter{$0.element.telephone.contains(where: {$0.phone == "+7 903 668-90-42"})}.map{ $0.offset }
-                print(a)
-                
-//                Upload new contacts
-                if (!new2.isEmpty){
+                //                Upload new contacts
+                if (!new.isEmpty){
                     do{
-                        try API().UploadContacts(contacts: new2){
+                        try API().UploadContacts(contacts: new){
                             (reses) in
                             print(reses)
+                            
+                            DispatchQueue.global(qos: .userInitiated).async {
+                                // Do some time consuming task in this background thread
+                                // Mobile app will remain to be responsive to user actions
+                                
+                                print("Performing time consuming task in this background thread")
+                                
+                                for guid in reses.payload.contacts{
+                                    print(guid)
+                                    let index = new.enumerated().filter{$0.element.telephone.contains(where: {$0.phone == guid.value.phone})}.map{ $0.offset }
+                                    print(index)
+                                    if (!index.isEmpty){
+                                        for i in index{
+                                            new[i].guid.append(guid.key)
+                                        }
+                                    }
+                                }
+                                
+//                                for contact in new{
+//                                    let index = data.enumerated().filter{$0.element == contact}.map{ $0.offset }
+//                                    if (!index.isEmpty){
+//                                        //                                    print("Insert at")
+//                                        //                                    print(index)
+//                                        for number in contact.telephone{
+//                                            //                                        print(number)
+//                                            for guid in reses.payload.contacts.filter({ $0.value.phone == number.phone }){
+//                                                //                                            print(guid)
+//                                                //                                            print(contact.id)
+//                                                //                                            print(new[new.enumerated().filter{$0.element.id == contact.id}.map{ $0.offset }[0]])
+//                                                new[new.enumerated().filter{$0.element.id == contact.id}.map{ $0.offset }[0]].guid.append(guid.key)
+//                                            }
+//                                        }
+//                                        //                                    withAnimation{
+//                                        self.contacts.append(new.first(where: {$0.id == contact.id})!)
+//                                        //                                    }
+//                                    }
+//
+//                                }
+                                
+                               DispatchQueue.main.async {
+                                   self.contacts = new
+                                    // Task consuming task has completed
+                                    // Update UI from this block of code
+                                    print("Time consuming task has completed. From here we are allowed to update user interface.")
+                                   
+                                   self.uploadedDone = true
+                                   if (self.uploadedDone && self.deletedDone){
+                                       self.save()
+                                       self.updated = true
+                                   }
+                                }
+                            }
+                            
+                            
+                            
                         }
-                        
                     }
                     catch{
                         print ("Error")
                     }
                 }
-//                Uploda deleted conatcs
-                if (!deleted2.isEmpty){
-                    do{
-                        try API().DeleteContacts(contacts: deleted2){
-                            (reses) in
-                            print(reses)
-                        }
-                        
-                    }
-                    catch{
-                        print ("Error")
-                    }
+                else{
+                    self.uploadedDone = true
                 }
-                self.contacts = data
-                self.save()
+                
+                
+                
+                //                self.err = err
             }
-            self.updated = true
-            print("Contacts updated!")
-            self.err = err
         }
         print("Contacts fetched")
     }
+    
     
     func save() {
         if let encoded = try? JSONEncoder().encode(self.contacts) {
             UserDefaults.standard.set(encoded, forKey: "ContactsData")
         }
         print("Contacts saved!")
+//        print(self.contacts)
     }
 }
 
@@ -358,7 +464,9 @@ struct SearchHistory: Hashable, Codable, Identifiable {
     var date: Date = Date()
     var res: Bool = false
     var searching: Bool = true
-    var handhsakes: [[String]]?
+    var handhsakes: [SearchPathDecoded]?
+    var error: String = ""
+    var handshakes_lines: Int = 0
     
 }
 
@@ -383,6 +491,16 @@ struct HistoryData: Decodable, Encodable, Identifiable {
                 //                print(decoded)
                 print("History loaded")
                 self = decoded
+                var index = 0;
+                while index < self.history.count{
+                    if (self.history[index].searching){
+                        self.history[index].res = false
+                        self.history[index].searching = false
+                        self.history[index].error = "Loading failed"
+                        self.history[index].handhsakes = []
+                    }
+                    index += 1
+                }
                 return
             }
         }
@@ -433,57 +551,57 @@ class API1234 {
         }
     }
     
-//    func Load(row: SearchHistory, completion: @escaping (SearchHistory) -> ()) async throws {
-//        await Task.sleep(UInt64(Double(Int.random(in: 2...4)) * Double(NSEC_PER_SEC)))
-//        let r = Int.random(in: 1...3)
-//        switch r {
-//        case 1:
-//            let decodedData = SearchHistory(number: row.number, date: row.date, res: false, searching: false, handhsakes: [])
-//            //            decodedData.searching = false
-//            //            decodedData.res = false
-//            //            decodedData.handhsakes = []
-//            //            print ("no")
-//            //            print(decodedData)
-//            DispatchQueue.main.async {
-//                completion(decodedData)
-//            }
-//            //            historyData.save()
-//        case 2:
-//            let decodedData = SearchHistory(number: row.number, date: row.date, res: true, searching: false, handhsakes: ["+1 888-555-5512"])
-//            //            decodedData.searching = false
-//            //            decodedData.res = true
-//            //            decodedData.handhsakes = ["+79160098109"]
-//            //            print ("1")
-//            //            print(decodedData)
-//            DispatchQueue.main.async {
-//                completion(decodedData)
-//            }
-//            //            historyData.save()
-//        case 3:
-//            let decodedData = SearchHistory(number: row.number, date: row.date, res: true, searching: false, handhsakes: ["+79160098109","+35799206068","+79160098109","+35799206068","+79160098109"])
-//            //            decodedData.searching = false
-//            //            decodedData.res = true
-//            //            decodedData.handhsakes = ["+79160098109","+35799206068","+79160098109","+35799206068","+79160098109"]
-//            //            print ("5")
-//            //            print(decodedData)
-//            DispatchQueue.main.async {
-//                completion(decodedData)
-//            }
-//            //            historyData.save()
-//        default:
-//            let decodedData = SearchHistory(number: row.number, date: row.date, res: false, searching: false, handhsakes: [])
-//            //            decodedData.searching = false
-//            //            decodedData.res = false
-//            //            decodedData.handhsakes = []
-//            //            print ("def")
-//            //            print(decodedData)
-//            DispatchQueue.main.async {
-//                completion(decodedData)
-//            }
-//        }
-//
-//
-//    }
+    //    func Load(row: SearchHistory, completion: @escaping (SearchHistory) -> ()) async throws {
+    //        await Task.sleep(UInt64(Double(Int.random(in: 2...4)) * Double(NSEC_PER_SEC)))
+    //        let r = Int.random(in: 1...3)
+    //        switch r {
+    //        case 1:
+    //            let decodedData = SearchHistory(number: row.number, date: row.date, res: false, searching: false, handhsakes: [])
+    //            //            decodedData.searching = false
+    //            //            decodedData.res = false
+    //            //            decodedData.handhsakes = []
+    //            //            print ("no")
+    //            //            print(decodedData)
+    //            DispatchQueue.main.async {
+    //                completion(decodedData)
+    //            }
+    //            //            historyData.save()
+    //        case 2:
+    //            let decodedData = SearchHistory(number: row.number, date: row.date, res: true, searching: false, handhsakes: ["+1 888-555-5512"])
+    //            //            decodedData.searching = false
+    //            //            decodedData.res = true
+    //            //            decodedData.handhsakes = ["+79160098109"]
+    //            //            print ("1")
+    //            //            print(decodedData)
+    //            DispatchQueue.main.async {
+    //                completion(decodedData)
+    //            }
+    //            //            historyData.save()
+    //        case 3:
+    //            let decodedData = SearchHistory(number: row.number, date: row.date, res: true, searching: false, handhsakes: ["+79160098109","+35799206068","+79160098109","+35799206068","+79160098109"])
+    //            //            decodedData.searching = false
+    //            //            decodedData.res = true
+    //            //            decodedData.handhsakes = ["+79160098109","+35799206068","+79160098109","+35799206068","+79160098109"]
+    //            //            print ("5")
+    //            //            print(decodedData)
+    //            DispatchQueue.main.async {
+    //                completion(decodedData)
+    //            }
+    //            //            historyData.save()
+    //        default:
+    //            let decodedData = SearchHistory(number: row.number, date: row.date, res: false, searching: false, handhsakes: [])
+    //            //            decodedData.searching = false
+    //            //            decodedData.res = false
+    //            //            decodedData.handhsakes = []
+    //            //            print ("def")
+    //            //            print(decodedData)
+    //            DispatchQueue.main.async {
+    //                completion(decodedData)
+    //            }
+    //        }
+    //
+    //
+    //    }
     
     func ModeContacts(contacts: [FetchedContact], completion: @escaping ([FetchedContact]) -> ()) async throws {
         await Task.sleep(UInt64(Double(Int.random(in: 2...4)) * Double(NSEC_PER_SEC)))
@@ -523,7 +641,8 @@ class API1234 {
                 p+=1
             }
             if (!newTelephone.isEmpty){
-                newContacts.append(FetchedContact(id: contacts[i].id, firstName: contacts[i].firstName, lastName: contacts[i].lastName, job: contacts[i].job, telephone: newTelephone, emails: contacts[i].emails, company: contacts[i].company, filterindex: contacts[i].filterindex, shortSearch: contacts[i].shortSearch, longSearch: contacts[i].longSearch))
+                newContacts.append(FetchedContact(id: contacts[i].id, firstName: contacts[i].firstName, lastName: contacts[i].lastName, telephone: newTelephone, filterindex: contacts[i].filterindex, shortSearch: contacts[i].shortSearch, longSearch: contacts[i].longSearch, guid: contacts[i].guid, fullContact: contacts[i].fullContact))
+                //                newContacts.append(FetchedContact(id: contacts[i].id, firstName: contacts[i].firstName, lastName: contacts[i].lastName, telephone: newTelephone, filterindex: contacts[i].filterindex, shortSearch: contacts[i].shortSearch, longSearch: contacts[i].longSearch, guid: contacts[i].guid))
             }
         }
         let decodedData = newContacts
