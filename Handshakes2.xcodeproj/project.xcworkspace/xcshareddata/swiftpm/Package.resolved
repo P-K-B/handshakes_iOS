@@ -1,0 +1,23 @@
+{
+  "pins" : [
+    {
+      "identity" : "hstack-snap-to-scroll",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/swiftui-library/hstack-snap-to-scroll",
+      "state" : {
+        "revision" : "263470319f98008b1e0294129847e2837ad37d89",
+        "version" : "1.0.2"
+      }
+    },
+    {
+      "identity" : "phonenumberkit",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/marmelroy/PhoneNumberKit.git",
+      "state" : {
+        "revision" : "5a1ff64be62f7ddea35618e6084997419a3f03d2",
+        "version" : "3.4.0"
+      }
+    }
+  ],
+  "version" : 2
+}
