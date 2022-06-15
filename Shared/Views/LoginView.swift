@@ -81,7 +81,7 @@ struct LoginView: View {
 //            .background(.ultraThinMaterial, in: RoundedRectangle(cornerRadius: 34, style: .continuous))
 //            .padding()
             .onAppear {
-                self.phoneField = PhoneNumberTextFieldView(phoneNumber: $phoneNumber, isEdeted: $validNumber)
+                self.phoneField = PhoneNumberTextFieldView(phoneNumber: $phoneNumber, isEdeted: $validNumber, maxDigits: 16)
                 validationError = true
             }
             
@@ -135,6 +135,8 @@ struct LoginView: View {
                    label: {
                 Text("User Agreement")
                     .font(Font.custom("SFProDisplay-Regular", size: 20))
+                    .underline()
+                    .foregroundColor(Color.theme.accent)
             }
             )
             .foregroundColor(.black)

@@ -89,7 +89,7 @@ struct SearchList: View {
         .padding()
         }
         .onAppear{
-            self.phoneField = PhoneNumberTextFieldView(phoneNumber: $phoneNumber, isEdeted: $validNumber)
+            self.phoneField = PhoneNumberTextFieldView(phoneNumber: $phoneNumber, isEdeted: $validNumber, maxDigits: 16)
         }
     }
     
