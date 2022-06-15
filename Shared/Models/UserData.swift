@@ -183,7 +183,12 @@ class UserDataService{
     
     
     func SignInUpCall(agreement: Bool, completion: @escaping (StatusResponse) -> ()) throws {
-        guard let url = URL(string: "https://hand.freekiller.net/api/session") else { fatalError("Missing URL") }
+        #if DEBUG
+            let baseUrl="https://develop.freekiller.net"
+        #else
+            let baseUrl="https://hand.freekiller.net"
+        #endif
+        guard let url = URL(string: baseUrl + "/api/session") else { fatalError("Missing URL") }
         var urlRequest = URLRequest(url: url)
         
         urlRequest.httpMethod = "POST"
@@ -228,7 +233,12 @@ class UserDataService{
     
     
     func SignInUpCallAppToken(completion: @escaping (AppTokenResponse) -> ()) throws {
-        guard let url = URL(string: "https://hand.freekiller.net/api/session") else { fatalError("Missing URL") }
+        #if DEBUG
+            let baseUrl="https://develop.freekiller.net"
+        #else
+            let baseUrl="https://hand.freekiller.net"
+        #endif
+        guard let url = URL(string: baseUrl + "/api/session") else { fatalError("Missing URL") }
         var urlRequest = URLRequest(url: url)
         
         urlRequest.httpMethod = "POST"
@@ -273,7 +283,12 @@ class UserDataService{
     
     
     func VerifySingUpCall(code: String, completion: @escaping (SingInSMSResponse) -> ()) throws {
-        guard let url = URL(string: "https://hand.freekiller.net/api/session/verify") else { fatalError("Missing URL") }
+        #if DEBUG
+            let baseUrl="https://develop.freekiller.net"
+        #else
+            let baseUrl="https://hand.freekiller.net"
+        #endif
+        guard let url = URL(string: baseUrl + "/api/session/verify") else { fatalError("Missing URL") }
         var urlRequest = URLRequest(url: url)
         
         urlRequest.httpMethod = "PUT"
@@ -316,7 +331,12 @@ class UserDataService{
     }
     
     func VerifySingUpCallResend(completion: @escaping (SingInSMSResponse) -> ()) throws {
-        guard let url = URL(string: "https://hand.freekiller.net/api/session/verify") else { fatalError("Missing URL") }
+        #if DEBUG
+            let baseUrl="https://develop.freekiller.net"
+        #else
+            let baseUrl="https://hand.freekiller.net"
+        #endif
+        guard let url = URL(string: baseUrl + "/api/session/verify") else { fatalError("Missing URL") }
         var urlRequest = URLRequest(url: url)
         
         urlRequest.httpMethod = "PUT"

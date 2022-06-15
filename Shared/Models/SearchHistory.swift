@@ -209,8 +209,12 @@ class HistoryDataService {
     }
     
     func GetPath(row: SearchHistory, completion: @escaping (SearchHistory) -> ()) throws {
-        print (row.number)
-        guard let url = URL(string: "https://hand.freekiller.net/api/contacts/path") else { fatalError("Missing URL") }
+        #if DEBUG
+            let baseUrl="https://develop.freekiller.net"
+        #else
+            let baseUrl="https://hand.freekiller.net"
+        #endif
+        guard let url = URL(string: baseUrl + "/api/contacts/path") else { fatalError("Missing URL") }
         var urlRequest = URLRequest(url: url)
         
         urlRequest.httpMethod = "POST"

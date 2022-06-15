@@ -161,7 +161,12 @@ final class ChatScreenService  {
     }
     
     func connect() {
-        let url = URL(string: "wss://hand.freekiller.net/ws?token=\(jwt)")! // 3
+        #if DEBUG
+            let baseUrl="wss://develop.freekiller.net"
+        #else
+            let baseUrl="wss://hand.freekiller.net"
+        #endif
+        let url = URL(string: baseUrl + "/ws?token=\(jwt)")! // 3
         webSocketTask = URLSession.shared.webSocketTask(with: url) // 4
         webSocketTask?.receive(completionHandler: onReceive) // 5
         webSocketTask?.resume() // 6
