@@ -57,6 +57,7 @@ struct ChatScreen: View {
                                             ForEach(b?.filter({($0.marker != "new_chat_meta") && ($0.marker != "destination_user_not_found")}) ?? [], id: \.self) { message in
 
                                                 ChatMessageRow(message: message, isUser: message.is_sender ?? false, partner: a.count > 0 ? a[0].firstName : "Unknown person")
+                                                    .environmentObject(model)
                                                     .id(message.message_id)
                                                     .onAppear{
                                                         if ((message.is_sender ?? false) == false){

@@ -107,22 +107,19 @@ struct ContentView: View {
         //                    SingleContactView()
         //                        .environmentObject(contactsData)
                         case .chats:
-        //                    VStack{
-        //                    InfoPageView()
-        //                        .environmentObject(userData)
-        //                        .environmentObject(contactsData)
-        //                        .environmentObject(historyData)
-        //                        .environmentObject(model)
+                            VStack{
+                            InfoPageView()
+                                .environmentObject(userData)
+                                .environmentObject(contactsData)
+                                .environmentObject(historyData)
+                                .environmentObject(model)
                             AllChats(big: big)
                                                         .environmentObject(model)
                                                         .environmentObject(contactsData)
         
-        //                    }
+                            }
                         case .singleChat:
-        //                    InfoPageView()
-        //                        .environmentObject(userData)
-        //                        .environmentObject(contactsData)
-        //                        .environmentObject(historyData)
+
                             ChatScreen(alert: $alert)
                                 .environmentObject(model)
                                 .environmentObject(contactsData)

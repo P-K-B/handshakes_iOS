@@ -17,6 +17,7 @@ struct ChatMessageRow: View {
     }()
     
     let message: ReceivingChatMessage
+    @EnvironmentObject private var model: ChatScreenModel
     let isUser: Bool
     let partner: String
     @State private var messageWidth: CGFloat = 0
@@ -24,6 +25,8 @@ struct ChatMessageRow: View {
 //    let dateFormatter = DateFormatter()
     
     var body: some View {
+        if (model.openChat != nil){
+            let b = model.chats.allChats[model.openChat!]
         HStack {
             if isUser {
                 Spacer()
@@ -31,12 +34,13 @@ struct ChatMessageRow: View {
             
             VStack(alignment: .leading, spacing: 6) {
                 HStack {
-                    Text(message.is_sender ?? false ? "You" : partner)
+                    
+                    Text(b?.first(where: {$0.message_id == message.message_id})?.is_sender ?? false ? "You" : partner)
                         .fontWeight(.bold)
                         .font(.system(size: 12))
                 }
                 
-                Text(message.body)
+                Text(b?.first(where: {$0.message_id == message.message_id})?.body ?? "")
                     .background(GeometryReader {
                                                     Color.clear.preference(key: MessageWidthPreferenceKey.self,
                                                                            value: $0.frame(in: .local).size.width)
@@ -47,8 +51,9 @@ struct ChatMessageRow: View {
                 let a = dateFormatter.string(from: Date(timeIntervalSince1970: Double(message.sent_on ?? 0)))
                 HStack{
                     Text(a)
-                    if (message.read != nil){
-                        if (message.read == false){
+                    if ((b?.first(where: {$0.message_id == message.message_id})?.is_sender ?? false) == true){
+                    if (b?.first(where: {$0.message_id == message.message_id})?.read != nil){
+                        if (b?.first(where: {$0.message_id == message.message_id})?.read == false){
                             Image(systemName: "checkmark")
                                 .foregroundColor(.gray)
                         }
@@ -58,6 +63,7 @@ struct ChatMessageRow: View {
                             Image(systemName: "checkmark")
                                 .foregroundColor(.green)
                         }
+                    }
                     }
                 }
                     .frame(minWidth: messageWidth, alignment: .trailing)
@@ -78,6 +84,7 @@ struct ChatMessageRow: View {
             if !isUser {
                 Spacer()
             }
+        }
         }
 //        .onAppear{
 //

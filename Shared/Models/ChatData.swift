@@ -145,10 +145,10 @@ final class ChatScreenService  {
     func  readMessage(searchGuid: String, id: Int){
         if (self.chats.allChats[searchGuid]?.first(where: {$0.message_id == id})?.read == false){
             self.send(text: "", searchGuid: searchGuid, toGuid: "", meta: nil, read: true, id: id)
-            let a = self.chats.allChats[searchGuid]?.firstIndex(where: {$0.message_id == id}) ?? nil
-            if (a != nil){
-                self.chats.allChats[searchGuid]?[a ?? 0].read = true
-            }
+//            let a = self.chats.allChats[searchGuid]?.firstIndex(where: {$0.message_id == id}) ?? nil
+//            if (a != nil){
+//                self.chats.allChats[searchGuid]?[a ?? 0].read = true
+//            }
         }
         
     }
@@ -243,10 +243,19 @@ final class ChatScreenService  {
                         }
                         newChatMessage.meta = meta
                     }
-                    self.addChat(a: newChatMessage.search_chain, to: to)
-                    self.chats.allChats[newChatMessage.search_chain]?.append(newChatMessage)
-                    self.save()
-                    print(self.chats)
+                        if (newChatMessage.marker == "message_has_been_read"){
+                            let a = self.chats.allChats[newChatMessage.search_chain]?.firstIndex(where: {$0.message_id == newChatMessage.message_id}) ?? nil
+                            if (a != nil){
+                                print(self.chats.allChats[newChatMessage.search_chain]?[a ?? 0])
+                                self.chats.allChats[newChatMessage.search_chain]?[a ?? 0].read = true
+                            }
+                        }
+                        else{
+                            self.addChat(a: newChatMessage.search_chain, to: to)
+                            self.chats.allChats[newChatMessage.search_chain]?.append(newChatMessage)
+                            self.save()
+                            print(self.chats)
+                        }
                 }
             }
         }
@@ -265,13 +274,13 @@ final class ChatScreenService  {
         else {
             return
         }
-        var message = SubmittedChatMessage(marker: "new_message", search_chain: searchGuid, body: text, to: toGuid, message_id: -1) // 1
+        var message = SubmittedChatMessage(marker: "new_message", search_chain: searchGuid, body: text, to: toGuid, message_id: 0) // 1
         if (meta != nil){
-            message = SubmittedChatMessage(marker: "new_chat_meta", search_chain: searchGuid, body: jsonMeta, to: toGuid, message_id: -1) // 1
+            message = SubmittedChatMessage(marker: "new_chat_meta", search_chain: searchGuid, body: jsonMeta, to: toGuid, message_id: 0) // 1
         }
         if (read != nil){
             if (read == true){
-                message = SubmittedChatMessage(marker: "message_has_been_read", search_chain: searchGuid, body: "", to: "", message_id: id ?? -1)
+                message = SubmittedChatMessage(marker: "message_has_been_read", search_chain: searchGuid, body: "", to: "", message_id: id ?? 0)
             }
         }
         guard let json = try? JSONEncoder().encode(message), // 2
