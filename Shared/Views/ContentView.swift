@@ -17,6 +17,7 @@ struct ContentView: View {
     
     @AppStorage("big") var big: Bool = IsBig()
     @AppStorage("selectedTab") var selectedTab: Tab = .search
+    @AppStorage("profile") var profile: Bool = false
     @StateObject private var model = ChatScreenModel()
     
     @Environment(\.scenePhase) var scenePhase
@@ -107,17 +108,13 @@ struct ContentView: View {
         //                    SingleContactView()
         //                        .environmentObject(contactsData)
                         case .chats:
-                            VStack{
-                            InfoPageView()
-                                .environmentObject(userData)
-                                .environmentObject(contactsData)
-                                .environmentObject(historyData)
-                                .environmentObject(model)
+//                            VStack{
+                            
                             AllChats(big: big)
                                                         .environmentObject(model)
                                                         .environmentObject(contactsData)
         
-                            }
+//                            }
                         case .singleChat:
 
                             ChatScreen(alert: $alert)
@@ -168,6 +165,13 @@ struct ContentView: View {
                                     print("Background")
                                 }
                             }
+                .popover(isPresented: $profile) {
+                    InfoPageView()
+                        .environmentObject(userData)
+                        .environmentObject(contactsData)
+                        .environmentObject(historyData)
+                        .environmentObject(model)
+                }
     }
     
     private func onAppear() {

@@ -13,6 +13,7 @@ struct NavigationBar: View {
     @Binding var hasScrolled: Bool
     
     @Binding var search: Bool
+    @AppStorage("profile") var profile: Bool = false
     
     @Binding var showSearch: Bool
     
@@ -65,24 +66,35 @@ struct NavigationBar: View {
             .padding(.leading, 20)
             .padding(.top, 30)
             .offset(y: hasScrolled ? -4 : 0)
-            if (showSearch){
+            
                 
                 HStack(spacing: 16) {
-                    Button(action:{self.search = true}){
-                        Image(systemName: "magnifyingglass")
-                            .font(.body.weight(.bold))
-                            .frame(width: 36, height: 36)
-                            .foregroundColor(Color.theme.accent)
-                            .background(Color.theme.input)
-                            .background(.ultraThinMaterial, in: RoundedRectangle(cornerRadius: 14, style: .continuous))
-                            .strokeStyle(cornerRadius: 14)
+                    if (showSearch){
+                        Button(action:{self.search = true}){
+                            Image(systemName: "magnifyingglass")
+                                .font(.body.weight(.bold))
+                                .frame(width: 36, height: 36)
+                                .foregroundColor(Color.theme.accent)
+                                .background(Color.theme.input)
+                                .background(.ultraThinMaterial, in: RoundedRectangle(cornerRadius: 14, style: .continuous))
+                                .strokeStyle(cornerRadius: 14)
+                        }
                     }
+                        Button(action:{self.profile = true}){
+                            Image(systemName: "person.crop.circle")
+                                .font(.body.weight(.bold))
+                                .frame(width: 36, height: 36)
+                                .foregroundColor(Color.theme.accent)
+                                .background(Color.theme.input)
+                                .background(.ultraThinMaterial, in: RoundedRectangle(cornerRadius: 14, style: .continuous))
+                                .strokeStyle(cornerRadius: 14)
+                        }
                 }
                 .frame(maxWidth: .infinity, alignment: .trailing)
                 .padding(.trailing, 20)
                 .padding(.top, 30)
                 .offset(y: hasScrolled ? -4 : 0)
-            }
+//            }
         }
         .frame(height: hasScrolled ? 110 : 134)
         .frame(maxHeight: .infinity, alignment: .top)
