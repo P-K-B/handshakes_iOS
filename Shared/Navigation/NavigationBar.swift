@@ -73,21 +73,21 @@ struct NavigationBar: View {
                         Button(action:{self.search = true}){
                             Image(systemName: "magnifyingglass")
                                 .font(.body.weight(.bold))
-                                .frame(width: 36, height: 36)
                                 .foregroundColor(Color.theme.accent)
-                                .background(Color.theme.input)
+                                .frame(width: 36, height: 36)
                                 .background(.ultraThinMaterial, in: RoundedRectangle(cornerRadius: 14, style: .continuous))
+                                .background(Color.theme.input, in: RoundedRectangle(cornerRadius: 14, style: .continuous))
                                 .strokeStyle(cornerRadius: 14)
                         }
                     }
                         Button(action:{self.profile = true}){
                             Image(systemName: "person.crop.circle")
                                 .font(.body.weight(.bold))
-                                .frame(width: 36, height: 36)
                                 .foregroundColor(Color.theme.accent)
-                                .background(Color.theme.input)
-                                .background(.ultraThinMaterial, in: RoundedRectangle(cornerRadius: 14, style: .continuous))
-                                .strokeStyle(cornerRadius: 14)
+                            .frame(width: 36, height: 36)
+                            .background(.ultraThinMaterial, in: RoundedRectangle(cornerRadius: 14, style: .continuous))
+                            .background(Color.theme.input, in: RoundedRectangle(cornerRadius: 14, style: .continuous))
+                            .strokeStyle(cornerRadius: 14)
                         }
                 }
                 .frame(maxWidth: .infinity, alignment: .trailing)
