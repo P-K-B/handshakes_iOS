@@ -33,6 +33,9 @@ struct SearchList: View {
         //        lazyV
 //        VStack{
             hardV
+            .onTapGesture {
+                self.endEditing()
+            }
 //        }
 //            .onAppear{
 //                if (history.datta.count < 5){
@@ -40,6 +43,7 @@ struct SearchList: View {
 //                }
 //            }
     }
+       
     
     var numberField: some View{
         self.phoneField
