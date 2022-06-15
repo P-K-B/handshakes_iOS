@@ -10,12 +10,21 @@
       }
     },
     {
+      "identity" : "lottie-ios",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/airbnb/lottie-ios.git",
+      "state" : {
+        "revision" : "4a6058cbbdfe4f74aeae92c8bd51ad3b0de2a1ee",
+        "version" : "3.3.0"
+      }
+    },
+    {
       "identity" : "phonenumberkit",
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/marmelroy/PhoneNumberKit.git",
       "state" : {
-        "revision" : "5a1ff64be62f7ddea35618e6084997419a3f03d2",
-        "version" : "3.4.0"
+        "revision" : "d4c094934237b23344cf948dd999c431feb8da06",
+        "version" : "3.4.1"
       }
     }
   ],

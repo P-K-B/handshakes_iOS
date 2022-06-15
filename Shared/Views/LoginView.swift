@@ -137,7 +137,7 @@ struct LoginView: View {
                     .font(Font.custom("SFProDisplay-Regular", size: 20))
             }
             )
-            .foregroundColor(.black)
+            .foregroundColor(Color.theme.accent)
 //                        Toggle("User Agreement", isOn: $userAgreement)
 //                            .toggleStyle(.checkbox)
         }

@@ -8,6 +8,7 @@
 import SwiftUI
 import PhoneNumberKit
 import Combine
+import Lottie
 
 @main
 struct Handshakes2App: App {
@@ -29,10 +30,10 @@ struct Handshakes2App: App {
     @AppStorage("jwt") var jwt: String = ""
     
     @State var isAnimating = false
-        var foreverAnimation: Animation {
-            Animation.linear(duration: 1.0)
-                .repeatForever(autoreverses: false)
-        }
+//        var foreverAnimation: Animation {
+//            Animation.linear(duration: 1.0)
+//                .repeatForever(autoreverses: false)
+//        }
 
 
     
@@ -94,7 +95,7 @@ struct Handshakes2App: App {
                         group.wait()
                         //                        userData.data.loaded = false
                         userData.update(newData: UserUpdate(field: .loaded, bool: false))
-                        //                                                sleep(3)
+                                                                        sleep(3)
                         print(userData.data.number)
                         try self.phoneNumberKit.parse(userData.data.number)
                         do{
@@ -188,9 +189,12 @@ struct Handshakes2App: App {
     var appLoading: some View{
         
         VStack{
+            LottieView()
             Text ("Loading...")
 //            ProgressView()
-//            Image("Logo")
+            
+            
+//            Image("LogoAnimated")
 //            Image(systemName: "arrow.2.circlepath")
 //                .rotationEffect(Angle(degrees: isAnimating ? 360.0 : 0.0))
 ////                .animation(isAnimating ? self.foreverAnimation : foreverAnimationNo)
@@ -202,5 +206,34 @@ struct Handshakes2App: App {
 //                                isAnimating = false
 //                            }
         }
+    }
+}
+
+struct LottieView: UIViewRepresentable {
+    func makeUIView(context: UIViewRepresentableContext<LottieView>) -> UIView {
+        @Environment(\.colorScheme) var colorScheme: ColorScheme
+        let view = UIView(frame: .zero)
+        let animationView = AnimationView()
+
+        let img = (colorScheme == .dark) ? "handshakes_logo_dark" : "handshakes_loading"
+           
+        print("Color scheme: ", colorScheme, " and img = ", img)
+        let animation = Animation.named(img)
+                animationView.animation = animation
+                animationView.contentMode = .scaleAspectFit
+                animationView.loopMode = LottieLoopMode.loop
+                animationView.play()
+
+                animationView.translatesAutoresizingMaskIntoConstraints = false
+                view.addSubview(animationView)
+                NSLayoutConstraint.activate([
+                    animationView.heightAnchor.constraint(equalTo: view.heightAnchor),
+                    animationView.widthAnchor.constraint(equalTo: view.widthAnchor)
+                ])
+
+                return view
+    }
+
+    func updateUIView(_ uiView: UIView, context: UIViewRepresentableContext<LottieView>) {
     }
 }
