@@ -11,7 +11,8 @@ import Combine
 import Foundation
 
 struct ChatScreen: View {
-    
+    @Binding var alert: MyAlert
+
     @EnvironmentObject private var model: ChatScreenModel
     @EnvironmentObject var contacts: ContactsDataView
     //    @State var searchGuid: String
@@ -53,21 +54,42 @@ struct ChatScreen: View {
                                         
                                     ScrollViewReader { proxy in
                                         LazyVStack(spacing: 8) {
-                                            ForEach(b?.filter({$0.marker != "new_chat_meta"}) ?? [], id: \.self) { message in
-                                                ChatMessageRow(message: message, isUser: message.is_sender ?? false, partner: a[0].firstName)
+                                            ForEach(b?.filter({($0.marker != "new_chat_meta") && ($0.marker != "destination_user_not_found")}) ?? [], id: \.self) { message in
+
+                                                ChatMessageRow(message: message, isUser: message.is_sender ?? false, partner: a.count > 0 ? a[0].firstName : "Unknown person")
                                                     .id(message.message_id)
+                                                    .onAppear{
+                                                        if ((message.is_sender ?? false) == false){
+                                                            model.readMessage(searchGuid: model.openChat ?? "", id: message.message_id)
+                                                        }
+                                                    }
                                                 //                                .onAppear{
                                                 //                                    print(message)
                                                 //                                }
                                                 //                            }
                                             }
                                         }
-                                        .onChange(of: model.chats.allChats[model.openChat!]?.count) { _ in // 3
+                                        .onChange(of: b?.count) { _ in // 3
                                             scrollToLastMessage(proxy: proxy)
-                                            print(message)
+                                            print ("112233")
+                                            print(b)
+                                            print(model.openChat)
+                                            let c = model.chats.allChats[model.openChat!]?.first(where: {$0.marker == "destination_user_not_found"})
+                                            if (c != nil){
+                                                alert = MyAlert(error: true, title: "Message error", text: "Destination user is not yet registrated", button: "Close", oneButton: true, deleteChat: true)
+                                                model.DeleteChat(chat: model.openChat!)
+                                                selectedTab = .chats
+                                            }
                                         }
                                         .onAppear{
                                             scrollToLastMessage(proxy: proxy)
+//                                            print (model.openChat)
+                                            let c = model.chats.allChats[model.openChat!]?.first(where: {$0.marker == "destination_user_not_found"})
+                                            if (c != nil){
+                                                alert = MyAlert(error: true, title: "Message error", text: "Destination user is not yet registrated", button: "Close", oneButton: true, deleteChat: true)
+                                                model.DeleteChat(chat: model.openChat!)
+                                                selectedTab = .chats
+                                            }
                                         }
                                     }
                                 }
@@ -104,8 +126,30 @@ struct ChatScreen: View {
         //            Color.clear.frame(height: big ? 55 : 70)
         //        }
         .onAppear{
-            if ((model.openChat == nil) && (selectedTab == .singleChat)){
-                selectedTab = .chats
+            DispatchQueue.global(qos: .userInitiated).async {
+                    let group = DispatchGroup()
+                    group.enter()
+                    
+                    // avoid deadlocks by not using .main queue here
+                    DispatchQueue.global().async {
+                        if (model.openChat != nil){
+                            while model.chats.allChats[model.openChat!]?.count == 0 {
+                            }
+                        }
+                        group.leave()
+                        print("Left")
+                    }
+                    
+                    // wait ...
+                    group.wait()
+                    //                        userData.data.loaded = false
+                
+                DispatchQueue.main.async {
+                    print("HERE2233")
+                    if (((model.openChat == nil) || (model.openChat == "")) && (selectedTab == .singleChat)){
+                        selectedTab = .chats
+                    }
+                }
             }
         }
     }

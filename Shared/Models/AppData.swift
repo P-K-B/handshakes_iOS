@@ -24,4 +24,5 @@ struct MyAlert{
     var button: String = ""
     var button2: String = ""
     var oneButton: Bool = true
+    var deleteChat: Bool = false
 }

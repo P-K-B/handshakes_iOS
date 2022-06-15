@@ -19,7 +19,7 @@ struct ContactsData: Encodable, Decodable {
     var letters: [String] = []
     var updated: Bool = false
     var err: Bool = false
-    var loaded: Bool = false
+    var loaded: Bool = true
     var time: Date = Date()
     var time2: Date = Date()
     var time3: Date = Date()
@@ -43,11 +43,12 @@ class ContactsDataView: ObservableObject {
     @Published var selectedContact: FetchedContact?
     @Published var order: Int = 0
     
-    private let contactsDataService = ContactsDataService()
+     let contactsDataService = ContactsDataService()
     
     private var cansellables = Set<AnyCancellable>()
     
     init(){
+        print("CONTACTS DATA: updated = \(data.updated)")
         addDataSubscriber()
     }
     
@@ -63,6 +64,7 @@ class ContactsDataView: ObservableObject {
                 }
             } receiveValue: { returnedData in
                 self.data=returnedData
+                print("CONTACTS DATA: updated = \(returnedData.updated)")
             }
             .store(in: &cansellables)
         
@@ -143,20 +145,20 @@ class ContactsDataService  {
     var contactsDeleteSunscription: AnyCancellable?
     
     init() {
-        self.data.loaded = false
-        self.data.time = Date()
+//        self.data.loaded = true
+//        self.data.time = Date()
         if let data = UserDefaults.standard.data(forKey: "ContactsData") {
             if let decoded = try? JSONDecoder().decode(CD.self, from: data) {
                 print("UserData loaded")
                 self.data.contacts = decoded.contacts
                 self.data.letters = decoded.letters
-                self.data.loaded = true
+//                self.data.loaded = true
                 DispatchQueue.global(qos: .userInitiated).async {
                     self.GetNewContacts()
                     DispatchQueue.main.async {
                         // Task consuming task has completed
                         // Update UI from this block of code
-                        self.data.loaded = true
+//                        self.data.loaded = true
                         print("Time consuming task has completed. From here we are allowed to update user interface.")
                         
                     }
@@ -170,12 +172,12 @@ class ContactsDataService  {
             DispatchQueue.global(qos: .userInitiated).async {
                 //                var parse =
                 //                self.data.contacts = self.fetchContacts()
-                self.data.loaded = true
+//                self.data.loaded = true
                 self.GetNewContacts()
                 DispatchQueue.main.async {
                     // Task consuming task has completed
                     // Update UI from this block of code
-                    self.data.loaded = true
+//                    self.data.loaded = true
                     print("Time consuming task has completed. From here we are allowed to update user interface.")
                     
                 }
@@ -204,7 +206,7 @@ class ContactsDataService  {
         self.data.contacts = []
         self.data.letters = []
         self.save()
-        self.data.time = Date()
+//        self.data.time = Date()
         DispatchQueue.global(qos: .userInitiated).async {
             //            var parse =
             //            self.data.contacts = self.fetchContacts()
@@ -658,7 +660,7 @@ class ContactsDataService  {
     }
     
     func GetNewContacts(){
-        //        sleep(5)
+                
         print("HERE!!!")
         self.data.updated = false
         let res = self.fetchContacts()
@@ -677,11 +679,11 @@ class ContactsDataService  {
         let contactsFromPhone = res3.0
         //        let filterindexApp = res2.1
         let filterindexPhone = res3.1
-        self.data.time11 = Date()
+//        self.data.time11 = Date()
         var new: [FetchedContact] = []
         var deleted: [FetchedContact] = []
         if (contactsFromPhone != contactsFromApp){
-            data.updated = false
+//            self.data.updated = false
             print("New contacts found")
             let compareSetNew = Set(contactsFromApp)
             let compareSetDeleted = Set(contactsFromPhone)
@@ -695,16 +697,23 @@ class ContactsDataService  {
         else{
             print("Contacts hasn't changed")
         }
-        self.data.time2 = Date()
+//        self.data.time2 = Date()
         if (!new.isEmpty || !deleted.isEmpty){
-            ManageContacts(new: new, deleted: deleted, contactsFromPhone: contactsFromPhone, contactsFromApp: contactsFromApp, filterindexPhone: filterindexPhone)
+            if (contactsFromApp.count != 0){
+                self.data.contacts = contactsFromApp
+            }
+            else{
+                self.data.contacts = contactsFromPhone
+            }
+            self.ManageContacts(new: new, deleted: deleted, contactsFromPhone: contactsFromPhone, contactsFromApp: contactsFromApp, filterindexPhone: filterindexPhone)
         }
         else{
-            print("UserData fetched")
+            print("Contacts fetched")
             self.save()
             //            self.data.loaded = true
+//            sleep(1)
             self.data.updated = true
-            self.data.time10 = Date()
+//            self.data.time10 = Date()
         }
         //        return contactsFromApp
     }
@@ -729,7 +738,7 @@ class ContactsDataService  {
                 
                 // wait ...
                 group.wait()
-                
+                sleep(3)
                 do{
                     try self.DeleteContacts(contacts: deleted)
                     { (reses) in
@@ -738,21 +747,21 @@ class ContactsDataService  {
                             
                             
                             
-                            self.data.time3 = Date()
+//                            self.data.time3 = Date()
                             
                             
                             do{
                                 try self.UploadContacts(contacts: new)
                                 { (reses2) in
                                     //                                    print(reses2)
-                                    self.data.time4 = Date()
+//                                    self.data.time4 = Date()
                                     uploadResult = reses2.payload
                                     self.EditContacts(new: new, deleted: deleted, contactsFromPhone: contactsFromPhone, contactsFromApp: contactsFromApp, uploadResult: uploadResult, filterindexphone: filterindexPhone){re in
                                         self.data.contacts =  re
                                         print("UserData fetched")
                                         self.save()
                                         self.data.updated = true
-                                        self.data.time10 = Date()
+//                                        self.data.time10 = Date()
                                     }
                                     
                                     
@@ -795,20 +804,20 @@ class ContactsDataService  {
                 // wait ...
                 group.wait()
                 
-                self.data.time3 = Date()
+//                self.data.time3 = Date()
                 
                 do{
                     try self.UploadContacts(contacts: new)
                     { (reses) in
                         //                        print(reses)
-                        self.data.time4 = Date()
+//                        self.data.time4 = Date()
                         uploadResult = reses.payload
                         self.EditContacts(new: new, deleted: deleted, contactsFromPhone: contactsFromPhone, contactsFromApp: contactsFromApp, uploadResult: uploadResult, filterindexphone: filterindexPhone) {re in
                             self.data.contacts =  re
                             print("UserData fetched")
                             self.save()
                             self.data.updated = true
-                            self.data.time10 = Date()
+//                            self.data.time10 = Date()
                         }
                         
                     }
@@ -853,7 +862,7 @@ class ContactsDataService  {
                 }
                 newGuid.append(a)
             }
-            self.data.time5 = Date()
+//            self.data.time5 = Date()
             
             //            print(newGuid)
             
@@ -871,7 +880,7 @@ class ContactsDataService  {
             //            print(contactsFromApp)
             //            print(deleted)
             
-            self.data.time6 = Date()
+//            self.data.time6 = Date()
             
             //        print(String(data: try! JSONEncoder().encode(contactsFromApp), encoding: String.Encoding.utf8)  )
             //        print(String(data: try! JSONEncoder().encode(app), encoding: String.Encoding.utf8)  )
@@ -898,7 +907,7 @@ class ContactsDataService  {
             app = self.ReOrder(contacts: app, etalon: contactsFromPhone)
             app = self.RestoreIndex(contacts: app, index: filterindexphone)
             
-            self.data.time7 = Date()
+//            self.data.time7 = Date()
             
             
             DispatchQueue.main.async {

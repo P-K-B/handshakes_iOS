@@ -86,7 +86,7 @@ struct SingleContactView: View {
             if ((contacts.selectedContact == nil) && (selectedTab == .singleContact)){
                 selectedTab = .contacts
             }
-
+            print(contacts.selectedContact)
         }
     }
 }

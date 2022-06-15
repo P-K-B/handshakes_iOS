@@ -8,16 +8,20 @@
 import SwiftUI
 
 struct ChatMessageRow: View {
-    static private let dateFormatter: DateFormatter = {
+    let dateFormatter: DateFormatter = {
         let formatter = DateFormatter()
-        formatter.dateStyle = .none
-        formatter.timeStyle = .short
+        formatter.timeZone = TimeZone(abbreviation: "GMT") //Set timezone that you want
+        formatter.locale = NSLocale.current
+        formatter.dateFormat = "HH:mm"
         return formatter
     }()
     
     let message: ReceivingChatMessage
     let isUser: Bool
     let partner: String
+    @State private var messageWidth: CGFloat = 0
+    
+//    let dateFormatter = DateFormatter()
     
     var body: some View {
         HStack {
@@ -33,7 +37,39 @@ struct ChatMessageRow: View {
                 }
                 
                 Text(message.body)
+                    .background(GeometryReader {
+                                                    Color.clear.preference(key: MessageWidthPreferenceKey.self,
+                                                                           value: $0.frame(in: .local).size.width)
+                                                })
+//                Text(message.body)
+//                HStack{
+//                    Spacer()
+                let a = dateFormatter.string(from: Date(timeIntervalSince1970: Double(message.sent_on ?? 0)))
+                HStack{
+                    Text(a)
+                    if (message.read != nil){
+                        if (message.read == false){
+                            Image(systemName: "checkmark")
+                                .foregroundColor(.gray)
+                        }
+                        else{
+                            Image(systemName: "checkmark")
+                                .foregroundColor(.green)
+                            Image(systemName: "checkmark")
+                                .foregroundColor(.green)
+                        }
+                    }
+                }
+                    .frame(minWidth: messageWidth, alignment: .trailing)
+//                }
+                
+                .onAppear{
+                    print(messageWidth)
+                }
             }
+            .onPreferenceChange(MessageWidthPreferenceKey.self) { pref in
+                                self.messageWidth = pref
+                            }
             .foregroundColor(isUser ? .white : .black)
             .padding(10)
             .background(isUser ? Color.blue : Color(white: 0.95))
@@ -43,5 +79,15 @@ struct ChatMessageRow: View {
                 Spacer()
             }
         }
+//        .onAppear{
+//
+//        }
     }
+    
+    struct MessageWidthPreferenceKey : PreferenceKey {
+            static var defaultValue: CGFloat { 0 }
+            static func reduce(value: inout Value, nextValue: () -> Value) {
+                value = value + nextValue()
+            }
+        }
 }

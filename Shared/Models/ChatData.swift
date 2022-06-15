@@ -12,7 +12,7 @@ import Combine
 final class ChatScreenModel: ObservableObject {
     @Published var toGuid: String = ""
     @Published var openChat: String?
-    @Published private(set) var messages: [ReceivingChatMessage] = []
+//    @Published private(set) var messages: [ReceivingChatMessage] = []
     @Published var chats: Chats = Chats()
 //    private var webSocketTask: URLSessionWebSocketTask? // 1
     
@@ -55,19 +55,7 @@ final class ChatScreenModel: ObservableObject {
             }
             .store(in: &cansellables)
         
-        chatsDataService.$messages
-            .receive(on: DispatchQueue.main)
-            .sink { (completion) in
-                switch completion{
-                case .finished:
-                    break
-                case .failure(let error):
-                    print (error.localizedDescription)
-                }
-            } receiveValue: { returnedData in
-                self.messages=returnedData
-            }
-            .store(in: &cansellables)
+        
         
         chatsDataService.$chats
             .receive(on: DispatchQueue.main)
@@ -104,7 +92,11 @@ final class ChatScreenModel: ObservableObject {
     }
     
     func send(text: String, searchGuid: String, toGuid: String, meta: Meta?) {
-        chatsDataService.send(text: text, searchGuid: searchGuid, toGuid: toGuid, meta: meta)
+        chatsDataService.send(text: text, searchGuid: searchGuid, toGuid: toGuid, meta: meta, read: nil, id: -1)
+    }
+    
+    func readMessage(searchGuid: String, id: Int){
+        chatsDataService.readMessage(searchGuid: searchGuid, id: id)
     }
     
     func reset(){
@@ -114,17 +106,22 @@ final class ChatScreenModel: ObservableObject {
     func SetJwt(jwt: String){
         chatsDataService.SetJwt(jwt: jwt)
     }
+    func OpenChat(chat: String){
+        chatsDataService.OpenChat(chat: chat)
+    }
+    func DeleteChat(chat:String){
+        chatsDataService.DeleteChat(chat: chat)
+    }
 }
 
 struct ChatsSave: Encodable,Decodable{
-    var messages: [ReceivingChatMessage] = []
+//    var messages: [ReceivingChatMessage] = []
     var chats: Chats = Chats()
 }
 
 final class ChatScreenService  {
     @Published var toGuid: String = ""
     @Published var openChat: String = ""
-    @Published private(set) var messages: [ReceivingChatMessage] = []
     @Published private(set) var chats: Chats = Chats()
     private var webSocketTask: URLSessionWebSocketTask? // 1
     
@@ -138,15 +135,36 @@ final class ChatScreenService  {
         if let data = UserDefaults.standard.data(forKey: "ChatsData") {
             if let decoded = try? JSONDecoder().decode(ChatsSave.self, from: data) {
                 print("ChatsData loaded")
-                self.messages = decoded.messages
+//                self.messages = decoded.messages
                 self.chats = decoded.chats
                 return
             }
         }
     }
     
+    func  readMessage(searchGuid: String, id: Int){
+        if (self.chats.allChats[searchGuid]?.first(where: {$0.message_id == id})?.read == false){
+            self.send(text: "", searchGuid: searchGuid, toGuid: "", meta: nil, read: true, id: id)
+            let a = self.chats.allChats[searchGuid]?.firstIndex(where: {$0.message_id == id}) ?? nil
+            if (a != nil){
+                self.chats.allChats[searchGuid]?[a ?? 0].read = true
+            }
+        }
+        
+    }
+    
+    func OpenChat(chat:String){
+        self.openChat = chat
+    }
+    
+    func DeleteChat(chat:String){
+        self.chats.allChats.removeValue(forKey: chat)
+        self.OpenChat(chat: "")
+        self.save()
+    }
+    
     func reset(){
-        self.messages = []
+//        self.messages = []
         self.chats = Chats()
         self.toGuid = ""
         self.openChat = ""
@@ -154,7 +172,7 @@ final class ChatScreenService  {
     }
     
     func save() {
-        if let encoded = try? JSONEncoder().encode(ChatsSave(messages: self.messages, chats: self.chats)) {
+        if let encoded = try? JSONEncoder().encode(ChatsSave(chats: self.chats)) {
             UserDefaults.standard.set(encoded, forKey: "ChatsData")
         }
         print("ChatsData saved!")
@@ -180,9 +198,9 @@ final class ChatScreenService  {
         if (self.chats.allChats[a] == nil){
             self.chats.allChats[a] = []
         }
-        if (self.chats.chatsData[a] == nil){
-            self.chats.chatsData[a] = ChatData(to: to)
-        }
+//        if (self.chats.chatsData[a] == nil){
+//            self.chats.chatsData[a] = ChatData(to: to)
+//        }
     }
     
     private func onReceive(incoming: Result<URLSessionWebSocketTask.Message, Error>) {
@@ -207,6 +225,7 @@ final class ChatScreenService  {
             
             DispatchQueue.main.async { // 6
                 newChatMessage = chatMessage
+                newChatMessage.read = false
                     if (newChatMessage.message_id != -1){
                     var to = ""
                     if (chatMessage.is_sender == true){
@@ -237,7 +256,7 @@ final class ChatScreenService  {
         disconnect()
     }
     
-    func send(text: String, searchGuid: String, toGuid: String, meta: Meta?) {
+    func send(text: String, searchGuid: String, toGuid: String, meta: Meta?, read: Bool?, id: Int?) {
         
 //        let meta: Meta = Meta(number: "+1", asking_number: "+2")
         
@@ -246,9 +265,14 @@ final class ChatScreenService  {
         else {
             return
         }
-        var message = SubmittedChatMessage(marker: "new_message", search_chain: searchGuid, body: text, to: toGuid) // 1
+        var message = SubmittedChatMessage(marker: "new_message", search_chain: searchGuid, body: text, to: toGuid, message_id: -1) // 1
         if (meta != nil){
-            message = SubmittedChatMessage(marker: "new_chat_meta", search_chain: searchGuid, body: jsonMeta, to: toGuid) // 1
+            message = SubmittedChatMessage(marker: "new_chat_meta", search_chain: searchGuid, body: jsonMeta, to: toGuid, message_id: -1) // 1
+        }
+        if (read != nil){
+            if (read == true){
+                message = SubmittedChatMessage(marker: "message_has_been_read", search_chain: searchGuid, body: "", to: "", message_id: id ?? -1)
+            }
         }
         guard let json = try? JSONEncoder().encode(message), // 2
               let jsonString = String(data: json, encoding: .utf8)
@@ -268,7 +292,7 @@ final class ChatScreenService  {
 
 struct Chats: Decodable, Encodable{
     var allChats:[String: [ReceivingChatMessage]] = [:]
-    var chatsData:[String: ChatData] = [:]
+//    var chatsData:[String: ChatData] = [:]
 }
 
 struct ChatData: Decodable, Encodable {
@@ -280,6 +304,7 @@ struct SubmittedChatMessage: Encodable {
     let search_chain: String
     let body: String
     let to: String
+    let message_id: Int?
 }
 
 struct Meta: Decodable, Encodable, Hashable{
@@ -300,6 +325,7 @@ struct ReceivingChatMessage: Decodable, Hashable, Encodable {
     let body: String
     let is_sender: Bool?
     var meta: Meta?
+    var read: Bool?
 }
 
 class UserInfo: ObservableObject {

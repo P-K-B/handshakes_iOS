@@ -53,11 +53,17 @@ struct ContactsView: View {
                         if (contacts.data.loaded){
                             if (!contacts.data.updated){
                                 Text ("Updating")
+                                    .onDisappear{
+                                        print("2")
+                                    }
                             }
 //                            else{
                                 //                                ForEach(contacts.data.contacts){ contact in
                                 //                                    HStack() {
                                 ContactsList
+                                .onAppear{
+                                    print("1")
+                                }
 //                            }
                             //                                    }
                             //                                }
@@ -68,12 +74,17 @@ struct ContactsView: View {
                     }
                     .overlay(
                         NavigationBar(title: "Contacts", hasScrolled: $hasScrolled, search: $search, showSearch: .constant(true))
+                           
                     )
                 }
             }
         }
         .popover(isPresented: $search) {
             SearchContacts(close: $search, selectedContact: $selectedContact)
+                .onAppear{
+                    print(contacts.data)
+                    print(contacts.contactsDataService.data)
+                }
         }
     }
     

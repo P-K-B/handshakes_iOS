@@ -683,7 +683,7 @@
 				0578ABB028341C7000810E70 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
-			defaultConfigurationName = Release;
+			defaultConfigurationName = Debug;
 		};
 		0578ABB128341C7000810E70 /* Build configuration list for PBXNativeTarget "Handshakes2 (iOS)" */ = {
 			isa = XCConfigurationList;
@@ -692,7 +692,7 @@
 				0578ABB328341C7000810E70 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
-			defaultConfigurationName = Release;
+			defaultConfigurationName = Debug;
 		};
 		0578ABB428341C7000810E70 /* Build configuration list for PBXNativeTarget "Handshakes2 (macOS)" */ = {
 			isa = XCConfigurationList;
@@ -701,7 +701,7 @@
 				0578ABB628341C7000810E70 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
-			defaultConfigurationName = Release;
+			defaultConfigurationName = Debug;
 		};
 /* End XCConfigurationList section */
 

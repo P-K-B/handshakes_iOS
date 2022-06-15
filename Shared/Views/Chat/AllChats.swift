@@ -31,7 +31,7 @@ struct AllChats: View{
                                         HStack{
                                             Button(action: {
                                                 withAnimation(){
-                                                    model.openChat = chat
+                                                    model.OpenChat(chat: chat)
                                                     selectedTab = .singleChat
                                                 }
                                             }, label: {

@@ -158,16 +158,29 @@ struct Handshakes2App: App {
 //                        print("Time consuming task has completed. From here we are allowed to update user interface.")
 //                    }
 //                }
+
             }
             .alert(isPresented: $alert.error) {
-                if (alert.oneButton){
+                if ((alert.oneButton) && (!alert.deleteChat)){
                     return Alert(
                         title: Text(alert.title),
                         message: Text(alert.text),
                         dismissButton: .default(Text(alert.button))
                     )
                 }
-                else{
+                else if ((alert.oneButton) && (alert.deleteChat)){
+                    return Alert (
+                        title: Text(alert.title),
+                        message: Text(alert.text),
+                        dismissButton: .default(Text(alert.button),
+                                                action: {
+//                                                    UIApplication.shared.open(URL(string: UIApplication.openSettingsURLString)!)
+                                                })
+//                        secondaryButton: .default(Text(alert.button2))
+                    )
+                }
+                    
+                else if (!alert.oneButton){
                     return Alert (
                         title: Text(alert.title),
                         message: Text(alert.text),
@@ -176,6 +189,13 @@ struct Handshakes2App: App {
                                                     UIApplication.shared.open(URL(string: UIApplication.openSettingsURLString)!)
                                                 }),
                         secondaryButton: .default(Text(alert.button2))
+                    )
+                }
+                else{
+                    return Alert(
+                        title: Text(alert.title),
+                        message: Text(alert.text),
+                        dismissButton: .default(Text(alert.button))
                     )
                 }
             }
