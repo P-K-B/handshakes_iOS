@@ -58,6 +58,11 @@
 		059C02B72843FF540073AFD6 /* SingleSearchView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 059C02B62843FF540073AFD6 /* SingleSearchView.swift */; };
 		059C02BC28452D8F0073AFD6 /* SnapToScroll in Frameworks */ = {isa = PBXBuildFile; productRef = 059C02BB28452D8F0073AFD6 /* SnapToScroll */; };
 		059C02BF2846079B0073AFD6 /* ChatScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = 059C02BE2846079B0073AFD6 /* ChatScreen.swift */; };
+		DEBF70E828591FBE001D0EB5 /* Lottie in Frameworks */ = {isa = PBXBuildFile; productRef = DEBF70E728591FBE001D0EB5 /* Lottie */; };
+		DEBF70EB285924F6001D0EB5 /* handshakes_loading.json in Resources */ = {isa = PBXBuildFile; fileRef = DEBF70E9285924F6001D0EB5 /* handshakes_loading.json */; };
+		DEBF70EC285924F6001D0EB5 /* handshakes_loading.json in Resources */ = {isa = PBXBuildFile; fileRef = DEBF70E9285924F6001D0EB5 /* handshakes_loading.json */; };
+		DEBFFBB02859CE6D00CE741F /* handshakes_logo_dark.json in Resources */ = {isa = PBXBuildFile; fileRef = DEBFFBAF2859CE6D00CE741F /* handshakes_logo_dark.json */; };
+		DEBFFBB12859CE6D00CE741F /* handshakes_logo_dark.json in Resources */ = {isa = PBXBuildFile; fileRef = DEBFFBAF2859CE6D00CE741F /* handshakes_logo_dark.json */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -105,6 +110,8 @@
 		059C02B42843FA760073AFD6 /* HistoryRow.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HistoryRow.swift; sourceTree = "<group>"; };
 		059C02B62843FF540073AFD6 /* SingleSearchView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SingleSearchView.swift; sourceTree = "<group>"; };
 		059C02BE2846079B0073AFD6 /* ChatScreen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatScreen.swift; sourceTree = "<group>"; };
+		DEBF70E9285924F6001D0EB5 /* handshakes_loading.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = handshakes_loading.json; sourceTree = "<group>"; };
+		DEBFFBAF2859CE6D00CE741F /* handshakes_logo_dark.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = handshakes_logo_dark.json; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -114,6 +121,7 @@
 			files = (
 				059C02BC28452D8F0073AFD6 /* SnapToScroll in Frameworks */,
 				0578ABB928341D2B00810E70 /* PhoneNumberKit in Frameworks */,
+				DEBF70E828591FBE001D0EB5 /* Lottie in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -161,6 +169,8 @@
 			isa = PBXGroup;
 			children = (
 				0568518C284E69B500A79A34 /* Handshakes2--iOS--Info.plist */,
+				DEBF70E9285924F6001D0EB5 /* handshakes_loading.json */,
+				DEBFFBAF2859CE6D00CE741F /* handshakes_logo_dark.json */,
 				0578AB9828341C6F00810E70 /* Shared */,
 				0578ABA728341C7000810E70 /* macOS */,
 				0578ABA128341C7000810E70 /* Products */,
@@ -292,6 +302,7 @@
 			packageProductDependencies = (
 				0578ABB828341D2B00810E70 /* PhoneNumberKit */,
 				059C02BB28452D8F0073AFD6 /* SnapToScroll */,
+				DEBF70E728591FBE001D0EB5 /* Lottie */,
 			);
 			productName = "Handshakes2 (iOS)";
 			productReference = 0578ABA028341C7000810E70 /* Handshakes2.app */;
@@ -344,6 +355,7 @@
 			packageReferences = (
 				0578ABB728341D2B00810E70 /* XCRemoteSwiftPackageReference "PhoneNumberKit" */,
 				059C02BA28452D8F0073AFD6 /* XCRemoteSwiftPackageReference "hstack-snap-to-scroll" */,
+				DEBF70E628591FBE001D0EB5 /* XCRemoteSwiftPackageReference "lottie-ios" */,
 			);
 			productRefGroup = 0578ABA128341C7000810E70 /* Products */;
 			projectDirPath = "";
@@ -361,7 +373,9 @@
 			buildActionMask = 2147483647;
 			files = (
 				0568518A284E697600A79A34 /* SFProDisplay-Bold.ttf in Resources */,
+				DEBFFBB02859CE6D00CE741F /* handshakes_logo_dark.json in Resources */,
 				0578ABAD28341C7000810E70 /* Assets.xcassets in Resources */,
+				DEBF70EB285924F6001D0EB5 /* handshakes_loading.json in Resources */,
 				05685188284E697600A79A34 /* SFProDisplay-Regular.ttf in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -371,7 +385,9 @@
 			buildActionMask = 2147483647;
 			files = (
 				0568518B284E697600A79A34 /* SFProDisplay-Bold.ttf in Resources */,
+				DEBFFBB12859CE6D00CE741F /* handshakes_logo_dark.json in Resources */,
 				0578ABAE28341C7000810E70 /* Assets.xcassets in Resources */,
+				DEBF70EC285924F6001D0EB5 /* handshakes_loading.json in Resources */,
 				05685189284E697600A79A34 /* SFProDisplay-Regular.ttf in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -555,7 +571,7 @@
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_TEAM = BRGBJ222RD;
+				DEVELOPMENT_TEAM = 3DT9V5436E;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = "Handshakes2--iOS--Info.plist";
@@ -573,7 +589,7 @@
 					"@executable_path/Frameworks",
 				);
 				MARKETING_VERSION = 0.1;
-				PRODUCT_BUNDLE_IDENTIFIER = com.kirillburchenko.Handshakes;
+				PRODUCT_BUNDLE_IDENTIFIER = com.m.Handshakes;
 				PRODUCT_NAME = Handshakes2;
 				SDKROOT = iphoneos;
 				SWIFT_EMIT_LOC_STRINGS = YES;
@@ -589,7 +605,7 @@
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_TEAM = BRGBJ222RD;
+				DEVELOPMENT_TEAM = 3DT9V5436E;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = "Handshakes2--iOS--Info.plist";
@@ -607,7 +623,7 @@
 					"@executable_path/Frameworks",
 				);
 				MARKETING_VERSION = 0.1;
-				PRODUCT_BUNDLE_IDENTIFIER = com.kirillburchenko.Handshakes;
+				PRODUCT_BUNDLE_IDENTIFIER = com.m.Handshakes;
 				PRODUCT_NAME = Handshakes2;
 				SDKROOT = iphoneos;
 				SWIFT_EMIT_LOC_STRINGS = YES;
@@ -722,6 +738,14 @@
 				minimumVersion = 1.0.0;
 			};
 		};
+		DEBF70E628591FBE001D0EB5 /* XCRemoteSwiftPackageReference "lottie-ios" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/airbnb/lottie-ios.git";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 3.0.0;
+			};
+		};
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
@@ -734,6 +758,11 @@
 			isa = XCSwiftPackageProductDependency;
 			package = 059C02BA28452D8F0073AFD6 /* XCRemoteSwiftPackageReference "hstack-snap-to-scroll" */;
 			productName = SnapToScroll;
+		};
+		DEBF70E728591FBE001D0EB5 /* Lottie */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = DEBF70E628591FBE001D0EB5 /* XCRemoteSwiftPackageReference "lottie-ios" */;
+			productName = Lottie;
 		};
 /* End XCSwiftPackageProductDependency section */
 

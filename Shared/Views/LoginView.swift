@@ -139,7 +139,7 @@ struct LoginView: View {
                     .foregroundColor(Color.theme.accent)
             }
             )
-            .foregroundColor(.black)
+            .foregroundColor(Color.theme.accent)
 //                        Toggle("User Agreement", isOn: $userAgreement)
 //                            .toggleStyle(.checkbox)
         }
