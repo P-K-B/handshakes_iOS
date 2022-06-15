@@ -48,14 +48,14 @@ struct NavigationBar: View {
                                 .frame(width: 15)
                                 .foregroundColor(Color.accentColor) //Apply color for arrow only
                             Text(title)
-                                .animatableFont(size: hasScrolled ? 22 : 34, weight: .bold)
+                                .animatableFont(size: hasScrolled ? 22 : 36, weight: .bold)
                                 .foregroundColor(.black)
                         }
                     }
                 }
                 else{
                     Text(title)
-                        .animatableFont(size: hasScrolled ? 22 : 34, weight: .bold)
+                        .animatableFont(size: hasScrolled ? 22 : 36, weight: .bold)
                 }
                 //                    .frame(maxWidth: .infinity, alignment: .leading)
                 //                    .padding(.leading, 20)

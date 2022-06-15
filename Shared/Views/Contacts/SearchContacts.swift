@@ -15,80 +15,184 @@ struct SearchContacts: View {
     @EnvironmentObject var contacts: ContactsDataView
     @Binding var selectedContact: String?
     @AppStorage("selectedTab") var selectedTab: Tab = .search
+    @State var hasScrolled: Bool = false
+    @AppStorage("big") var big: Bool = IsBig()
+
+
     
     var body: some View {
         ZStack{
+
             VStack{
-                SearchBarMy(searchText: $searchText)
-                ScrollView() {
+                ZStack {
+//                    Color.clear
+//                        .background(.ultraThinMaterial)
+//                    //                .blur(radius: 5)
+//                        .mask(
+//                            LinearGradient(gradient: Gradient(stops: [
+//                                Gradient.Stop(color: Color(white: 0, opacity: 1),
+//                                              location: 0.8),
+//                                Gradient.Stop(color: Color(white: 0, opacity: 0),
+//                                              location: 1),
+//                            ]), startPoint: .top, endPoint: .bottom)
+//                        )
+//                        .opacity(hasScrolled ? 1 : 0)
                     
+                    VStack (alignment: .leading){
+
+                            Text("Search")
+                                .animatableFont(size: hasScrolled ? 22 : 36, weight: .bold)
+                        
+                        //                    .frame(maxWidth: .infinity, alignment: .leading)
+                        //                    .padding(.leading, 20)
+                        //                    .padding(.top, 30)
+                        //                    .offset(y: hasScrolled ? -4 : 0)
+                    }
+                    .frame(maxWidth: .infinity, alignment: .leading)
+                    .padding(.leading, 20)
+                    .padding(.top, 30)
+                    .offset(y: hasScrolled ? -4 : 0)
+
+        //            }
+                }
+                .frame(height: hasScrolled ? 50 : 74)
+//                .frame(maxHeight: .infinity, alignment: .top)
+//                .ignoresSafeArea()
+                SearchBarMy(searchText: $searchText)
+//                    .padding(.top, 5)
+                ScrollView() {
+                    GeometryElement(hasScrolled: $hasScrolled, big: big, hasBack: false)
                     LazyVStack (pinnedViews: .sectionHeaders){
                         ContactsSearchList
                     }
-                    .padding(.top, 20)
+//                    .padding(.top, 5)
                 }
             }
+            .onTapGesture {
+                self.endEditing()
+            }
+//            .safeAreaInset(edge: .top, content: {
+//                Color.clear.frame(height: big ? 45: 75)
+//            })
+//            .overlay(
+//                NavigationBar(title: "Search", hasScrolled: $hasScrolled, search: .constant(false), showSearch: .constant(false))
+//
+//            )
         }
+
     }
     
     var ContactsSearchList: some View{
         LazyVStack{
-            Text("\(searchText)")
-            Text("Top name matches")
-            ForEach(contacts.data.contacts
-                        .filter { searchText.isEmpty || $0.shortSearch.localizedStandardContains(searchText)}
-            )
-            { contact in
-                ZStack{
-//                    NavigationLink("", destination: SingleContactView(contact: contact), tag: contact.id, selection: $selectedContact)
-                    Button(action: {
-                        contacts.SelectContact(contact: contact)
-                        selectedTab = .singleContact
-                        close = false
-                    }, label: {
-                        HStack{
-                            ContactRow(contact: contact, order: contacts.order)
-                            Spacer()
-                            Image(systemName: "chevron.right")
-                                .resizable()
-                                .aspectRatio(contentMode: .fit)
-                                .frame(width: 7)
-                                .foregroundColor(Color.accentColor) //Apply color for arrow only
-                                .padding(.trailing, 5)
-                        }
-                    })
-                    .foregroundColor(.black)
-                }
-            }
-            if (searchText != ""){
-                Text("Other results")
-                ForEach(contacts.data.contacts
-                            .filter { searchText.isEmpty || ($0.longSearch.localizedStandardContains(searchText) && !$0.shortSearch.localizedStandardContains(searchText))}
+//            Text("\(searchText)")
+//            Text("Top name matches")
+//            ForEach(contacts.data.contacts
+//                        .filter { searchText.isEmpty || $0.shortSearch.localizedStandardContains(searchText)}
+//            )
+//            { contact in
+//                VStack{
+//                    //                            Button (action:{
+//                    //                                withAnimation{
+//                    //                                    windowManager.contactDetailsIndex = contact.id
+//                    //                                    windowManager.isContactDetails = true
+//                    //                                }
+//                    //                            }) {
+//                    HStack {
+//                        //                                    Text(contact.lastName.isEmpty ? "" : contact.lastName + " ")
+//                        //                                        .font(Font.custom("SFProDisplay-Bold", size: 20))
+//                        //                                    +
+//                        //                                    Text(contact.firstName)
+//                        //                                        .font(Font.custom("SFProDisplay-Regular", size: 20))
+//
+//                        //                                NavigationLink("", destination: SingleContactView(), tag: contact.id, selection: $selectedContact)
+//                        Button(action: {
+//                            withAnimation(){
+//                                contacts.selectedContact = contact
+//                                selectedTab = .singleContact
+//                            }
+//                        }, label: {
+//                            HStack{
+//                                ContactRow(contact: contact, order: contacts.order)
+//                                Spacer()
+////                                        Image(systemName: "chevron.right")
+////                                            .resizable()
+////                                            .aspectRatio(contentMode: .fit)
+////                                            .frame(width: 7)
+////                                            .foregroundColor(Color.accentColor) //Apply color for arrow only
+////                                            .padding(.trailing, 5)
+//                            }
+//                        })
+//                        .foregroundColor(.black)
+//                        .padding(.leading, 13)
+//
+//
+//
+//                    }
+//                    Divider()
+//
+//                    //                            }
+//                    //                            .foregroundColor(.primary)
+//
+//                }
+//                .padding(.horizontal, 10)
+//                .padding(.vertical, 3)
+//            }
+//            if (searchText != ""){
+//                Text("Other results")
+                            ForEach(contacts.data.contacts
+                                        .filter { searchText.isEmpty || $0.longSearch.localizedStandardContains(searchText)}
+
                 )
                 { contact in
-                    ZStack{
-    //                    NavigationLink("", destination: SingleContactView(contact: contact), tag: contact.id, selection: $selectedContact)
-                        Button(action: {
-                            contacts.SelectContact(contact: contact)
-                            selectedTab = .singleContact
-                            close = false
-                        }, label: {
-                            HStack{
-                                ContactRow(contact: contact, order: contacts.order)
-                                Spacer()
-                                Image(systemName: "chevron.right")
-                                    .resizable()
-                                    .aspectRatio(contentMode: .fit)
-                                    .frame(width: 7)
-                                    .foregroundColor(Color.accentColor) //Apply color for arrow only
-                                    .padding(.trailing, 5)
-                            }
-                        })
-                        .foregroundColor(.black)
+                    VStack{
+                        //                            Button (action:{
+                        //                                withAnimation{
+                        //                                    windowManager.contactDetailsIndex = contact.id
+                        //                                    windowManager.isContactDetails = true
+                        //                                }
+                        //                            }) {
+                        HStack {
+                            //                                    Text(contact.lastName.isEmpty ? "" : contact.lastName + " ")
+                            //                                        .font(Font.custom("SFProDisplay-Bold", size: 20))
+                            //                                    +
+                            //                                    Text(contact.firstName)
+                            //                                        .font(Font.custom("SFProDisplay-Regular", size: 20))
+                            
+                            //                                NavigationLink("", destination: SingleContactView(), tag: contact.id, selection: $selectedContact)
+                            Button(action: {
+                                withAnimation(){
+                                    contacts.selectedContact = contact
+                                    selectedTab = .singleContact
+                                }
+                            }, label: {
+                                HStack{
+                                    ContactRow(contact: contact, order: contacts.order)
+                                    Spacer()
+//                                        Image(systemName: "chevron.right")
+//                                            .resizable()
+//                                            .aspectRatio(contentMode: .fit)
+//                                            .frame(width: 7)
+//                                            .foregroundColor(Color.accentColor) //Apply color for arrow only
+//                                            .padding(.trailing, 5)
+                                }
+                            })
+                            .foregroundColor(.black)
+                            .padding(.leading, 13)
+                            
+                            
+                            
+                        }
+                        Divider()
+                        
+                        //                            }
+                        //                            .foregroundColor(.primary)
+                        
                     }
+                    .padding(.horizontal, 10)
+                    .padding(.vertical, 3)
                 }
             }
-        }
+//        }
         
     }
 }

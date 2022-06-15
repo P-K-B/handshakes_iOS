@@ -11,15 +11,22 @@ struct SectionLetter: View{
     @State var text: String
     
     var body: some View{
-        HStack{
-            BigLetter(letter: text, frame: 25, font: 15, color: Color.theme.accent)
-                .padding(.leading, 10)
-                .padding(5)
-                .font(Font.custom("SFProDisplay-Bold", size: 15))
-            Spacer()
+        VStack(spacing: 5){
+            HStack{
+                Text(text)
+                    .padding(.leading, 13)
+//                    .padding(5)
+//                    .font(Font.custom("Inter-Bold", size: 16))
+                    .font(Font.system(size: 16, weight: .bold, design: .default))
+                    .foregroundColor(Color.theme.contactsHeadLetter)
+                Spacer()
+            }
+//            .background(.red)
+            Divider()
+//                .background(.green)
         }
-        .background(Color.theme.input)
-        .cornerRadius(60)
-        .padding(3)
+//        .background(Color.theme.input)
+//        .cornerRadius(60)
+        .padding(10)
     }
 }

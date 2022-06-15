@@ -82,8 +82,8 @@ struct ContactsView: View {
         .popover(isPresented: $search) {
             SearchContacts(close: $search, selectedContact: $selectedContact)
                 .onAppear{
-                    print(contacts.data)
-                    print(contacts.contactsDataService.data)
+//                    print(contacts.data)
+//                    print(contacts.contactsDataService.data)
                 }
         }
     }
@@ -96,7 +96,7 @@ struct ContactsView: View {
                         .filter({ (contact) -> Bool in (contact.filterindex.prefix(1).uppercased() == letter)})
                     )
                     { contact in
-                        ZStack{
+                        VStack{
                             //                            Button (action:{
                             //                                withAnimation{
                             //                                    windowManager.contactDetailsIndex = contact.id
@@ -120,22 +120,28 @@ struct ContactsView: View {
                                     HStack{
                                         ContactRow(contact: contact, order: contacts.order)
                                         Spacer()
-                                        Image(systemName: "chevron.right")
-                                            .resizable()
-                                            .aspectRatio(contentMode: .fit)
-                                            .frame(width: 7)
-                                            .foregroundColor(Color.accentColor) //Apply color for arrow only
-                                            .padding(.trailing, 5)
+//                                        Image(systemName: "chevron.right")
+//                                            .resizable()
+//                                            .aspectRatio(contentMode: .fit)
+//                                            .frame(width: 7)
+//                                            .foregroundColor(Color.accentColor) //Apply color for arrow only
+//                                            .padding(.trailing, 5)
                                     }
                                 })
                                 .foregroundColor(.black)
+                                .padding(.leading, 13)
+                                
+                                
                                 
                             }
-                            .padding(.horizontal, 15)
+                            Divider()
+                            
                             //                            }
                             //                            .foregroundColor(.primary)
                             
                         }
+                        .padding(.horizontal, 10)
+                        .padding(.vertical, 3)
                     }
                 }
                 
@@ -218,11 +224,15 @@ struct ContactsView: View {
     }
 }
 
-//struct ContactsView_Previews: PreviewProvider {
-//    static var previews: some View {
-//        ContactsView(appData: .constant(AppData()))
-//    }
-//}
+struct ContactsView_Previews: PreviewProvider {
+    static var previews: some View {
+        ContactsView(alert: .constant(MyAlert()))
+            .environmentObject(DebugData().historyData)
+            .environmentObject(DebugData().contactsData)
+            .environmentObject(DebugData().model)
+            .environmentObject(DebugData().userData)
+    }
+}
 
 
 extension Date {

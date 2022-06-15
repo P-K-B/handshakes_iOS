@@ -15,17 +15,20 @@ struct ContactRow: View {
         HStack() {
             if (order == 3){
                 Text(contact.firstName == "" ? "" : (contact.firstName + " "))
-                    .font(Font.custom("SFProDisplay-Regular", size: 20))
+                    .font(Font.system(size: 18, weight: .regular, design: .default))
                 +
                 Text(contact.lastName)
-                    .font(Font.custom("SFProDisplay-Bold", size: 20))
+                    .font(Font.system(size: 18, weight: .semibold, design: .default))
+
+                
             }
             else{
                 Text(contact.lastName == "" ? "" : (contact.lastName + " "))
-                    .font(Font.custom("SFProDisplay-Bold", size: 20))
+                            .font(Font.system(size: 18, weight: .semibold, design: .default))
+                          //                    .font(Font.custom("Inter-SemiBold", size: 40))
                 +
                 Text(contact.firstName)
-                    .font(Font.custom("SFProDisplay-Regular", size: 20))
+                        .font(Font.system(size: 18, weight: .regular, design: .default))
             }
         }
     }

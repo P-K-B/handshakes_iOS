@@ -21,6 +21,7 @@ struct ColorTheme {
     let background = Color("BackgroundColor")
     let gray = Color("Gray")
     let input = Color("Input")
+    let contactsHeadLetter = Color("ContactsHeadLetter")
 //    let red = Color("RedColor")
 //    let secondaryText = Color("SecondaryTextColor")
     

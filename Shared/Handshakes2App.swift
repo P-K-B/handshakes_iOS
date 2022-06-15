@@ -95,7 +95,7 @@ struct Handshakes2App: App {
                         group.wait()
                         //                        userData.data.loaded = false
                         userData.update(newData: UserUpdate(field: .loaded, bool: false))
-                                                                        sleep(3)
+//                                                                        sleep(3)
                         print(userData.data.number)
                         try self.phoneNumberKit.parse(userData.data.number)
                         do{

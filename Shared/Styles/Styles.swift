@@ -105,7 +105,8 @@ struct AnimatableFontModifier: AnimatableModifier {
     func body(content: Content) -> some View {
         content
 //            .font(.system(size: size, weight: weight, design: design))
-            .font(Font.custom("SFProDisplay-Bold", size: size))
+//            .font(Font.custom("SFProDisplay-Bold", size: size))
+            .font(Font.system(size: size, weight: .bold, design: .default))
     }
 }
 
