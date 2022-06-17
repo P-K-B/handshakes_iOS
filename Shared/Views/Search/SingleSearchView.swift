@@ -32,104 +32,45 @@ struct SingleSearchView: View {
             Divider()
             VStack{
                 VStack{
-                    //                    HStackSnap(alignment: .center(32)) {
-                    ScrollView(){
-                        HStack{
-                            ZStack{
-                                GeometryReader{reader -> AnyView in
-                                    let lyAxis=reader.frame(in: .global).minY
-                                    let lxAxis=reader.frame(in: .global).minX
-
-                                    
-                                    print(lyAxis)
-                                    print(lxAxis)
-                                    
-//                                    Path { path in
-//
-//
-//                                        path.move(
-//                                            to: CGPoint(
-//                                                x: 1,
-//                                                y: 1
-//                                            )
-//                                        )
-//
-//                                        path.addLine(
-//                                            to: CGPoint(
-//                                                x: 2,
-//                                                y: 2
-//                                            )
-//                                        )
-//                                        path.addLine(
-//                                            to: CGPoint(
-//                                                x: 3,
-//                                                y: 3
-//                                            )
-//                                        )
-//
-//                                        path.closeSubpath()
-//                                    }
-                                    
-                                    return AnyView(
-                                        Color.red
-//                                        Color.red.frame(width: 50)
-                                    )
-                                }
-//                                .frame(height: 0)
-                                Scl(letter: "I", frame: 50, font: 20, color: .green, text: "I")
+                    HStackSnap(alignment: .center(32)) {
+                        //                    ScrollView(){
+                        //                        HStack{
+                        //                            VStack{
+                        if (history.datta.first(where: {$0.id == history.selectedHistory})?.handhsakes != nil){
+                            ForEach (((history.datta.first(where: {$0.id == history.selectedHistory})?.handhsakes!.sorted(by: {$0.path.count < $1.path.count})))!, id: \.self){ handhsake in
+                                //                                Text("Path #\(index+1)")
+                                //                                Text("\(handhsake.path.count)")
+                                Grid_old(handshake: handhsake)
+                                    .environmentObject(history)
+                                    .environmentObject(contacts)
+                                    .environmentObject(model)
+                                    .environmentObject(userData)
+                                    .frame(minHeight:200)
+//                                                                    .padding()
+                                    .background(.ultraThinMaterial, in: RoundedRectangle(cornerRadius: 20, style: .continuous))
+                                    .frame(maxHeight: 1000)
+                                
+                                    .snapAlignmentHelper(id: "")
+                                
                             }
-                            .frame(width: 70)
-                            VStack{
-                                if (history.datta.first(where: {$0.id == history.selectedHistory})?.handhsakes != nil){
-                                    ForEach (((history.datta.first(where: {$0.id == history.selectedHistory})?.handhsakes!.sorted(by: {$0.path.count < $1.path.count})))!, id: \.self){ handhsake in
-                                        //                                Text("Path #\(index+1)")
-                                        //                                Text("\(handhsake.path.count)")
-                                        Grid_old(handshake: handhsake)
-                                            .environmentObject(history)
-                                            .environmentObject(contacts)
-                                            .environmentObject(model)
-                                            .environmentObject(userData)
-                                        //                                    .padding()
-                                            .background(.ultraThinMaterial, in: RoundedRectangle(cornerRadius: 20, style: .continuous))
-                                        
-                                        //                                    .snapAlignmentHelper(id: "")
-                                        
-                                        //                                Grid_test()
-                                        
-                                    }
-                                    
-                                    //                                    ForEach (((history.datta.first(where: {$0.id == history.selectedHistory})?.handhsakes!.sorted(by: {$0.path.count < $1.path.count})))!, id: \.self){ handhsake in
-                                    //                                        //                                Text("Path #\(index+1)")
-                                    //                                        //                                Text("\(handhsake.path.count)")
-                                    //                                        Grid_old(handshake: handhsake)
-                                    //                                            .environmentObject(history)
-                                    //                                            .environmentObject(contacts)
-                                    //                                            .environmentObject(model)
-                                    //                                            .environmentObject(userData)
-                                    //                                            .background(.ultraThinMaterial, in: RoundedRectangle(cornerRadius: 20, style: .continuous))
-                                    //
-                                    //                                        //                                    .padding()
-                                    //                                        //                                    .snapAlignmentHelper(id: "")
-                                    //
-                                    //                                        //                                Grid_test()
-                                    //
-                                    //                                    }
-                                }
-                                else{
-                                    Text("NIL")
-                                }
-                            }
+                            
                         }
+                        else{
+                            Text("NIL")
+                            //                                }
+                            //                            }
+                            //                        }
+                        }
+                        
+                    } eventHandler: { event in
+                        //
+                        handleSnapToScrollEvent(event: event)
                     }
-                    
-                    //                    } eventHandler: { event in
-                    //
-                    //                        handleSnapToScrollEvent(event: event)
-                    //                    }
                     
                     //                    .background(.red)
                 }
-                //                .frame(maxHeight: 1000)
+//                                .padding(.vertical, 200)
+//                                .frame(maxHeight: 1000)
                 
             }
             
@@ -195,7 +136,9 @@ struct Grid_old: View{
     @EnvironmentObject var userData: UserDataView
     @AppStorage("selectedTab") var selectedTab: Tab = .search
     @State var moreContacts: Bool = false
+    @State var oneContact: Bool = false
     @State var extra: [FetchedContact] = []
+    @State var openContact: FetchedContact?
     
     var body: some View{
         HStack{
@@ -213,13 +156,28 @@ struct Grid_old: View{
                         if (path.number != ""){
                             
                             Text(i == (handshake.path.count - 1) ? "You know this number as:" : "Person who may know this number:")
+                                .font(Font.system(size: 18, weight: .regular, design: .default))
+                                .padding(.bottom, 5)
                             let a = contacts.data.contacts.filter({$0.telephone.contains(where: {$0.phone == path.number})})
                             if (a.count > 0){
                                 //                        ForEach (a){contact in
-                                
-                                ContactRow(contact: a[0], order: contacts.order)
+                                Button (action:{
+                                    self.openContact = a[0]
+                                    withAnimation{
+//                                        print(extra)
+                                        oneContact = true
+                                    }
+                                }) {
+                                    HStack{
+                                        ContactRow(contact: a[0], order: contacts.order)
+                                        if (a.count > 1){
+                                            Text(" + \(a.count - 1)")
+                                        }
+                                    }
+                                }
                                 if (a.count > 1){
                                     Text("This contacts has more entries in you Contacts")
+                                        .font(Font.system(size: 14, weight: .regular, design: .default))
                                     Button (action:{
                                         self.extra = a
                                         withAnimation{
@@ -237,26 +195,26 @@ struct Grid_old: View{
                                 }
                                 //                                .frame(height: 300)
                                 
-                                Button (action:{
-                                    withAnimation{
-                                        model.OpenChat(chat: handshake.path_id)
-//                                        model.openChat = handshake.path_id
-                                        model.toGuid = path.guid
-                                        model.addChat(a: handshake.path_id, to: path.guid)
-                                        model.send(text: "", searchGuid: handshake.path_id, toGuid: path.guid, meta: Meta(number: history.datta.first(where: {$0.id == history.selectedHistory})?.number ?? "", asking_number: userData.data.number, res: path.number))
-                                        model.send(text: "Searching info about number \(path.number)", searchGuid: handshake.path_id, toGuid: path.guid, meta: nil)
-                                        selectedTab = .singleChat
-                                        
-                                    }
-                                }) {
-                                    HStack {
-                                        
-                                        //                                                                        Text(a[0].firstName)
-                                        Text("Chat")
-                                    }
-                                }
-                                .padding(.horizontal, 15)
-                                .padding()
+//                                Button (action:{
+//                                    withAnimation{
+//                                        model.OpenChat(chat: handshake.path_id)
+//                                        //                                        model.openChat = handshake.path_id
+//                                        model.toGuid = path.guid
+//                                        model.addChat(a: handshake.path_id, to: path.guid)
+//                                        model.send(text: "", searchGuid: handshake.path_id, toGuid: path.guid, meta: Meta(number: history.datta.first(where: {$0.id == history.selectedHistory})?.number ?? "", asking_number: userData.data.number, res: path.number))
+//                                        model.send(text: "Searching info about number \(path.number)", searchGuid: handshake.path_id, toGuid: path.guid, meta: nil)
+//                                        selectedTab = .singleChat
+//
+//                                    }
+//                                }) {
+//                                    HStack {
+//
+//                                        //                                                                        Text(a[0].firstName)
+//                                        Text("Chat")
+//                                    }
+//                                }
+//                                .padding(.horizontal, 15)
+//                                .padding()
                                 //                        }
                             }
                             
@@ -287,6 +245,13 @@ struct Grid_old: View{
                 .environmentObject(model)
                 .environmentObject(userData)
         }
+        .popover(isPresented: $oneContact) {
+            OneContact(oneContact: $openContact)
+                .environmentObject(history)
+                .environmentObject(contacts)
+                .environmentObject(model)
+                .environmentObject(userData)
+        }
         
     }
     
@@ -306,6 +271,19 @@ struct Grid_old: View{
     // MARK: Private
     
     @State private var selectedGettingStartedIndex: Int = 0
+}
+
+struct OneContact: View{
+    @EnvironmentObject var history: HistoryDataView
+    @EnvironmentObject var contacts: ContactsDataView
+    @EnvironmentObject private var model: ChatScreenModel
+    @EnvironmentObject var userData: UserDataView
+    @AppStorage("selectedTab") var selectedTab: Tab = .search
+    @Binding var oneContact: FetchedContact?
+    
+    var body: some View{
+        Text("HI")
+    }
 }
 
 struct MoreContacts: View{
@@ -331,7 +309,7 @@ struct MoreContacts: View{
 
 struct Grid_Previews: PreviewProvider {
     static var previews: some View {
-        Grid(handshake: SearchPathDecoded(path_id: "233DCB1EE69511ECAE590242AC120003", dep: 0, print: ["-", "+7 903 668-90-41", ""], path: [SearchPathDecodedPath(number: "-", guid: "233D3773E69511ECAE590242AC120003"), SearchPathDecodedPath(number: "+7 903 668-90-41", guid: "233D47D4E69511ECAE590242AC120003"), SearchPathDecodedPath(number: "", guid: "233DB13EE69511ECAE590242AC120003")]))
+        Grid_old(handshake: SearchPathDecoded(path_id: "233DCB1EE69511ECAE590242AC120003", dep: 0, print: ["-", "+7 903 668-90-41", ""], path: [SearchPathDecodedPath(number: "-", guid: "233D3773E69511ECAE590242AC120003"), SearchPathDecodedPath(number: "+7 903 668-90-41", guid: "233D47D4E69511ECAE590242AC120003"), SearchPathDecodedPath(number: "", guid: "233DB13EE69511ECAE590242AC120003")]))
             .environmentObject(DebugData().historyData)
             .environmentObject(DebugData().contactsData)
             .environmentObject(DebugData().model)
