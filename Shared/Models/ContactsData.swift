@@ -401,6 +401,9 @@ class ContactsDataService  {
                     if (numberOk.prefix(1) == "8"){
                         numberOk = "+7" + numberOk.dropFirst()
                     }
+                    if (numberOk.prefix(1) != "+"){
+                        numberOk = "+" + numberOk
+                    }
                     allNumbers.append(numberOk)
                     nn.append(Number(id: i, title: number.label?.replacingOccurrences(of: "_$!<", with: "").replacingOccurrences(of: ">!$_", with: "") ?? "Phone", phone: numberOk))
                     i+=1

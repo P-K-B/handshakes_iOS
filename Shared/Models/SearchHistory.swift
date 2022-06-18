@@ -279,7 +279,7 @@ class HistoryDataService {
 //                    print(decodedPathes)
 //                            print(String(data: try! JSONEncoder().encode(decodedPathes), encoding: String.Encoding.utf8)  )
                     
-                    decodedData = SearchHistory(number: row.number, date: row.date, res: true, searching: false, handhsakes: decodedPathes, handshakes_lines: 10)
+                    decodedData = SearchHistory(number: row.number, date: row.date, res: decodedPathes.count > 0 ? true : false, searching: false, handhsakes: decodedPathes, handshakes_lines: 10)
                 }
                 else{
                     decodedData = SearchHistory(number: row.number, date: row.date, res: false, searching: false, handhsakes: [], error: statusResponce.status_text!)

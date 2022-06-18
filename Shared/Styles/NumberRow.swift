@@ -11,9 +11,16 @@ struct NumberRow: View {
     var number: Number
     
     var body: some View {
-        HStack{
-            Text ("\(number.title): \(number.phone)")
-                .font(Font.custom("SFProDisplay-Regular", size: 20))
+        VStack(alignment: .leading){
+            Text ("\(number.title)")
+                .font(Font.system(size: 16, weight: .semibold, design: .default))
+                .foregroundColor(Color.theme.contactsHeadLetter)
+                .padding(.leading, 5)
+            Divider()
+            Text ("\(number.phone)")
+                .font(Font.system(size: 20, weight: .medium, design: .default))
+//                .underline()
+                .padding(.leading, 5)
         }
     }
 }

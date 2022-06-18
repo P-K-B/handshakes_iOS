@@ -92,18 +92,30 @@ struct ContentView: View {
                         case .contacts:
                             ContactsView(alert: $alert)
                                 .environmentObject(contactsData)
+                                .safeAreaInset(edge: .top, content: {
+                                    Color.clear.frame(height: big ? 45: 75)
+                                })
                         case .singleContact:
                             SingleContactView()
                                 .environmentObject(contactsData)
                                 .environmentObject(historyData)
+//                                .safeAreaInset(edge: .top, content: {
+//                                    Color.clear.frame(height: big ? 45: 75)
+//                                })
                         case .search:
                             SearchList(alert: $alert)
                                 .environmentObject(historyData)
+                                .safeAreaInset(edge: .top, content: {
+                                    Color.clear.frame(height: big ? 45: 75)
+                                })
                         case .singleSearch:
                             SingleSearchView()
                                 .environmentObject(historyData)
                                 .environmentObject(contactsData)
                                 .environmentObject(model)
+                                .safeAreaInset(edge: .top, content: {
+                                    Color.clear.frame(height: big ? 45: 75)
+                                })
         //                    EmptyView()
         //                    SingleContactView()
         //                        .environmentObject(contactsData)
@@ -113,6 +125,9 @@ struct ContentView: View {
                             AllChats(big: big)
                                                         .environmentObject(model)
                                                         .environmentObject(contactsData)
+                                                        .safeAreaInset(edge: .top, content: {
+                                                            Color.clear.frame(height: big ? 45: 75)
+                                                        })
         
 //                            }
                         case .singleChat:
@@ -120,6 +135,9 @@ struct ContentView: View {
                             ChatScreen(alert: $alert)
                                 .environmentObject(model)
                                 .environmentObject(contactsData)
+                                .safeAreaInset(edge: .top, content: {
+                                    Color.clear.frame(height: big ? 45: 75)
+                                })
                         }
         
                     }
@@ -134,9 +152,6 @@ struct ContentView: View {
         //                Example3ContentView()
         //            }
         
-                    .safeAreaInset(edge: .top, content: {
-                        Color.clear.frame(height: big ? 45: 75)
-                    })
                     .safeAreaInset(edge: .bottom) {
                         Color.clear.frame(height: big ? 55: 70)
                     }

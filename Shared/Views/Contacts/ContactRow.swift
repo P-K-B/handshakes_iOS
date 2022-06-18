@@ -33,3 +33,13 @@ struct ContactRow: View {
         }
     }
 }
+
+struct ContactRowN: View {
+    var string: String
+    
+    var body: some View {
+
+                Text(string)
+                        .font(Font.system(size: 18, weight: .regular, design: .default))
+    }
+}
