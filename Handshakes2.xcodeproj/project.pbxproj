@@ -51,6 +51,9 @@
 		057F9711283570DF00B454DD /* FetchedContact.swift in Sources */ = {isa = PBXBuildFile; fileRef = 057F970F283570DF00B454DD /* FetchedContact.swift */; };
 		057F9713283575D800B454DD /* ContactsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 057F9712283575D800B454DD /* ContactsView.swift */; };
 		057F9714283575D800B454DD /* ContactsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 057F9712283575D800B454DD /* ContactsView.swift */; };
+		058659F2285A677D00D919CE /* Inter-Light.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 058659EF285A677D00D919CE /* Inter-Light.ttf */; };
+		058659F3285A677D00D919CE /* Inter-Bold.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 058659F0285A677D00D919CE /* Inter-Bold.ttf */; };
+		058659F4285A677D00D919CE /* Inter-Regular.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 058659F1285A677D00D919CE /* Inter-Regular.ttf */; };
 		05912DBB28523A120047E9BB /* DebugData.swift in Sources */ = {isa = PBXBuildFile; fileRef = 05912DBA28523A120047E9BB /* DebugData.swift */; };
 		059C02B02843F58A0073AFD6 /* SearchHistory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 059C02AF2843F58A0073AFD6 /* SearchHistory.swift */; };
 		059C02B32843F8AC0073AFD6 /* SearchHistoryView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 059C02B22843F8AC0073AFD6 /* SearchHistoryView.swift */; };
@@ -104,6 +107,10 @@
 		057F970C2835708200B454DD /* ContactsData.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContactsData.swift; sourceTree = "<group>"; };
 		057F970F283570DF00B454DD /* FetchedContact.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FetchedContact.swift; sourceTree = "<group>"; };
 		057F9712283575D800B454DD /* ContactsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContactsView.swift; sourceTree = "<group>"; };
+		058659EF285A677D00D919CE /* Inter-Light.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Inter-Light.ttf"; sourceTree = "<group>"; };
+		058659F0285A677D00D919CE /* Inter-Bold.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Inter-Bold.ttf"; sourceTree = "<group>"; };
+		058659F1285A677D00D919CE /* Inter-Regular.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Inter-Regular.ttf"; sourceTree = "<group>"; };
+		058659F5285A694D00D919CE /* Inter-SemiBold.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Inter-SemiBold.ttf"; sourceTree = "<group>"; };
 		05912DBA28523A120047E9BB /* DebugData.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DebugData.swift; sourceTree = "<group>"; };
 		059C02AF2843F58A0073AFD6 /* SearchHistory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SearchHistory.swift; sourceTree = "<group>"; };
 		059C02B22843F8AC0073AFD6 /* SearchHistoryView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SearchHistoryView.swift; sourceTree = "<group>"; };
@@ -159,6 +166,10 @@
 		05685185284E697600A79A34 /* Fonts */ = {
 			isa = PBXGroup;
 			children = (
+				058659F0285A677D00D919CE /* Inter-Bold.ttf */,
+				058659F5285A694D00D919CE /* Inter-SemiBold.ttf */,
+				058659EF285A677D00D919CE /* Inter-Light.ttf */,
+				058659F1285A677D00D919CE /* Inter-Regular.ttf */,
 				05685186284E697600A79A34 /* SFProDisplay-Regular.ttf */,
 				05685187284E697600A79A34 /* SFProDisplay-Bold.ttf */,
 			);
@@ -375,7 +386,10 @@
 				0568518A284E697600A79A34 /* SFProDisplay-Bold.ttf in Resources */,
 				DEBFFBB02859CE6D00CE741F /* handshakes_logo_dark.json in Resources */,
 				0578ABAD28341C7000810E70 /* Assets.xcassets in Resources */,
+				058659F3285A677D00D919CE /* Inter-Bold.ttf in Resources */,
 				DEBF70EB285924F6001D0EB5 /* handshakes_loading.json in Resources */,
+				058659F2285A677D00D919CE /* Inter-Light.ttf in Resources */,
+				058659F4285A677D00D919CE /* Inter-Regular.ttf in Resources */,
 				05685188284E697600A79A34 /* SFProDisplay-Regular.ttf in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -571,7 +585,7 @@
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_TEAM = 3DT9V5436E;
+				DEVELOPMENT_TEAM = BRGBJ222RD;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = "Handshakes2--iOS--Info.plist";
@@ -589,7 +603,7 @@
 					"@executable_path/Frameworks",
 				);
 				MARKETING_VERSION = 0.1;
-				PRODUCT_BUNDLE_IDENTIFIER = com.m.Handshakes;
+				PRODUCT_BUNDLE_IDENTIFIER = com.kirillburchenko.Handshakes;
 				PRODUCT_NAME = Handshakes2;
 				SDKROOT = iphoneos;
 				SWIFT_EMIT_LOC_STRINGS = YES;
@@ -605,7 +619,7 @@
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_TEAM = 3DT9V5436E;
+				DEVELOPMENT_TEAM = BRGBJ222RD;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = "Handshakes2--iOS--Info.plist";
@@ -623,7 +637,7 @@
 					"@executable_path/Frameworks",
 				);
 				MARKETING_VERSION = 0.1;
-				PRODUCT_BUNDLE_IDENTIFIER = com.m.Handshakes;
+				PRODUCT_BUNDLE_IDENTIFIER = com.kirillburchenko.Handshakes;
 				PRODUCT_NAME = Handshakes2;
 				SDKROOT = iphoneos;
 				SWIFT_EMIT_LOC_STRINGS = YES;

@@ -205,6 +205,7 @@ struct Grid_old: View{
     @State var extra: [FetchedContact] = []
     @State var openContact: FetchedContact?
     
+    
     var body: some View{
         HStack{
             Spacer()
@@ -220,11 +221,9 @@ struct Grid_old: View{
                         //                                                        Text(path.number == "-" ? "You" : path.number)
                         
                         if (path.number != ""){
+
+                            OneMore3(i: i, c: c)
                             
-                            Text(i == (c - 1) ? "You know this number as:" : "Person who may know this number:")
-                                .font(Font.system(size: 18, weight: .regular, design: .default))
-                                .foregroundColor(Color.theme.contactsHeadLetter)
-                                .padding(5)
                             let a = contacts.data.contacts.filter({$0.telephone.contains(where: {$0.phone == path.number})})
                             if (a.count > 0){
                                 //                        ForEach (a){contact in
@@ -235,11 +234,6 @@ struct Grid_old: View{
                                         oneContact = true
                                     }
                                 }) {
-                                    
-                                    //                                            let ii = i % self.colors.count
-                                    //                                            if (ii < colors.count){
-                                    //                                            let c = colors[i]
-                                    //                                            }
                                     OneMore(a: a, i: i, m: c - 1, order: contacts.order)
                                     
                                     
@@ -342,6 +336,21 @@ struct OneContact: View{
     
     var body: some View{
         Text("HI")
+    }
+}
+
+struct OneMore3: View{
+    
+    var i:Int
+    var c:Int
+    
+    var body: some View{
+            if (i < 2){
+                Text(i == (c - 1) ? "You know this number as:" : "Person who may know this number:")
+                    .font(Font.system(size: 18, weight: .regular, design: .default))
+                    .foregroundColor(Color.theme.contactsHeadLetter)
+                    .padding(5)
+        }
     }
 }
 

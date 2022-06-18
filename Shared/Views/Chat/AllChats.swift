@@ -66,7 +66,7 @@ struct AllChats: View{
                     }
 //                }
                 .overlay(
-                    NavigationBar(title: "Chats", hasScrolled: $hasScrolled, search: .constant(false), showSearch: .constant(false))
+                    NavigationBar(title: "Messages", hasScrolled: $hasScrolled, search: .constant(false), showSearch: .constant(false))
                 )
             }
 //        }
