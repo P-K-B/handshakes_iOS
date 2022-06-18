@@ -30,12 +30,24 @@ struct AllChats: View{
 //                        VStack{
 //                            ScrollView {
 //                                LazyVStack(spacing: 8) {
-                                    ForEach(Array(model.chats.allChats.keys), id: \.self) { chatKey in
-                                        let chat = model.chats.allChats[chatKey]
+                        
+//                            .padding(.horizontal, 13.0)
+                        let a = model.chats.allChats
+                            .sorted(by: {$0.value.last?.sent_on ?? 0 > $1.value.last?.sent_on ?? 0})
+//                        var b = Array(model.chats.allChats)
+//                            b.sort(by: {$0.value.last?.sent_on ?? 0 > $1.value.last?.sent_on ?? 0})
+                        
+//                            .sorted(by: {$0.value.last?.sent_on ?? 0 > $1.value.last?.sent_on ?? 0})
+                        Divider()
+                        ForEach(a, id: \.key) { chatKey, val in
+                            let chat = model.chats.allChats[chatKey]
                                         ChatItem(chat: chat, onClickAction: {withAnimation(){
                                                 model.OpenChat(chat: chatKey)
                                                 selectedTab = .singleChat
                                         }})
+                                        .onAppear{
+                                            
+                                        }
                                     }
 //                                }
 //                            }
@@ -45,7 +57,7 @@ struct AllChats: View{
                     }
 //                }
                 .overlay(
-                    NavigationBar(title: "Messages", hasScrolled: $hasScrolled, search: $search, showSearch: .constant(true))
+                    NavigationBar(title: "Messages", hasScrolled: $hasScrolled, search: $search, showSearch: .constant(false))
                 )
             }
             .popover(isPresented: $search) {
@@ -95,47 +107,110 @@ struct ChatItem: View {
         self.lastMessage = chat?.last
     }
     
-    func GetChatTitle() -> String {
+    func GetChatTitle() -> (String, String) {
         let metaMsg = self.chat?.first(where: {$0.marker == "new_chat_meta"})
         if (metaMsg?.is_sender == true){
             let a = contacts.data.contacts.filter({$0.telephone.contains(where: {$0.phone == metaMsg?.meta?.res})})
 //                                                        Text ("You'r asking ")
-            let s = "You'r asking " +
-            (a.count > 0 ? a[0].firstName : "Unknown person") +
-            (" about ") +
-            (metaMsg?.meta?.number ?? "No number")
-            return s
+//            let s = "You'r asking " +
+//            (a.count > 0 ? a[0].firstName : "Unknown person") +
+//            (" about ") +
+//            (metaMsg?.meta?.number ?? "No number")
+            return ((a.count > 0 ? a[0].firstName : "Unknown person"), (metaMsg?.meta?.number ?? "No number"))
         }
         else{
             let a = contacts.data.contacts.filter({$0.telephone.contains(where: {$0.phone == metaMsg?.meta?.asking_number})})
             return
-                (a.count > 0 ? a[0].firstName : "Unknown person") +
-                (" is asking about ") +
-                (metaMsg?.meta?.number ?? "No number")
+                ((a.count > 0 ? a[0].firstName : "Unknown person"), (metaMsg?.meta?.number ?? "No number"))
         }
     }
     var body: some View {
         VStack{
-            HStack{
-                Text(GetChatTitle()).font(.title2).bold()
-                if (lastMessage != nil) {
-                    let a = dateFormatter.string(from: Date(timeIntervalSince1970: Double(lastMessage?.sent_on ?? 0)))
-                    Text(a)
-                        .font(.caption)
-                        .multilineTextAlignment(.center)
-                        .lineLimit(1)
+            VStack(spacing: 5){
+                let s = GetChatTitle()
+                HStack{
+                    Text(s.0)
+    //                    .font(.title2).bold()
+                        .font(Font.system(size: 22, weight: .semibold, design: .default))
+                        .multilineTextAlignment(.leading)
+                        .lineLimit(2)
+                    Spacer()
+                    if (lastMessage != nil) {
+                        let a = dateFormatter.string(from: Date(timeIntervalSince1970: Double(lastMessage?.sent_on ?? 0)))
+                        Text(a)
+    //                        .font(.caption)
+                            .font(Font.system(size: 16, weight: .regular, design: .default))
+                            .multilineTextAlignment(.leading)
+    //                        .lineLimit(2)
+                    }
+                }
+                HStack{
+                    Image(systemName: "number.circle")
+                        .resizable()
+                        .frame(width: 20, height: 20, alignment: .center)
+                        .foregroundColor(Color.theme.accent)
+                    Text(s.1)
+    //                    .font(.title2).bold()
+                        .font(Font.system(size: 18, weight: .regular, design: .default))
+                        .multilineTextAlignment(.leading)
+                        .lineLimit(2)
+                    Spacer()
+                }
+                HStack{
+                
+                    if (lastMessage != nil) {
+                        Text(lastMessage!.body)
+                            .truncationMode(.tail)
+                            .foregroundColor(.gray)
+                            .frame(maxHeight: 50)
+                            .multilineTextAlignment(.leading)
+                            .lineLimit(2)
+                            .font(Font.system(size: 18, weight: .regular, design: .default))
+                    }
+                    Spacer()
+                    if (lastMessage?.is_sender != true){
+//                        if (lastMessage?.read == true){
+////                            Image(systemName: "checkmark.circle")
+////                                .foregroundColor(.gray)
+////                                .frame(width: 10, height: 10, alignment: .center)
+//                            Text("read")
+//                                .font(Font.system(size: 18, weight: .regular, design: .default))
+//                        }
+////                        else{
+////                            Image(systemName: "checkmark.circle.fill")
+////                                .foregroundColor(.green)
+////                                .frame(width: 10, height: 10, alignment: .center)
+////                        }
+//                    }
+//                    else{
+                        if (lastMessage?.read == false){
+                            Circle()
+                                .fill(Color.theme.accent)
+                                .frame(width: 10, height: 10, alignment: .center)
+//                            Image(systemName: "checkmark")
+//                                .foregroundColor(.gray)
+                        }
+                    }
+                    
+//                    if (b?.first(where: {$0.message_id == message.message_id})?.read != nil){
+//                        if (b?.first(where: {$0.message_id == message.message_id})?.read == false){
+//                            Image(systemName: "checkmark")
+//                                .foregroundColor(.gray)
+//                        }
+//                        else{
+//                            Image(systemName: "checkmark")
+//                                .foregroundColor(.green)
+//                            Image(systemName: "checkmark")
+//                                .foregroundColor(.green)
+//                        }
+//                    }
+                    
+                    
                 }
             }
-            
-            if (lastMessage != nil) {
-                Text(lastMessage!.body)
-                    .truncationMode(.tail)
-                    .foregroundColor(.gray)
-                    .frame(maxHeight: 50)
-            }
+            .padding(.horizontal, 13.0)
             Divider()
         }
-        .padding(.horizontal, 13.0)
         .frame(
               minWidth: 0,
               maxWidth: .infinity,

@@ -23,7 +23,28 @@ struct ChatScreen: View {
     
     @State private var message = ""
     
+    func GetChatTitle(b: [ReceivingChatMessage]) -> (String) {
+        let metaMsg = b.first(where: {$0.marker == "new_chat_meta"})
+        if (metaMsg?.is_sender == true){
+            let a = contacts.data.contacts.filter({$0.telephone.contains(where: {$0.phone == metaMsg?.meta?.res})})
+//                                                        Text ("You'r asking ")
+            let s = "You'r asking " +
+            (a.count > 0 ? a[0].firstName : "Unknown person") +
+            (" about ") +
+            (metaMsg?.meta?.number ?? "No number")
+            return s
+        }
+        else{
+            let a = contacts.data.contacts.filter({$0.telephone.contains(where: {$0.phone == metaMsg?.meta?.asking_number})})
+                        return
+                            (a.count > 0 ? a[0].firstName : "Unknown person") +
+                            (" is asking about ") +
+                            (metaMsg?.meta?.number ?? "No number")
+        }
+    }
+    
     var body: some View {
+
         ZStack{
             
             //            if (windowManager.isContactDetails == false){
@@ -48,12 +69,17 @@ struct ChatScreen: View {
                                 //            Text(toGuid)
                                 //            Text(String((model.chats.allChats[model.openChat]?.count) ?? 0))
                                 // Chat history.
-                                Text("Chat about " + (b?.first(where: {$0.marker == "new_chat_meta"})?.meta?.number ?? "No number"))
+//                                Text("Chat about " + (b?.first(where: {$0.marker == "new_chat_meta"})?.meta?.number ?? "No number"))
+                                
+                                let s = GetChatTitle(b: b ?? [])
+                                Text(s)
+                                    .font(Font.system(size: 18, weight: .regular, design: .default))
+                                    .padding(.top, 5)
                                 ScrollView {
                                     
                                         
                                     ScrollViewReader { proxy in
-                                        LazyVStack(spacing: 8) {
+                                        LazyVStack(spacing: 3) {
                                             ForEach(b?.filter({($0.marker != "new_chat_meta") && ($0.marker != "destination_user_not_found")}) ?? [], id: \.self) { message in
 
                                                 ChatMessageRow(message: message, isUser: message.is_sender ?? false, partner: a.count > 0 ? a[0].firstName : "Unknown person")
@@ -102,17 +128,26 @@ struct ChatScreen: View {
                         //                                    }
                         //                                }
 //                    }
-                    HStack {
+                    HStack(spacing: 5) {
                         TextField("Message", text: $message, onEditingChanged: { _ in }, onCommit: onCommit)
+                            .font(Font.system(size: 18, weight: .regular, design: .default))
+                            .padding(5)
+                            .addBorder(Color.theme.contactsHeadLetter.opacity(0.30), width: 1, cornerRadius: 10)
+                            .foregroundColor(message.isEmpty ? Color.theme.contactsHeadLetter.opacity(0.30) : Color.black)
+
                         // .modifiers here
                         Button(action: onCommit) {
                             // Image etc
-                            Image(systemName: "paperplane")
+                            Image(systemName: "arrow.up.circle")
+                                .resizable()
+                                .frame(width: 30, height: 30, alignment: .center)
+//                                .padding()
+                                .foregroundColor(Color.theme.accent)
                         }
-                        .padding()
                         .disabled(message.isEmpty) // 4
                     }
-                    .padding()
+                    .padding(.horizontal, 5)
+                    .padding(.bottom, 5)
                 }
                 .overlay(
                     NavigationBar(title: "Chat", hasScrolled: $hasScrolled, search: .constant(false), showSearch: .constant(false), back: .chats)

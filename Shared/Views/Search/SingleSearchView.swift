@@ -242,24 +242,24 @@ struct Grid_old: View{
                                 
                                 //                                .frame(height: 300)
                                 
-                                //                                Button (action:{
-                                //                                    withAnimation{
-                                //                                        model.OpenChat(chat: handshake.path_id)
-                                //                                        //                                        model.openChat = handshake.path_id
-                                //                                        model.toGuid = path.guid
-                                //                                        model.addChat(a: handshake.path_id, to: path.guid)
-                                //                                        model.send(text: "", searchGuid: handshake.path_id, toGuid: path.guid, meta: Meta(number: history.datta.first(where: {$0.id == history.selectedHistory})?.number ?? "", asking_number: userData.data.number, res: path.number))
-                                //                                        model.send(text: "Searching info about number \(path.number)", searchGuid: handshake.path_id, toGuid: path.guid, meta: nil)
-                                //                                        selectedTab = .singleChat
-                                //
-                                //                                    }
-                                //                                }) {
-                                //                                    HStack {
-                                //
-                                //                                        //                                                                        Text(a[0].firstName)
-                                //                                        Text("Chat")
-                                //                                    }
-                                //                                }
+                                                                Button (action:{
+                                                                    withAnimation{
+                                                                        model.OpenChat(chat: handshake.path_id)
+                                                                        //                                        model.openChat = handshake.path_id
+                                                                        model.toGuid = path.guid
+                                                                        model.addChat(a: handshake.path_id, to: path.guid)
+                                                                        model.send(text: "", searchGuid: handshake.path_id, toGuid: path.guid, meta: Meta(number: history.datta.first(where: {$0.id == history.selectedHistory})?.number ?? "", asking_number: userData.data.number, res: path.number))
+                                                                        model.send(text: "Searching info about number \(path.number)", searchGuid: handshake.path_id, toGuid: path.guid, meta: nil)
+                                                                        selectedTab = .singleChat
+                                
+                                                                    }
+                                                                }) {
+                                                                    HStack {
+                                
+                                                                        //                                                                        Text(a[0].firstName)
+                                                                        Text("Chat")
+                                                                    }
+                                                                }
                                 //                                .padding(.horizontal, 15)
                                 //                                .padding()
                                 //                        }

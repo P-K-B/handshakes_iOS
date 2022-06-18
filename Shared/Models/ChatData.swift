@@ -145,6 +145,8 @@ final class ChatScreenService  {
     func  readMessage(searchGuid: String, id: Int){
         if (self.chats.allChats[searchGuid]?.first(where: {$0.message_id == id})?.read == false){
             self.send(text: "", searchGuid: searchGuid, toGuid: "", meta: nil, read: true, id: id)
+            self.chats.allChats[searchGuid]?[(self.chats.allChats[searchGuid]?.firstIndex(where: {$0.message_id == id}))!].read = true
+            self.save()
 //            let a = self.chats.allChats[searchGuid]?.firstIndex(where: {$0.message_id == id}) ?? nil
 //            if (a != nil){
 //                self.chats.allChats[searchGuid]?[a ?? 0].read = true
@@ -248,6 +250,7 @@ final class ChatScreenService  {
                             if (a != nil){
                                 print(self.chats.allChats[newChatMessage.search_chain]?[a ?? 0])
                                 self.chats.allChats[newChatMessage.search_chain]?[a ?? 0].read = true
+                                self.save()
                             }
                         }
                         else{
