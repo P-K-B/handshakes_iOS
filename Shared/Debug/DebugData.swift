@@ -27,7 +27,59 @@ class DebugData{
 
         historyData.selectedHistory = UUID(uuidString: "2A079572-1C2C-48ED-857A-1DF4B7A97195")
         
-//        model.chats = Chats(allChats: ["233DCB1EE69511ECAE590242AC120003": [Handshakes2.ReceivingChatMessage(message_id: 288, from: "233D3773E69511ECAE590242AC120003", to: "233D47D4E69511ECAE590242AC120003", sent_on: Optional(1654628888), read_on: nil, search_chain: "233DCB1EE69511ECAE590242AC120003", marker: "new_chat_meta", body: "{\"number\":\"+7 909 909-00-09\",\"asking_number\":\"+1 888-555-1212\"}", is_sender: Optional(true), meta: Optional(Handshakes2.Meta(number: "+7 909 909-00-09", asking_number: "+1 888-555-1212"))), Handshakes2.ReceivingChatMessage(message_id: 289, from: "233D3773E69511ECAE590242AC120003", to: "233D47D4E69511ECAE590242AC120003", sent_on: Optional(1654628911), read_on: nil, search_chain: "233DCB1EE69511ECAE590242AC120003", marker: "new_message", body: "123", is_sender: Optional(true), meta: nil), Handshakes2.ReceivingChatMessage(message_id: 290, from: "233D47D4E69511ECAE590242AC120003", to: "233D3773E69511ECAE590242AC120003", sent_on: Optional(1654628920), read_on: nil, search_chain: "233DCB1EE69511ECAE590242AC120003", marker: "new_message", body: "Hihi", is_sender: nil, meta: nil), Handshakes2.ReceivingChatMessage(message_id: 291, from: "233D47D4E69511ECAE590242AC120003", to: "233D3773E69511ECAE590242AC120003", sent_on: Optional(1654629002), read_on: nil, search_chain: "233DCB1EE69511ECAE590242AC120003", marker: "new_message", body: "Lol", is_sender: nil, meta: nil), Handshakes2.ReceivingChatMessage(message_id: 292, from: "233D3773E69511ECAE590242AC120003", to: "233D47D4E69511ECAE590242AC120003", sent_on: Optional(1654629006), read_on: nil, search_chain: "233DCB1EE69511ECAE590242AC120003", marker: "new_message", body: "I’m here", is_sender: Optional(true), meta: nil)]], chatsData: ["233DCB1EE69511ECAE590242AC120003": Handshakes2.ChatData(to: "233D47D4E69511ECAE590242AC120003")])
+        model.chats = Chats(allChats: [
+            "233DCB1EE69511ECAE590242AC120003": [
+                Handshakes2.ReceivingChatMessage(
+                    message_id: 288,
+                    from: "233D3773E69511ECAE590242AC120003",
+                    to: "233D47D4E69511ECAE590242AC120003",
+                    sent_on: Optional(1654628888),
+                    read_on: nil,
+                    search_chain: "233DCB1EE69511ECAE590242AC120003",
+                    marker: "new_chat_meta",
+                    body: "{\"number\":\"+7 909 909-00-09\",\"asking_number\":\"+1 888-555-1212\"}",
+                    is_sender: Optional(true),
+                    meta: Optional(Handshakes2.Meta(number: "+7 909 909-00-09", asking_number: "+1 888-555-1212", res: ""))
+                ), Handshakes2.ReceivingChatMessage(
+                    message_id: 289,
+                    from: "233D3773E69511ECAE590242AC120003",
+                    to: "233D47D4E69511ECAE590242AC120003",
+                    sent_on: Optional(1654628911),
+                    read_on: nil, search_chain: "233DCB1EE69511ECAE590242AC120003",
+                    marker: "new_message",
+                    body: "123",
+                    is_sender: Optional(true),
+                    meta: nil
+                ), Handshakes2.ReceivingChatMessage(
+                    message_id: 290,
+                    from: "233D47D4E69511ECAE590242AC120003",
+                    to: "233D3773E69511ECAE590242AC120003",
+                    sent_on: Optional(1654628920),
+                    read_on: nil,
+                    search_chain: "233DCB1EE69511ECAE590242AC120003",
+                    marker: "new_message",
+                    body: "Hihi",
+                    is_sender: nil,
+                    meta: nil
+                ), Handshakes2.ReceivingChatMessage(
+                    message_id: 291, from: "233D47D4E69511ECAE590242AC120003",
+                    to: "233D3773E69511ECAE590242AC120003", sent_on: Optional(1654629002),
+                    read_on: nil,
+                    search_chain: "233DCB1EE69511ECAE590242AC120003",
+                    marker: "new_message",
+                    body: "Lol",
+                    is_sender: nil,
+                    meta: nil
+                ), Handshakes2.ReceivingChatMessage(
+                    message_id: 292, from: "233D3773E69511ECAE590242AC120003",
+                    to: "233D47D4E69511ECAE590242AC120003", sent_on: Optional(1654629006), read_on: nil,
+                    search_chain: "233DCB1EE69511ECAE590242AC120003", marker: "new_message",
+                    body: "I’m here",
+                    is_sender: Optional(true),
+                    meta: nil
+                )
+            ]
+        ])
 
     }
 }
