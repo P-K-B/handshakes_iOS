@@ -15,7 +15,8 @@ struct NavigationBar: View {
     @Binding var search: Bool
     @AppStorage("profile") var profile: Bool = false
     
-    @Binding var showSearch: Bool
+    @State var showSearch: Bool
+    @State var showProfile: Bool
     
     @State var back: Tab?
     
@@ -80,6 +81,7 @@ struct NavigationBar: View {
                                 .strokeStyle(cornerRadius: 14)
                         }
                     }
+                    if (showProfile){
                         Button(action:{self.profile = true}){
                             Image(systemName: "person.crop.circle")
                                 .font(.body.weight(.bold))
@@ -89,6 +91,7 @@ struct NavigationBar: View {
                             .background(Color.theme.input, in: RoundedRectangle(cornerRadius: 14, style: .continuous))
                             .strokeStyle(cornerRadius: 14)
                         }
+                    }
                 }
                 .frame(maxWidth: .infinity, alignment: .trailing)
                 .padding(.trailing, 20)
@@ -104,6 +107,6 @@ struct NavigationBar: View {
 
 struct NavigationBar_Previews: PreviewProvider {
     static var previews: some View {
-        NavigationBar(title: "Featured", hasScrolled: .constant(true), search: .constant(true), showSearch: .constant(true), back: .contacts)
+        NavigationBar(title: "Featured", hasScrolled: .constant(true), search: .constant(true), showSearch: true, showProfile: true, back: .contacts)
     }
 }

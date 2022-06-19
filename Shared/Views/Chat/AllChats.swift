@@ -57,7 +57,7 @@ struct AllChats: View{
                     }
 //                }
                 .overlay(
-                    NavigationBar(title: "Messages", hasScrolled: $hasScrolled, search: $search, showSearch: .constant(false))
+                    NavigationBar(title: "Messages", hasScrolled: $hasScrolled, search: $search, showSearch: false, showProfile: true)
                 )
             }
             .popover(isPresented: $search) {

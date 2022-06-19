@@ -8,7 +8,7 @@
 import SwiftUI
 import PhoneNumberKit
 
-struct SearchList: View {
+struct SearchList: View, KeyboardReadable {
     
     //    App data
     @Binding var alert: MyAlert
@@ -27,6 +27,8 @@ struct SearchList: View {
     @State private var phoneNumber = String()
     @State private var validNumber: Bool = false
     @State var welcomeText: String = "Enter phone number to search:"
+    @State private var isKeyboardVisible = false
+
 
     
     var body: some View {
@@ -36,6 +38,9 @@ struct SearchList: View {
             .onTapGesture {
                 self.endEditing()
             }
+            .safeAreaInset(edge: .bottom) {
+                Color.clear.frame(height: isKeyboardVisible ? 0 : (big ? 55: 70))
+            }
 //        }
 //            .onAppear{
 //                if (history.datta.count < 5){
@@ -43,6 +48,7 @@ struct SearchList: View {
 //                }
 //            }
     }
+    
        
     
     var numberField: some View{
@@ -61,6 +67,10 @@ struct SearchList: View {
                 .padding()
                 .frame(maxWidth: .infinity, alignment: .leading)
             numberField
+                .onReceive(keyboardPublisher) { newIsKeyboardVisible in
+                                print("Is keyboard visible? ", newIsKeyboardVisible)
+                                isKeyboardVisible = newIsKeyboardVisible
+                            }
             Button{Task {
                 do{
                     //                                    Send code
@@ -107,7 +117,7 @@ struct SearchList: View {
                     inputRow
                     ScrollView() {
                         //                            debugTime
-                        GeometryElement(hasScrolled: $hasScrolled, big: big, hasBack: false)
+//                        GeometryElement(hasScrolled: $hasScrolled, big: big, hasBack: false)
                         
                         if (history.updated){
                                 //                                ForEach(contacts.data.contacts){ contact in
@@ -122,7 +132,7 @@ struct SearchList: View {
                     }
             }
                     .overlay(
-                        NavigationBar(title: "Search", hasScrolled: $hasScrolled, search: .constant(false), showSearch: .constant(false))
+                        NavigationBar(title: "Search", hasScrolled: $hasScrolled, search: .constant(false), showSearch: false, showProfile: true)
                     )
             }
         }

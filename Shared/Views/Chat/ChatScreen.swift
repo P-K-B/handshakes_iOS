@@ -9,8 +9,9 @@
 import SwiftUI
 import Combine
 import Foundation
+import UIKit
 
-struct ChatScreen: View {
+struct ChatScreen: View, KeyboardReadable {
     @Binding var alert: MyAlert
 
     @EnvironmentObject private var model: ChatScreenModel
@@ -20,6 +21,8 @@ struct ChatScreen: View {
     @AppStorage("big") var big: Bool = IsBig()
     @AppStorage("selectedTab") var selectedTab: Tab = .search
     @State var hasScrolled: Bool = false
+    @State private var isKeyboardVisible = false
+
     
     @State private var message = ""
     
@@ -134,6 +137,10 @@ struct ChatScreen: View {
                             .padding(5)
                             .addBorder(Color.theme.contactsHeadLetter.opacity(0.30), width: 1, cornerRadius: 10)
                             .foregroundColor(message.isEmpty ? Color.theme.contactsHeadLetter.opacity(0.30) : Color.black)
+                            .onReceive(keyboardPublisher) { newIsKeyboardVisible in
+                                            print("Is keyboard visible? ", newIsKeyboardVisible)
+                                            isKeyboardVisible = newIsKeyboardVisible
+                                        }
 
                         // .modifiers here
                         Button(action: onCommit) {
@@ -148,12 +155,30 @@ struct ChatScreen: View {
                     }
                     .padding(.horizontal, 5)
                     .padding(.bottom, 5)
+//                    Color.clear.frame(height: big ? 55: 70)
+//                    .offset(x: 0, y: isKeyboardVisible ? (big ? 55: 70) : 0)
                 }
                 .overlay(
-                    NavigationBar(title: "Chat", hasScrolled: $hasScrolled, search: .constant(false), showSearch: .constant(false), back: .chats)
+                    NavigationBar(title: "Chat", hasScrolled: $hasScrolled, search: .constant(false), showSearch: false, showProfile: false, back: .chats)
                 )
             }
         }
+        .safeAreaInset(edge: .bottom) {
+            Color.clear.frame(height: isKeyboardVisible ? 0 : (big ? 55: 70))
+        }
+        .onTapGesture {
+            self.endEditing()
+        }
+//        .gesture(
+//           DragGesture().onChanged { value in
+////              if value.translation.height > 0 {
+////                 print("Scroll down")
+////              } else {
+////                 print("Scroll up")
+////              }
+//               self.endEditing()
+//           }
+//        )
         
         //        .safeAreaInset(edge: .top, content: {
         //            Color.clear.frame(height: big ? 45 : 75)
@@ -211,3 +236,21 @@ struct ChatScreen: View {
 
 
 
+protocol KeyboardReadable {
+    var keyboardPublisher: AnyPublisher<Bool, Never> { get }
+}
+
+extension KeyboardReadable {
+    var keyboardPublisher: AnyPublisher<Bool, Never> {
+        Publishers.Merge(
+            NotificationCenter.default
+                .publisher(for: UIResponder.keyboardWillShowNotification)
+                .map { _ in true },
+            
+            NotificationCenter.default
+                .publisher(for: UIResponder.keyboardWillHideNotification)
+                .map { _ in false }
+        )
+        .eraseToAnyPublisher()
+    }
+}

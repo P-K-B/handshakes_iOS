@@ -22,6 +22,9 @@ struct ColorTheme {
     let gray = Color("Gray")
     let input = Color("Input")
     let contactsHeadLetter = Color("ContactsHeadLetter")
+    let myYellow = Color("MyYellow")
+    let myBlur = Color("MyBlue")
+    let myGray = Color ("MyGray")
 //    let red = Color("RedColor")
 //    let secondaryText = Color("SecondaryTextColor")
     

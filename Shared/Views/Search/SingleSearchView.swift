@@ -78,7 +78,7 @@ struct SingleSearchView: View {
         }
         
         .overlay(
-            NavigationBar(title: "Searching", hasScrolled: $hasScrolled, search: .constant(false), showSearch: .constant(false), back: .search)
+            NavigationBar(title: "Searching", hasScrolled: $hasScrolled, search: .constant(false), showSearch: false, showProfile: false, back: .search)
         )
         .onAppear{
             if ((history.selectedHistory == nil) && (selectedTab == .singleSearch)){

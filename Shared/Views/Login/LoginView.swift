@@ -41,12 +41,41 @@ struct LoginView: View {
     
     
     var body: some View {
+        ZStack{
+            VStack{
+                VStack{
+                    ZStack{
+                        VStack{
+                        Image("Logo")
+                            .resizable()
+                            .rotationEffect(.degrees(180))
+                            .frame(width: UIScreen.screenHeight/2.9, height: UIScreen.screenHeight/2.9)
+                            .offset(x: UIScreen.screenWidth/3, y: -UIScreen.screenHeight/8)
+                            Spacer()
+                        }
+                        .ignoresSafeArea()
+                        VStack(){
+                            HStack{
+                                Text("Log in to \nHandshakes")
+                                    .font(.largeTitle).fontWeight(.bold)
+                                    .padding()
+                                Spacer()
+                            }
+                            Spacer()
+                        }
+//                        .background(.blue)
+                    }
+                    Spacer()
+                }
+            }
+//            .background(.red)
         VStack{
             VStack(spacing: 5) {
 //                Text(String(validationError))
 //                Text("\(errorDesc)")
                 Text(hint)
-                    .font(Font.custom("SFProDisplay-Regular", size: 20))
+//                    .font(Font.custom("SFProDisplay-Regular", size: 20))
+                    .font(.title3).fontWeight(.semibold)
                     .padding()
                 //                    Phone number
                 VStack{
@@ -86,12 +115,14 @@ struct LoginView: View {
             }
             
         }
+        }
         .onTapGesture {
             self.endEditing()
         }
         .popover(isPresented: $showAgreementFile) {
             PDFView
         }
+        
     }
     
     
@@ -107,6 +138,7 @@ struct LoginView: View {
             .padding(.horizontal, 15)
             .background(.ultraThinMaterial, in: RoundedRectangle(cornerRadius: 20, style: .continuous))
             .padding()
+//            .font(.largeTitle)
     }
     var codeField: some View{
         SuperTextField(
@@ -115,6 +147,7 @@ struct LoginView: View {
             text: $code
         )
         .font(Font.custom("SFProDisplay-Regular", size: 20))
+//        .font(.body)
         .frame(minWidth: 0, maxWidth: .infinity, minHeight: 60, maxHeight: 60)
         .keyboardType(.phonePad).padding(.horizontal, 15)
         .background(.ultraThinMaterial, in: RoundedRectangle(cornerRadius: 20, style: .continuous))
@@ -335,5 +368,6 @@ struct LoginView: View {
 struct LoginView_Previews: PreviewProvider {
     static var previews: some View {
         LoginView(alert: .constant(MyAlert()))
+            .environmentObject(DebugData().userData)
     }
 }

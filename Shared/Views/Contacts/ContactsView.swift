@@ -73,7 +73,7 @@ struct ContactsView: View {
                         }
                     }
                     .overlay(
-                        NavigationBar(title: "Contacts", hasScrolled: $hasScrolled, search: $search, showSearch: .constant(true))
+                        NavigationBar(title: "Contacts", hasScrolled: $hasScrolled, search: $search, showSearch: true, showProfile: true)
                            
                     )
                 }

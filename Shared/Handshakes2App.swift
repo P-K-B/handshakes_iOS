@@ -64,7 +64,7 @@ struct Handshakes2App: App {
 //                            .transition(.scale)
                     }
                     else{
-                        LoginView(alert: $alert)
+                        LoginHi(alert: $alert)
                             .environmentObject(userData)
                             
                     }

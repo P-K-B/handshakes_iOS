@@ -19,6 +19,7 @@
 		05245FB9283F9E0500AF5CEB /* SingleContactView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 05245FB8283F9E0500AF5CEB /* SingleContactView.swift */; };
 		05245FBB283F9E8000AF5CEB /* BigLetter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 05245FBA283F9E8000AF5CEB /* BigLetter.swift */; };
 		05245FBD283F9ED400AF5CEB /* NumberRow.swift in Sources */ = {isa = PBXBuildFile; fileRef = 05245FBC283F9ED400AF5CEB /* NumberRow.swift */; };
+		053C8609285F5A1300F4255F /* LoginHi.swift in Sources */ = {isa = PBXBuildFile; fileRef = 053C8608285F5A1300F4255F /* LoginHi.swift */; };
 		05685188284E697600A79A34 /* SFProDisplay-Regular.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 05685186284E697600A79A34 /* SFProDisplay-Regular.ttf */; };
 		05685189284E697600A79A34 /* SFProDisplay-Regular.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 05685186284E697600A79A34 /* SFProDisplay-Regular.ttf */; };
 		0568518A284E697600A79A34 /* SFProDisplay-Bold.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 05685187284E697600A79A34 /* SFProDisplay-Bold.ttf */; };
@@ -82,6 +83,7 @@
 		05245FB8283F9E0500AF5CEB /* SingleContactView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SingleContactView.swift; sourceTree = "<group>"; };
 		05245FBA283F9E8000AF5CEB /* BigLetter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BigLetter.swift; sourceTree = "<group>"; };
 		05245FBC283F9ED400AF5CEB /* NumberRow.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NumberRow.swift; sourceTree = "<group>"; };
+		053C8608285F5A1300F4255F /* LoginHi.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoginHi.swift; sourceTree = "<group>"; };
 		05685186284E697600A79A34 /* SFProDisplay-Regular.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "SFProDisplay-Regular.ttf"; sourceTree = "<group>"; };
 		05685187284E697600A79A34 /* SFProDisplay-Bold.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "SFProDisplay-Bold.ttf"; sourceTree = "<group>"; };
 		0568518C284E69B500A79A34 /* Handshakes2--iOS--Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = "Handshakes2--iOS--Info.plist"; sourceTree = "<group>"; };
@@ -165,6 +167,15 @@
 			path = Contacts;
 			sourceTree = "<group>";
 		};
+		053C8607285F59F200F4255F /* Login */ = {
+			isa = PBXGroup;
+			children = (
+				0578ABBB28341D8800810E70 /* LoginView.swift */,
+				053C8608285F5A1300F4255F /* LoginHi.swift */,
+			);
+			path = Login;
+			sourceTree = "<group>";
+		};
 		05685185284E697600A79A34 /* Fonts */ = {
 			isa = PBXGroup;
 			children = (
@@ -230,7 +241,7 @@
 				059C02BD284607840073AFD6 /* Chat */,
 				059C02B12843F87F0073AFD6 /* Search */,
 				0578AB9A28341C6F00810E70 /* ContentView.swift */,
-				0578ABBB28341D8800810E70 /* LoginView.swift */,
+				053C8607285F59F200F4255F /* Login */,
 				0578ABC028341E3600810E70 /* PDFKitView.swift */,
 				0578ABC328341EFA00810E70 /* PhoneNumberTextFieldView.swift */,
 				0507964428423CEC0044F691 /* Contacts */,
@@ -434,6 +445,7 @@
 				057F970D2835708200B454DD /* ContactsData.swift in Sources */,
 				057F9713283575D800B454DD /* ContactsView.swift in Sources */,
 				0507963F28423B6B0044F691 /* GeometryElement.swift in Sources */,
+				053C8609285F5A1300F4255F /* LoginHi.swift in Sources */,
 				0507964E284294500044F691 /* SearchContacts.swift in Sources */,
 				0578ABBF28341DC400810E70 /* UserData.swift in Sources */,
 				0578ABC128341E3600810E70 /* PDFKitView.swift in Sources */,
