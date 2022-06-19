@@ -32,11 +32,19 @@ struct SingleSearchView: View {
             Divider()
             VStack{
                 VStack{
+                    if (history.datta.first(where: {$0.id == history.selectedHistory})?.handhsakes != nil){
                     HStackSnap(alignment: .center(32)) {
+                        if (history.datta.first(where: {$0.id == history.selectedHistory})?.handhsakes?.count == 0){
+                            Text("No results")
+                                .frame(minHeight:200)
+                                .frame(maxHeight: 1000)
+                                .snapAlignmentHelper(id: "")
+                        }
+                        else{
                         //                    ScrollView(){
                         //                        HStack{
                         //                            VStack{
-                        if (history.datta.first(where: {$0.id == history.selectedHistory})?.handhsakes != nil){
+                        
                             ForEach (((history.datta.first(where: {$0.id == history.selectedHistory})?.handhsakes!.sorted(by: {$0.path.count < $1.path.count})))!, id: \.self){ handhsake in
                                 //                                Text("Path #\(index+1)")
                                 //                                Text("\(handhsake.path.count)")
@@ -54,18 +62,25 @@ struct SingleSearchView: View {
                                     .onAppear{print(handhsake)}
                                 
                             }
+                        }
                             
-                        }
-                        else{
-                            Text("NIL")
-                            //                                }
-                            //                            }
-                            //                        }
-                        }
+//                        }
                         
                     } eventHandler: { event in
                         //
                         handleSnapToScrollEvent(event: event)
+                    }
+                    }
+                    else{
+                        HStackSnap(alignment: .center(32)) {
+                            ProgressView()
+                                .frame(minHeight:200)
+                                .frame(maxHeight: 1000)
+                                .snapAlignmentHelper(id: "")
+                        } eventHandler: { event in
+                            //
+                            handleSnapToScrollEvent(event: event)
+                        }
                     }
                     
                     //                    .background(.red)
@@ -155,7 +170,10 @@ struct OneMore: View{
                         .offset(x: 25, y: -25)
                 }
             }
-                                                    ContactRow(contact: a[0], order: order)
+//            HStack{
+//                Text ("Chat with")
+//                ContactRow(contact: a[0], order: order)
+//            }
         }
     }
     
@@ -227,17 +245,17 @@ struct Grid_old: View{
                             let a = contacts.data.contacts.filter({$0.telephone.contains(where: {$0.phone == path.number})})
                             if (a.count > 0){
                                 //                        ForEach (a){contact in
-                                Button (action:{
-                                    self.openContact = a[0]
-                                    withAnimation{
-                                        //                                        print(extra)
-                                        oneContact = true
-                                    }
-                                }) {
+//                                Button (action:{
+//                                    self.openContact = a[0]
+//                                    withAnimation{
+//                                        //                                        print(extra)
+//                                        oneContact = true
+//                                    }
+//                                }) {
+                                    
                                     OneMore(a: a, i: i, m: c - 1, order: contacts.order)
                                     
-                                    
-                                }
+//                                }
                                 
                                 
                                 //                                .frame(height: 300)
@@ -255,9 +273,10 @@ struct Grid_old: View{
                                                                     }
                                                                 }) {
                                                                     HStack {
-                                
+                                                                        
                                                                         //                                                                        Text(a[0].firstName)
-                                                                        Text("Chat")
+                                                                        Text("Chat with ")
+                                                                        ContactRow(contact: a[0], order: contacts.order )
                                                                     }
                                                                 }
                                 //                                .padding(.horizontal, 15)

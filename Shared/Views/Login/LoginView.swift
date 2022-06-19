@@ -19,6 +19,8 @@ struct LoginView: View {
     @Binding var alert: MyAlert
     @EnvironmentObject var userData: UserDataView
     
+    @AppStorage("big") var big: Bool = IsBig()
+    
 //    PhoneNumberKit
     let phoneNumberKit = PhoneNumberKit()
     
@@ -43,8 +45,7 @@ struct LoginView: View {
     var body: some View {
         ZStack{
             VStack{
-                VStack{
-                    ZStack{
+                
                         VStack{
                         Image("Logo")
                             .resizable()
@@ -54,23 +55,35 @@ struct LoginView: View {
                             Spacer()
                         }
                         .ignoresSafeArea()
-                        VStack(){
-                            HStack{
-                                Text("Log in to \nHandshakes")
-                                    .font(.largeTitle).fontWeight(.bold)
-                                    .padding()
-                                Spacer()
-                            }
-                            Spacer()
-                        }
 //                        .background(.blue)
-                    }
-                    Spacer()
-                }
+                    
+                    
             }
 //            .background(.red)
         VStack{
-            VStack(spacing: 5) {
+                        if (validNumber == false && big == false){
+                            Spacer()
+                        }
+//            Spacer()
+            VStack(){
+//                Spacer()
+                HStack{
+                    VStack(alignment: .leading){
+                    Text("Log in to").font(.largeTitle).fontWeight(.bold)
+                        Text("Handshakes").font(.largeTitle).fontWeight(.bold)
+                    }
+//                        .font(.largeTitle).fontWeight(.bold)
+                        .padding()
+//                        .multilineTextAlignment(.leading)
+                    Spacer()
+                }
+//                Spacer()
+//                .padding(.top, 100)
+            }
+//            if (!validNumber && big){
+                Spacer()
+//            }
+            VStack(spacing: big ? 5 : 0) {
 //                Text(String(validationError))
 //                Text("\(errorDesc)")
                 Text(hint)
@@ -78,7 +91,7 @@ struct LoginView: View {
                     .font(.title3).fontWeight(.semibold)
                     .padding()
                 //                    Phone number
-                VStack{
+                VStack (spacing: big ? 5 : 0){
                     numberField
                     
                     if (validNumber){
@@ -101,12 +114,17 @@ struct LoginView: View {
                                 //                            Code validation
                                 confirmButton
                             }
-                            .padding()
+//                            .padding()
+                            .padding(.vertical, big ? 10 : 3)
+                            .padding(.horizontal, 10)
                         }
                     }
                 }
                 
             }
+            Spacer()
+            Spacer()
+
 //            .background(.ultraThinMaterial, in: RoundedRectangle(cornerRadius: 34, style: .continuous))
 //            .padding()
             .onAppear {
@@ -137,7 +155,8 @@ struct LoginView: View {
             .keyboardType(.phonePad)
             .padding(.horizontal, 15)
             .background(.ultraThinMaterial, in: RoundedRectangle(cornerRadius: 20, style: .continuous))
-            .padding()
+            .padding(.vertical, big ? 10 : 3)
+            .padding(.horizontal, 10)
 //            .font(.largeTitle)
     }
     var codeField: some View{
@@ -151,7 +170,8 @@ struct LoginView: View {
         .frame(minWidth: 0, maxWidth: .infinity, minHeight: 60, maxHeight: 60)
         .keyboardType(.phonePad).padding(.horizontal, 15)
         .background(.ultraThinMaterial, in: RoundedRectangle(cornerRadius: 20, style: .continuous))
-        .padding()
+        .padding(.vertical, big ? 10 : 3)
+        .padding(.horizontal, 10)
     }
     
     var userAgrimentField: some View{
@@ -195,11 +215,17 @@ struct LoginView: View {
             }
             
         }
-        .padding()
+//        .padding()
+        .padding(.vertical, big ? 10 : 3)
+        .padding(.horizontal, 10)
     }
     
     func SignInButton(){
         do{
+            if ((userData.data.isNewUser) && (userAgreement == false)){
+                alert = MyAlert(error: true, title: "", text: "Please read and agree with \"User Agreement\"", button: "Ok")
+                self.loading = false
+            }
             //                                    Send code
             let validatedPhoneNumber = try phoneNumberKit.parse(phoneNumber)
             if (userData.data.isNewUser && !userAgreement){
@@ -300,10 +326,6 @@ struct LoginView: View {
     
     func ConfirmButton(){
         self.loading = true
-        if (!userData.data.isNewUser){
-            alert = MyAlert(error: true, title: "", text: "Please read and agree with \"User Agreement\"", button: "Ok")
-            self.loading = false
-        }
         do{
             print("Code is: \(self.code)")
 //            let validatedPhoneNumber = try self.phoneNumberKit.parse(self.phoneNumber)
