@@ -25,8 +25,8 @@ struct AllChats: View{
                 Color.theme.background
                     .ignoresSafeArea()
 //                VStack{
-                    ScrollView() {
-                        GeometryElement(hasScrolled: $hasScrolled, big: big, hasBack: false)
+//                    ScrollView() {
+                        GeometryElement(hasScrolled: $hasScrolled, big: big, hasBack: false) // FIXME - stopped working without ScrollView and ScrollView breaks List below.
 //                        VStack{
 //                            ScrollView {
 //                                LazyVStack(spacing: 8) {
@@ -39,22 +39,27 @@ struct AllChats: View{
                         
 //                            .sorted(by: {$0.value.last?.sent_on ?? 0 > $1.value.last?.sent_on ?? 0})
                         Divider()
-                        ForEach(a, id: \.key) { chatKey, val in
-                            let chat = model.chats.allChats[chatKey]
-                                        ChatItem(chat: chat, onClickAction: {withAnimation(){
-                                                model.OpenChat(chat: chatKey)
-                                                selectedTab = .singleChat
-                                        }})
-                                        .onAppear{
-                                            
-                                        }
-                                    }
+                        List(a, id: \.key) { data in
+                            ChatItem(chat: data.value)
+                                .onTapGesture(perform: {withAnimation(){
+                                    model.OpenChat(chat: data.key)
+                                    selectedTab = .singleChat
+                                }})
+                                .swipeActions(edge: .trailing) {
+                                    Button(
+                                        role:.destructive,
+                                        action: {model.DeleteChat(chat: data.key) },
+                                        label: {
+                                            Label("Delete", systemImage: "trash")
+                                        })
+                                }
+                        }
 //                                }
 //                            }
 //                        }
                         
                         
-                    }
+//                    }
 //                }
                 .overlay(
                     NavigationBar(title: "Messages", hasScrolled: $hasScrolled, search: $search, showSearch: .constant(false))
@@ -98,12 +103,10 @@ struct ChatItem: View {
     @EnvironmentObject var contacts: ContactsDataView
     
     var chat: [ReceivingChatMessage]?
-    var onClickAction: ()->Void
     var lastMessage: ReceivingChatMessage? = nil
     
-    init(chat: [ReceivingChatMessage]?, onClickAction: @escaping ()->Void) {
+    init(chat: [ReceivingChatMessage]?) {
         self.chat = chat
-        self.onClickAction = onClickAction
         self.lastMessage = chat?.last
     }
     
@@ -218,7 +221,6 @@ struct ChatItem: View {
               maxHeight: 80,
               alignment: .topLeading
         )
-        .onTapGesture(perform: onClickAction)
     }
 
 }
