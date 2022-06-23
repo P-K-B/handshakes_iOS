@@ -8,33 +8,54 @@
 import SwiftUI
 import SnapToScroll
 
+//struct ContentView: View {
+//        @Binding var alert: MyAlert
+//
+//    var body: some View {
+//        ScrollView {
+//            ScrollViewReader { proxy in
+//                LazyVStack {
+//                    ForEach(0..<50000, id: \.self) { i in
+//                        Button("Jump to \(i+500)") {
+//                            proxy.scrollTo(i+500, anchor: .top)
+//                        }
+//                        Text("Example \(i)")
+//                            .id(i)
+//                    }
+//                }
+//            }
+//        }
+//    }
+//}
+
 struct ContentView: View {
-    
+
     @EnvironmentObject var userData: UserDataView
     @StateObject var contactsData: ContactsDataView = ContactsDataView()
     @StateObject var historyData: HistoryDataView = HistoryDataView()
     @Binding var alert: MyAlert
-    
+
     @AppStorage("big") var big: Bool = IsBig()
     @AppStorage("selectedTab") var selectedTab: Tab = .search
     @AppStorage("profile") var profile: Bool = false
     @StateObject private var model = ChatScreenModel()
-    
+    @State var visible: Int = 0
+
     @Environment(\.scenePhase) var scenePhase
-    
+
     var body: some View {
-        
+
 //        VStack{
 //            ScrollView{
 //                ZStack{
 //                    GeometryReader{reader -> AnyView in
 //                        let lyAxis=reader.frame(in: .global).minY
 //                        let lxAxis=reader.frame(in: .global).minX
-//                        
-//                        
+//
+//
 //                        print(lyAxis)
 //                        print(lxAxis)
-//                        
+//
 //                        //                                    Path { path in
 //                        //
 //                        //
@@ -60,7 +81,7 @@ struct ContentView: View {
 //                        //
 //                        //                                        path.closeSubpath()
 //                        //                                    }
-//                        
+//
 //                        return AnyView(
 //                            ZStack{
 //                                Arrow(index: 1, total: 5)
@@ -69,7 +90,7 @@ struct ContentView: View {
 //                                Arrow(index: 4, total: 5)
 //                                Arrow(index: 5, total: 5)
 //                                //                                       Color.red.frame(width: 50)
-//                                
+//
 //                            }
 ////                                .background(.blue)
 //                        )
@@ -77,20 +98,20 @@ struct ContentView: View {
 //                    Scl(letter: "I", frame: 50, font: 20, color: .green, text: "I")
 ////                        .background(.orange)
 //                    //                                .frame(height: 0)
-//                    
+//
 //                }
 //                .frame(width: 70)
 ////                .background(.red)
 //            }
 //            .padding(.top, 200)
 //        }
-        
-        
+
+
                 ZStack{
                     ZStack {
                         switch selectedTab {
                         case .contacts:
-                            ContactsView(alert: $alert)
+                            ContactsView(alert: $alert, visible: $visible)
                                 .environmentObject(contactsData)
                                 .safeAreaInset(edge: .top, content: {
                                     Color.clear.frame(height: big ? 45: 75)
@@ -133,7 +154,7 @@ struct ContentView: View {
         //                        .environmentObject(contactsData)
                         case .chats:
 //                            VStack{
-                            
+
                             AllChats(big: big)
                                                         .environmentObject(model)
                                                         .environmentObject(contactsData)
@@ -143,7 +164,7 @@ struct ContentView: View {
                                                         .safeAreaInset(edge: .bottom) {
                                                             Color.clear.frame(height: big ? 55: 70)
                                                         }
-        
+
 //                            }
                         case .singleChat:
 
@@ -154,7 +175,7 @@ struct ContentView: View {
                                     Color.clear.frame(height: big ? 45: 75)
                                 })
                         }
-        
+
                     }
         //            ScrollView{
         //                Example3ContentView()
@@ -166,9 +187,9 @@ struct ContentView: View {
         //                Example3ContentView()
         //                Example3ContentView()
         //            }
-        
 
-        
+
+
                     TabBar()
                 }
                 .onAppear{
@@ -176,9 +197,9 @@ struct ContentView: View {
                     historyData.SetJwt( jwt: userData.data.jwt)
                     model.SetJwt( jwt: userData.data.jwt)
                     onAppear()
-        
-        
-        
+
+
+
         //            print(String(data: try! JSONEncoder().encode(userData), encoding: String.Encoding.utf8))
         //            print(contactsData.data)
                 }
@@ -201,11 +222,11 @@ struct ContentView: View {
                         .environmentObject(model)
                 }
     }
-    
+
     private func onAppear() {
         model.connect()
     }
-    
+
     private func onDisappear() {
         model.disconnect()
     }

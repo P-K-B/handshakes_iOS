@@ -20,6 +20,10 @@ struct ContactsView: View {
     @State var selectedContact: String? = ""
     @State var search: Bool = false
     @AppStorage("selectedTab") var selectedTab: Tab = .search
+    
+    @State var stored: Int = 0
+    @State var current: [Int] = []
+    @Binding var visible: Int
 
     
     var body: some View {
@@ -46,6 +50,52 @@ struct ContactsView: View {
                     }
                 }
                 else{
+                    ScrollViewReader { proxy in
+//                        HStack {
+//                                            Button("Store \(stored)") {
+//                                                // hard code is just for demo !!!
+//                                                stored = visible // 1st is out of screen by LazyVStack
+//                                                print("!! stored \(stored)")
+//                                            }
+//                                            Button("Restore") {
+//                                                print("[x] visible \(visible)")
+////                                                if (current.contains(stored)){
+////                                                    proxy.scrollTo(stored, anchor: .top)
+////                                                }
+////                                                else{
+////                                                    if (visible > stored){
+////                                                        let l = min(visible, stored)
+////                                                        let r = max(visible, stored)
+////                                                        print("big",l,r)
+////                                                        var t=0
+////                                                        for  i in l...r{
+////                                                            withAnimation{
+////                                                            print("[x] restored \(r-t)")
+////                                                            proxy.scrollTo(r-t, anchor: .top)
+////                                                                t += 1
+//////                                                                sleep(1)
+////                                                            }
+////                                                        }
+////                                                    }
+////                                                    else{
+////                                                        let l = min(visible, stored)
+////                                                        let r = max(visible, stored)
+////                                                        print(l,r)
+////                                                        for  i in l...r{
+////                                                            withAnimation{
+////                                                            print("[x] restored \(i)")
+////                                                            proxy.scrollTo(i, anchor: .top)
+////                                                            }
+////                                                        }
+////                                                    }
+//                                                proxy.scrollTo(contacts.data.contacts[contacts.data.contacts.count - 2].index)
+////                                                }
+////                                                print("[x] restored \(stored)")
+////                                                print("[x] to \(to)")
+////                                                print("[x] current \(current)")
+//                                            }
+//                                        }
+//                                        Divider()
                     ScrollView() {
                         //                            debugTime
                         GeometryElement(hasScrolled: $hasScrolled, big: big, hasBack: false)
@@ -60,10 +110,26 @@ struct ContactsView: View {
 //                            else{
                                 //                                ForEach(contacts.data.contacts){ contact in
                                 //                                    HStack() {
+                            LazyVStack{
                                 ContactsList
-                                .onAppear{
-                                    print("1")
-                                }
+//                                ForEach(contacts.data.contacts)
+//                                { contact in
+//                                ContactRow(contact: contact, order: contacts.order)
+//                                        .id(contact.index)
+//                                }
+                                
+                            }
+                            .onAppear {
+                                print("Visible!" ,visible)
+//                                if (contacts.data.contacts.count > 0){
+//                                    print("scrol to last",contacts.data.contacts[contacts.data.contacts.count - 2].index)
+//                                proxy.scrollTo(contacts.data.contacts[contacts.data.contacts.count - 2].index)
+//                                }
+//                                else{
+                                proxy.scrollTo(visible, anchor: .bottom)
+//                                }
+                                            }
+//                                        }
 //                            }
                             //                                    }
                             //                                }
@@ -72,10 +138,12 @@ struct ContactsView: View {
                             Text("Loading")
                         }
                     }
+                    }
                     .overlay(
                         NavigationBar(title: "Contacts", hasScrolled: $hasScrolled, search: $search, showSearch: true, showProfile: true)
                            
                     )
+                    
                 }
             }
         }
@@ -89,12 +157,18 @@ struct ContactsView: View {
     }
     
     var ContactsList: some View{
-        LazyVStack(){
-            ForEach(contacts.data.letters, id: \.self) { letter in
+        
+
+        
+//        LazyVStack(){
+            ForEach(contacts.data.letters, id:\.self) { letter in
                 Section(header: SectionLetter(text:letter)) {
                     ForEach(contacts.data.contacts
                         .filter({ (contact) -> Bool in (contact.filterindex.prefix(1).uppercased() == letter)})
                     )
+//                    ForEach(contacts.data.contacts
+//                        .filter({ (contact) -> Bool in (contact.filterindex.prefix(1).uppercased() == letter)})
+//                    )
                     { contact in
                         VStack{
                             //                            Button (action:{
@@ -128,6 +202,16 @@ struct ContactsView: View {
 //                                            .padding(.trailing, 5)
                                     }
                                 })
+                                .onAppear {
+                                                                    print(">> added \(contact.index)")
+                                                                    current.append(contact.index)
+//                                    print(current.sorted(by: {$0 < $1}))
+                                    visible = (current.sorted(by: {$0 < $1}).last ?? 0) - 2
+                                                                }
+                                                                .onDisappear {
+                                                                    current.removeAll { $0 == contact.index }
+                                                                    print("<< removed \(contact.index)")
+                                                                }
                                 .foregroundColor(.black)
                                 .padding(.leading, 13)
                                 
@@ -142,12 +226,13 @@ struct ContactsView: View {
                         }
                         .padding(.horizontal, 10)
                         .padding(.vertical, 3)
+                        .id(contact.index)
                     }
                 }
                 
             }
-            Text(String(contacts.data.contacts.count))
-        }
+//            Text(String(contacts.data.contacts.count))
+//        }
     }
     
     var lazyV: some View{
@@ -226,7 +311,7 @@ struct ContactsView: View {
 
 struct ContactsView_Previews: PreviewProvider {
     static var previews: some View {
-        ContactsView(alert: .constant(MyAlert()))
+        ContactsView(alert: .constant(MyAlert()), visible: .constant(0))
             .environmentObject(DebugData().historyData)
             .environmentObject(DebugData().contactsData)
             .environmentObject(DebugData().model)
