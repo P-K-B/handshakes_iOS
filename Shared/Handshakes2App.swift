@@ -113,7 +113,7 @@ struct Handshakes2App: App {
                                     userData.save()
                                 }
                                 if (reses.status_code == -1){
-                                    alert = MyAlert(error: true, title: "", text: "Error connectiong to server", button: "Ok")
+                                    alert = MyAlert(error: true, title: "", text: "Error connectiong to server", button: "Ok", oneButton: true)
                                 }
                                     userData.update(newData: UserUpdate(field: .loaded, bool: true))
                             }

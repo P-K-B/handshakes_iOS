@@ -20,6 +20,8 @@ struct LoginView: View {
     @EnvironmentObject var userData: UserDataView
     
     @AppStorage("big") var big: Bool = IsBig()
+    @AppStorage("fresh") var fresh: Bool = true
+
     
 //    PhoneNumberKit
     let phoneNumberKit = PhoneNumberKit()
@@ -223,7 +225,7 @@ struct LoginView: View {
     func SignInButton(){
         do{
             if ((userData.data.isNewUser) && (userAgreement == false)){
-                alert = MyAlert(error: true, title: "", text: "Please read and agree with \"User Agreement\"", button: "Ok")
+                alert = MyAlert(error: true, title: "", text: "Please read and agree with \"User Agreement\"", button: "Ok", oneButton: true)
                 self.loading = false
             }
             //                                    Send code
@@ -257,7 +259,7 @@ struct LoginView: View {
                             }
                         }
                         else {
-                            alert = MyAlert(error: true, title: "", text: reses.status_text ?? "Error while fetching data", button: "Ok")
+                            alert = MyAlert(error: true, title: "", text: reses.status_text ?? "Error while fetching data", button: "Ok", oneButton: true)
                         }
                         code=""
                         loading = false
@@ -265,12 +267,12 @@ struct LoginView: View {
                 }
             }
             catch{
-                alert = MyAlert(error: true, title: "", text: "Error while fetching data", button: "Ok")
+                alert = MyAlert(error: true, title: "", text: "Error while fetching data", button: "Ok", oneButton: true)
                 loading = false
             }
         }
         catch {
-            alert = MyAlert(error: true, title: "", text: "Please enter a valid phone number", button: "Ok")
+            alert = MyAlert(error: true, title: "", text: "Please enter a valid phone number", button: "Ok", oneButton: true)
             loading = false
         }
     }
@@ -297,13 +299,13 @@ struct LoginView: View {
                 if (reses.status_code == 0){
                 }
                 else{
-                    alert = MyAlert(error: true, title: "", text: reses.status_text ?? "Error while fetching data", button: "Ok")
+                    alert = MyAlert(error: true, title: "", text: reses.status_text ?? "Error while fetching data", button: "Ok", oneButton: true)
                 }
                 self.loading = false
             }
         }
         catch {
-            alert = MyAlert(error: true, title: "", text: "Error while fetching data", button: "Ok")
+            alert = MyAlert(error: true, title: "", text: "Error while fetching data", button: "Ok", oneButton: true)
         }
     }
     
@@ -336,6 +338,7 @@ struct LoginView: View {
 //                    userData.data.jwt=reses.payload?.jwt.jwt ?? ""
                     userData.update(newData: UserUpdate(field: .jwt, string: reses.payload?.jwt.jwt ?? ""))
                     userData.update(newData: UserUpdate(field: .id, string: String(reses.payload?.jwt.id ?? -1)))
+                    fresh = true
                     withAnimation(){
 //                        userData.data.loggedIn = true
                         userData.update(newData: UserUpdate(field: .loggedIn, bool: true))
@@ -343,13 +346,13 @@ struct LoginView: View {
                     }
                 }
                 else{
-                    alert = MyAlert(error: true, title: "", text: reses.status_text ?? "Error while fetching data", button: "Ok")
+                    alert = MyAlert(error: true, title: "", text: reses.status_text ?? "Error while fetching data", button: "Ok", oneButton: true)
                 }
                 loading = false
             }
         }
         catch {
-            alert = MyAlert(error: true, title: "", text: "Error while fetching data", button: "Ok")
+            alert = MyAlert(error: true, title: "", text: "Error while fetching data", button: "Ok", oneButton: true)
             self.loading = false
         }
         print(self.userData.data)

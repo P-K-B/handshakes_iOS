@@ -112,6 +112,10 @@ final class ChatScreenModel: ObservableObject {
     func DeleteChat(chat:String){
         chatsDataService.DeleteChat(chat: chat)
     }
+    
+    func Delete(){
+        chatsDataService.Delete()
+    }
 }
 
 struct ChatsSave: Encodable,Decodable{
@@ -141,6 +145,13 @@ final class ChatScreenService  {
             }
         }
     }
+    
+    func Delete(){
+        self.chats = Chats()
+        self.save()
+    }
+    
+//    func Load(){}
     
     func  readMessage(searchGuid: String, id: Int){
         if (self.chats.allChats[searchGuid]?.first(where: {$0.message_id == id})?.read == false){

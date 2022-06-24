@@ -38,6 +38,7 @@ struct ContentView: View {
     @AppStorage("big") var big: Bool = IsBig()
     @AppStorage("selectedTab") var selectedTab: Tab = .search
     @AppStorage("profile") var profile: Bool = false
+    @AppStorage("fresh") var fresh: Bool = true
     @StateObject private var model = ChatScreenModel()
     @State var visible: Int = 0
 
@@ -193,12 +194,19 @@ struct ContentView: View {
                     TabBar()
                 }
                 .onAppear{
+                    if (fresh == true){
+                        contactsData.Delete()
+                        fresh = false
+                    }
+                        contactsData.Load()
+//
+//                    }
                     contactsData.SetJwt( jwt: userData.data.jwt)
                     historyData.SetJwt( jwt: userData.data.jwt)
                     model.SetJwt( jwt: userData.data.jwt)
                     onAppear()
 
-
+                    
 
         //            print(String(data: try! JSONEncoder().encode(userData), encoding: String.Encoding.utf8))
         //            print(contactsData.data)

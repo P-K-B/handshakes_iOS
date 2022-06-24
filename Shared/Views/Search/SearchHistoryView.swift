@@ -87,7 +87,7 @@ struct SearchList: View, KeyboardReadable {
                     }
                 }
                 catch {
-                    alert = MyAlert(error: true, title: "", text: "Please enter a valid phone number", button: "Ok")
+                    alert = MyAlert(error: true, title: "", text: "Please enter a valid phone number", button: "Ok", oneButton: true)
                 }
             }
             }

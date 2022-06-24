@@ -51,54 +51,10 @@ struct ContactsView: View {
                 }
                 else{
                     ScrollViewReader { proxy in
-//                        HStack {
-//                                            Button("Store \(stored)") {
-//                                                // hard code is just for demo !!!
-//                                                stored = visible // 1st is out of screen by LazyVStack
-//                                                print("!! stored \(stored)")
-//                                            }
-//                                            Button("Restore") {
-//                                                print("[x] visible \(visible)")
-////                                                if (current.contains(stored)){
-////                                                    proxy.scrollTo(stored, anchor: .top)
-////                                                }
-////                                                else{
-////                                                    if (visible > stored){
-////                                                        let l = min(visible, stored)
-////                                                        let r = max(visible, stored)
-////                                                        print("big",l,r)
-////                                                        var t=0
-////                                                        for  i in l...r{
-////                                                            withAnimation{
-////                                                            print("[x] restored \(r-t)")
-////                                                            proxy.scrollTo(r-t, anchor: .top)
-////                                                                t += 1
-//////                                                                sleep(1)
-////                                                            }
-////                                                        }
-////                                                    }
-////                                                    else{
-////                                                        let l = min(visible, stored)
-////                                                        let r = max(visible, stored)
-////                                                        print(l,r)
-////                                                        for  i in l...r{
-////                                                            withAnimation{
-////                                                            print("[x] restored \(i)")
-////                                                            proxy.scrollTo(i, anchor: .top)
-////                                                            }
-////                                                        }
-////                                                    }
-//                                                proxy.scrollTo(contacts.data.contacts[contacts.data.contacts.count - 2].index)
-////                                                }
-////                                                print("[x] restored \(stored)")
-////                                                print("[x] to \(to)")
-////                                                print("[x] current \(current)")
-//                                            }
-//                                        }
-//                                        Divider()
                     ScrollView() {
                         //                            debugTime
                         GeometryElement(hasScrolled: $hasScrolled, big: big, hasBack: false)
+                        Text("\(contacts.data.contacts.count)")
                         
                         if (contacts.data.loaded){
                             if (!contacts.data.updated){
@@ -148,7 +104,8 @@ struct ContactsView: View {
             }
         }
         .popover(isPresented: $search) {
-            SearchContacts(close: $search, selectedContact: $selectedContact)
+            HideContacts(close: $search, selectedContact: $selectedContact)
+//            SearchContacts(close: $search, selectedContact: $selectedContact)
                 .onAppear{
 //                    print(contacts.data)
 //                    print(contacts.contactsDataService.data)
@@ -170,63 +127,65 @@ struct ContactsView: View {
 //                        .filter({ (contact) -> Bool in (contact.filterindex.prefix(1).uppercased() == letter)})
 //                    )
                     { contact in
-                        VStack{
-                            //                            Button (action:{
-                            //                                withAnimation{
-                            //                                    windowManager.contactDetailsIndex = contact.id
-                            //                                    windowManager.isContactDetails = true
-                            //                                }
-                            //                            }) {
-                            HStack {
-                                //                                    Text(contact.lastName.isEmpty ? "" : contact.lastName + " ")
-                                //                                        .font(Font.custom("SFProDisplay-Bold", size: 20))
-                                //                                    +
-                                //                                    Text(contact.firstName)
-                                //                                        .font(Font.custom("SFProDisplay-Regular", size: 20))
+                        if (!contacts.data.hide.contains(contact.id)){
+                            VStack{
+                                //                            Button (action:{
+                                //                                withAnimation{
+                                //                                    windowManager.contactDetailsIndex = contact.id
+                                //                                    windowManager.isContactDetails = true
+                                //                                }
+                                //                            }) {
+                                HStack {
+                                    //                                    Text(contact.lastName.isEmpty ? "" : contact.lastName + " ")
+                                    //                                        .font(Font.custom("SFProDisplay-Bold", size: 20))
+                                    //                                    +
+                                    //                                    Text(contact.firstName)
+                                    //                                        .font(Font.custom("SFProDisplay-Regular", size: 20))
+                                    
+                                    //                                NavigationLink("", destination: SingleContactView(), tag: contact.id, selection: $selectedContact)
+                                    Button(action: {
+                                        withAnimation(){
+                                            contacts.selectedContact = contact
+                                            selectedTab = .singleContact
+                                        }
+                                    }, label: {
+                                        HStack{
+                                            ContactRow(contact: contact, order: contacts.order)
+                                            Spacer()
+    //                                        Image(systemName: "chevron.right")
+    //                                            .resizable()
+    //                                            .aspectRatio(contentMode: .fit)
+    //                                            .frame(width: 7)
+    //                                            .foregroundColor(Color.accentColor) //Apply color for arrow only
+    //                                            .padding(.trailing, 5)
+                                        }
+                                    })
+                                    .onAppear {
+    //                                                                    print(">> added \(contact.index)")
+                                                                        current.append(contact.index)
+    //                                    print(current.sorted(by: {$0 < $1}))
+                                        visible = (current.sorted(by: {$0 < $1}).last ?? 0) - 2
+                                                                    }
+                                                                    .onDisappear {
+                                                                        current.removeAll { $0 == contact.index }
+    //                                                                    print("<< removed \(contact.index)")
+                                                                    }
+                                    .foregroundColor(.black)
+                                    .padding(.leading, 13)
+                                    
+                                    
+                                    
+                                }
+                                Divider()
                                 
-                                //                                NavigationLink("", destination: SingleContactView(), tag: contact.id, selection: $selectedContact)
-                                Button(action: {
-                                    withAnimation(){
-                                        contacts.selectedContact = contact
-                                        selectedTab = .singleContact
-                                    }
-                                }, label: {
-                                    HStack{
-                                        ContactRow(contact: contact, order: contacts.order)
-                                        Spacer()
-//                                        Image(systemName: "chevron.right")
-//                                            .resizable()
-//                                            .aspectRatio(contentMode: .fit)
-//                                            .frame(width: 7)
-//                                            .foregroundColor(Color.accentColor) //Apply color for arrow only
-//                                            .padding(.trailing, 5)
-                                    }
-                                })
-                                .onAppear {
-                                                                    print(">> added \(contact.index)")
-                                                                    current.append(contact.index)
-//                                    print(current.sorted(by: {$0 < $1}))
-                                    visible = (current.sorted(by: {$0 < $1}).last ?? 0) - 2
-                                                                }
-                                                                .onDisappear {
-                                                                    current.removeAll { $0 == contact.index }
-                                                                    print("<< removed \(contact.index)")
-                                                                }
-                                .foregroundColor(.black)
-                                .padding(.leading, 13)
-                                
-                                
+                                //                            }
+                                //                            .foregroundColor(.primary)
                                 
                             }
-                            Divider()
-                            
-                            //                            }
-                            //                            .foregroundColor(.primary)
-                            
+                            .padding(.horizontal, 10)
+                            .padding(.vertical, 3)
+                            .id(contact.index)
                         }
-                        .padding(.horizontal, 10)
-                        .padding(.vertical, 3)
-                        .id(contact.index)
                     }
                 }
                 

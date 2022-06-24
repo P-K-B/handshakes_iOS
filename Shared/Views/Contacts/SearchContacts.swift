@@ -21,6 +21,7 @@ struct SearchContacts: View {
 
     
     var body: some View {
+        
         ZStack{
 
             VStack{
@@ -58,13 +59,27 @@ struct SearchContacts: View {
                 .frame(height: hasScrolled ? 50 : 74)
 //                .frame(maxHeight: .infinity, alignment: .top)
 //                .ignoresSafeArea()
-                SearchBarMy(searchText: $searchText)
+                ScrollViewReader { proxy in
+                
+//                    .onChange(of: searchText, perform: {print(searchText)})
 //                    .padding(.top, 5)
+                
+//                    let binding = Binding<String>(get: {
+//                                self.searchText
+//                            }, set: {
+//                                self.searchText = $0
+//                                // do whatever you want here
+//                                print("Scrol")
+//                                proxy.scrollTo(contacts.data.contacts
+//                                    .filter { searchText.isEmpty || ($0.longSearch.localizedStandardContains(searchText)}[0] ?? []).index, anchor: .top)
+//                            })
+                    SearchBarMy(searchText: $searchText)
                 ScrollView() {
-                    GeometryElement(hasScrolled: $hasScrolled, big: big, hasBack: false)
+//                    GeometryElement(hasScrolled: $hasScrolled, big: big, hasBack: false)
                     LazyVStack (pinnedViews: .sectionHeaders){
                         ContactsSearchList
                     }
+                }
 //                    .padding(.top, 5)
                 }
             }
@@ -190,6 +205,7 @@ struct SearchContacts: View {
                     }
                     .padding(.horizontal, 10)
                     .padding(.vertical, 3)
+                    .id(contact.index)
                 }
             }
 //        }

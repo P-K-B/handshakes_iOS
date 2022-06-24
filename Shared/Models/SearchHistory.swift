@@ -122,6 +122,10 @@ class HistoryDataView: ObservableObject {
     func Add(number: String) -> UUID {
         return historyDataService.Add(number: number)
     }
+    
+    func Delete(){
+        historyDataService.Delete()
+    }
 }
 
 class HistoryDataService {
@@ -149,6 +153,11 @@ class HistoryDataService {
         }
         
         
+    }
+    
+    func Delete(){
+        self.data = []
+        self.save()
     }
     
     func Add(number: String) -> UUID{
