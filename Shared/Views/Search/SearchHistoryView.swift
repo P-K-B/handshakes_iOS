@@ -115,10 +115,13 @@ struct SearchList: View, KeyboardReadable {
                     .ignoresSafeArea()
                 VStack{
                     inputRow
+                    Divider()
+                    GeometryReader { geometry in
+
                     ScrollView() {
                         //                            debugTime
 //                        GeometryElement(hasScrolled: $hasScrolled, big: big, hasBack: false)
-                        
+                        if (history.datta.count > 0){
                         if (history.updated){
                                 //                                ForEach(contacts.data.contacts){ contact in
                                 //                                    HStack() {
@@ -129,8 +132,21 @@ struct SearchList: View, KeyboardReadable {
                         else{
                             Text("Loading")
                         }
+                        }
+                       
+                    
+                    else{
+                        VStack{
+                       Text("Search history is empty")
+                                .font(Font.system(size: 16, weight: .light, design: .default))
+                        }
+                        .frame(width: geometry.size.width)      // Make the scroll view full-width
+                                    .frame(minHeight: geometry.size.height)
+                            
+                    }
                     }
             }
+                }
                     .overlay(
                         NavigationBar(title: "Search", hasScrolled: $hasScrolled, search: .constant(false), showSearch: false, showProfile: true)
                     )

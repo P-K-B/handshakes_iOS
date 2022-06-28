@@ -21,7 +21,7 @@ struct ContactsData: Encodable, Decodable {
     var letters: [String] = []
     var updated: Bool = false
     var err: Bool = false
-    var loaded: Bool = true
+    var loaded: Bool = false
     var time: Date = Date()
     var time2: Date = Date()
     var time3: Date = Date()
@@ -31,6 +31,7 @@ struct ContactsData: Encodable, Decodable {
     var time7: Date = Date()
     var time10: Date = Date()
     var time11: Date = Date()
+//    var showedHide: Bool = false
 }
 
 struct CD: Encodable,Decodable{
@@ -38,6 +39,7 @@ struct CD: Encodable,Decodable{
     var letters: [String] = []
     var order: Int
     var hide: [String] = []
+//    var showHide: Bool
 }
 
 class ContactsDataView: ObservableObject {
@@ -68,7 +70,7 @@ class ContactsDataView: ObservableObject {
                 }
             } receiveValue: { returnedData in
                 self.data=returnedData
-                print("CONTACTS DATA: updated = \(returnedData.updated)")
+//                print("CONTACTS DATA: contacts = \(returnedData.contacts)")
             }
             .store(in: &cansellables)
         
@@ -117,8 +119,8 @@ class ContactsDataView: ObservableObject {
         contactsDataService.save()
     }
     
-    func reset(){
-        contactsDataService.reset()
+    func reset(upload: Bool){
+        contactsDataService.reset(upload: upload)
     }
     
     func SetJwt(jwt: String){
@@ -137,8 +139,8 @@ class ContactsDataView: ObservableObject {
         contactsDataService.SelectContact(contact: contact)
     }
     
-    func Load(){
-        contactsDataService.Load()
+    func Load(upload: Bool){
+        contactsDataService.Load(upload: upload)
     }
     
     func Delete(){
@@ -156,6 +158,19 @@ class ContactsDataView: ObservableObject {
     func updateHide(id: [String]){
         contactsDataService.updateHide(id: id)
     }
+    
+    func Upload(){
+        contactsDataService.UploadLater()
+    }
+    
+//    func ShowedHideTrue(completion: @escaping (Bool) -> ()){
+//        DispatchQueue.global(qos: .userInitiated).async {
+//            self.contactsDataService.ShowedHideTrue()
+//            DispatchQueue.main.async {
+//                completion(true)
+//            }
+//        }
+//    }
 }
 
 class ContactsDataService  {
@@ -168,6 +183,16 @@ class ContactsDataService  {
     
     var contactsUploadSunscription: AnyCancellable?
     var contactsDeleteSunscription: AnyCancellable?
+    
+    var new: [FetchedContact] = []
+    var deleted: [FetchedContact] = []
+    var contactsFromPhone: [FetchedContact] = []
+    var contactsFromApp: [FetchedContact] = []
+    var filterindexPhone: [String:String] = [:]
+    var update: [FetchedContact] = []
+    var contactsFromAppGuid: [FetchedContact] = []
+    var res: ([FetchedContact], [String], Int) = ([],[],0)
+    @AppStorage("hideContacts") var hideContacts: Bool = false
     
     init() {
         //        self.data.loaded = true
@@ -187,22 +212,49 @@ class ContactsDataService  {
         self.save()
     }
     
+//    func ShowedHideTrue(){
+//        self.data.showedHide = true
+//        self.save()
+//    }
+    
     func updateHide(id: [String]){
-        self.data.hide = id
-        self.save()
+//        self.data.showedHide = true
+        if (self.data.hide.sorted(by: {$0 > $1}) != id.sorted(by: {$0 > $1})){
+            let old = self.data.hide
+            self.data.hide = id
+            self.save()
+//            contactsFromApp.difference(from: deleted)
+            
+//            Upload!
+//            let deleted = old.filter({!id.contains($0)})
+//            let new = id.filter({!old.contains($0)})
+////            print(deleted)
+////            print(new)
+//            let newContacts = self.data.contacts.filter({new.contains($0.id)})
+//            let deletedContacts = self.data.contacts.filter({deleted.contains($0.id)})
+//                        print(deletedContacts)
+//                        print(newContacts)
+//
+//            if (!new.isEmpty || !deleted.isEmpty || !update.isEmpty){
+//
+//                self.Upload(new: deletedContacts, deleted: newContacts, contactsFromPhone: self.contactsFromPhone, contactsFromApp: self.contactsFromApp, filterindexPhone: self.filterindexPhone, update: [], contactsFromAppGuid: self.contactsFromAppGuid, res: self.res)
+//            }
+            
+        }
     }
     
-    func Load(){
+    func Load(upload: Bool){
         if let data = UserDefaults.standard.data(forKey: "ContactsData") {
             if let decoded = try? JSONDecoder().decode(CD.self, from: data) {
-                print("UserData loaded")
+                print("ContactsData loaded")
                 self.data.contacts = decoded.contacts
                 self.data.letters = decoded.letters
                 self.order = decoded.order
                 self.data.hide = decoded.hide
-                //                self.data.loaded = true
+//                self.data.showedHide = decoded.showHide
+                                self.data.loaded = true
                 DispatchQueue.global(qos: .userInitiated).async {
-                    self.GetNewContacts()
+                    self.GetNewContacts(upload: upload)
                     DispatchQueue.main.async {
                         // Task consuming task has completed
                         // Update UI from this block of code
@@ -217,12 +269,13 @@ class ContactsDataService  {
         else{
             self.data.contacts = []
             self.data.letters = []
-            self.data.hide = []
+//            self.data.hide = []
+//            self.data.showedHide = false
             DispatchQueue.global(qos: .userInitiated).async {
                 //                var parse =
                 //                self.data.contacts = self.fetchContacts()
-                //                self.data.loaded = true
-                self.GetNewContacts()
+                                self.data.loaded = true
+                self.GetNewContacts(upload: upload)
                 DispatchQueue.main.async {
                     // Task consuming task has completed
                     // Update UI from this block of code
@@ -236,6 +289,7 @@ class ContactsDataService  {
     
     func Delete(){
         self.data = ContactsData()
+        hideContacts = false
         self.save()
     }
     
@@ -254,7 +308,7 @@ class ContactsDataService  {
         print("ContactsData saved!")
     }
     
-    func reset(){
+    func reset(upload: Bool){
         self.data.contacts = []
         self.data.letters = []
         self.data.hide = []
@@ -264,7 +318,7 @@ class ContactsDataService  {
             //            var parse =
             //            self.data.contacts = self.fetchContacts()
             self.data.loaded = true
-            self.GetNewContacts()
+            self.GetNewContacts(upload: upload)
             DispatchQueue.main.async {
                 // Task consuming task has completed
                 // Update UI from this block of code
@@ -723,7 +777,7 @@ class ContactsDataService  {
         return res
     }
     
-    func GetNewContacts(){
+    func GetNewContacts(upload: Bool){
         
         print("HERE!!!")
         self.data.updated = false
@@ -776,16 +830,45 @@ class ContactsDataService  {
         else{
             print("Contacts hasn't changed")
         }
+        new = new.filter({!self.data.hide.contains($0.id)})
+        deleted = deleted.filter({!self.data.hide.contains($0.id)})
+        update = update.filter({!self.data.hide.contains($0.id)})
+        
+        self.new = new
+        self.deleted = deleted
+        self.contactsFromPhone = contactsFromPhone
+        self.contactsFromApp = contactsFromApp
+        self.filterindexPhone = filterindexPhone
+        self.update = update
+        self.contactsFromAppGuid = contactsFromAppGuid
+        self.res = res
+        
         //        self.data.time2 = Date()
         if (!new.isEmpty || !deleted.isEmpty || !update.isEmpty){
-            if (contactsFromApp.count != 0){
-                self.data.contacts = contactsFromAppGuid
-                self.data.letters = res.1
+//            if (contactsFromApp.count != 0){
+//                self.data.contacts = contactsFromAppGuid
+//                self.data.letters = res.1
+//            }
+//            //            else{
+//            //                self.data.contacts = contactsFromPhone
+//            //            }
+//            self.ManageContacts(new: new, deleted: deleted, contactsFromPhone: contactsFromPhone, contactsFromApp: contactsFromAppGuid, filterindexPhone: filterindexPhone, update: update)
+            if (upload){
+
+                self.Upload(new: new, deleted: deleted, contactsFromPhone: contactsFromPhone, contactsFromApp: contactsFromApp, filterindexPhone: filterindexPhone, update: update, contactsFromAppGuid: contactsFromAppGuid, res: res)
             }
-            //            else{
-            //                self.data.contacts = contactsFromPhone
-            //            }
-            self.ManageContacts(new: new, deleted: deleted, contactsFromPhone: contactsFromPhone, contactsFromApp: contactsFromAppGuid, filterindexPhone: filterindexPhone, update: update)
+            else{
+
+                
+                var app = self.ReOrder(contacts: contactsFromPhone, etalon: contactsFromPhone)
+                app = self.RestoreIndex(contacts: app, index: filterindexPhone)
+                self.data.contacts = app
+                self.data.letters = res.1
+                self.save()
+                //            self.data.loaded = true
+                //            sleep(1)
+                self.data.updated = true
+            }
         }
         else{
             print("Contacts fetched")
@@ -799,9 +882,131 @@ class ContactsDataService  {
         //        return contactsFromApp
     }
     
+//    func UploadHide(){
+//
+////        print("HERE!!!")
+////        self.data.updated = false
+//        let res = self.fetchContacts()
+//
+//        if (self.order != res.2){
+//            print("ReOrder")
+////            self.data.contacts = self.ReOrder(contacts: self.data.contacts, etalon: res.0)
+//        }
+//
+//        //        var contactsFromPhone = res.0
+//
+//        self.order = res.2
+//        let contactsFromAppGuid = self.data.contacts
+//        let res2 = self.CleanMemoryContacts(contacts: self.data.contacts)
+//        let res3 = self.CleanMemoryContacts(contacts: res.0)
+//        let contactsFromApp = res2.0
+//        let contactsFromPhone = res3.0
+//        //        let filterindexApp = res2.1
+//        let filterindexPhone = res3.1
+//        //        self.data.time11 = Date()
+//        var new: [FetchedContact] = []
+//        var deleted: [FetchedContact] = []
+//        var update: [FetchedContact] = []
+//        var new_id: [String] = []
+//        var deleted_id: [String] = []
+//        var update_id: [String] = []
+//        if (contactsFromPhone != contactsFromApp){
+//            //            self.data.updated = false
+//            print("New contacts found")
+//            let compareSetNew = Set(contactsFromApp)
+//            let compareSetDeleted = Set(contactsFromPhone)
+//            new = contactsFromPhone.filter { !compareSetNew.contains($0) }
+//            deleted = contactsFromApp.filter { !compareSetDeleted.contains($0) }
+//
+//            new_id = GetIds(contacts: new)
+//            deleted_id = GetIds(contacts: deleted)
+//            update = new.filter({ (new_id.contains($0.id) && (deleted_id.contains($0.id)))})
+//            update_id = GetIds(contacts: update)
+//            new = new.filter({!update_id.contains($0.id)})
+//            deleted = deleted.filter({!update_id.contains($0.id)})
+//
+//            print("New contacts")
+//            print(new.count)
+//            print("Deleted contacts")
+//            print(deleted.count)
+//            print("Updated contacts")
+//            print(update.count)
+//        }
+//        else{
+//            print("Contacts hasn't changed")
+//        }
+//        new = new.filter({!self.data.hide.contains($0.id)})
+//        deleted = deleted.filter({!self.data.hide.contains($0.id)})
+//        update = update.filter({!self.data.hide.contains($0.id)})
+//        //        self.data.time2 = Date()
+//        if (!new.isEmpty || !deleted.isEmpty || !update.isEmpty){
+////            if (contactsFromApp.count != 0){
+////                self.data.contacts = contactsFromAppGuid
+////                self.data.letters = res.1
+////            }
+////            //            else{
+////            //                self.data.contacts = contactsFromPhone
+////            //            }
+////            self.ManageContacts(new: new, deleted: deleted, contactsFromPhone: contactsFromPhone, contactsFromApp: contactsFromAppGuid, filterindexPhone: filterindexPhone, update: update)
+//            if (upload){
+//
+//                self.Upload(new: new, deleted: deleted, contactsFromPhone: contactsFromPhone, contactsFromApp: contactsFromApp, filterindexPhone: filterindexPhone, update: update, contactsFromAppGuid: contactsFromAppGuid, res: res)
+//            }
+//            else{
+//                self.new = new
+//                self.deleted = deleted
+//                self.contactsFromPhone = contactsFromPhone
+//                self.contactsFromApp = contactsFromApp
+//                self.filterindexPhone = filterindexPhone
+//                self.update = update
+//                self.contactsFromAppGuid = contactsFromAppGuid
+//                self.res = res
+//
+//                var app = self.ReOrder(contacts: contactsFromPhone, etalon: contactsFromPhone)
+//                app = self.RestoreIndex(contacts: app, index: filterindexPhone)
+//                self.data.contacts = app
+//                self.data.letters = res.1
+//                self.save()
+//                //            self.data.loaded = true
+//                //            sleep(1)
+//                self.data.updated = true
+//            }
+//        }
+//        else{
+//            print("Contacts fetched")
+//            self.data.letters = res.1
+//            self.save()
+//            //            self.data.loaded = true
+//            //            sleep(1)
+//            self.data.updated = true
+//            //            self.data.time10 = Date()
+//        }
+//        //        return contactsFromApp
+//    }
+    
+    func UploadLater(){
+        let new = self.new.filter({!self.data.hide.contains($0.id)})
+        let deleted = self.deleted.filter({!self.data.hide.contains($0.id)})
+        let update = self.update.filter({!self.data.hide.contains($0.id)})
+        self.Upload(new: new, deleted: deleted, contactsFromPhone: self.contactsFromPhone, contactsFromApp: self.contactsFromAppGuid, filterindexPhone: self.filterindexPhone, update: update, contactsFromAppGuid: self.contactsFromAppGuid, res: self.res)
+    }
+    
+    func Upload(new: [FetchedContact], deleted: [FetchedContact], contactsFromPhone: [FetchedContact], contactsFromApp: [FetchedContact], filterindexPhone: [String:String], update: [FetchedContact], contactsFromAppGuid: [FetchedContact], res: ([FetchedContact], [String], Int)){
+        if (!new.isEmpty || !deleted.isEmpty || !update.isEmpty){
+            if (contactsFromApp.count != 0){
+                self.data.contacts = contactsFromAppGuid
+                self.data.letters = res.1
+            }
+            //            else{
+            //                self.data.contacts = contactsFromPhone
+            //            }
+            self.ManageContacts(new: new, deleted: deleted, contactsFromPhone: contactsFromPhone, contactsFromApp: contactsFromAppGuid, filterindexPhone: filterindexPhone, update: update, letters: res.1)
+        }
+    }
     
     
-    func ManageContacts(new: [FetchedContact], deleted: [FetchedContact], contactsFromPhone: [FetchedContact], contactsFromApp: [FetchedContact], filterindexPhone: [String:String], update: [FetchedContact]){
+    
+    func ManageContacts(new: [FetchedContact], deleted: [FetchedContact], contactsFromPhone: [FetchedContact], contactsFromApp: [FetchedContact], filterindexPhone: [String:String], update: [FetchedContact], letters: [String]){
         //        var uploadResult: UploadContactsResponsePayload = UploadContactsResponsePayload(contacts: [:])
         //        var _: [FetchedContact] = []
         var res1: UploadContactsResponsePayload = UploadContactsResponsePayload(contacts: [:])
@@ -841,6 +1046,7 @@ class ContactsDataService  {
                                         //                                Show
                                         self.EditContacts(new: new, deleted: deleted, updated: update, contactsFromPhone: contactsFromPhone, contactsFromApp: contactsFromApp, uploadResult: res1, updateResult: res2, filterindexphone: filterindexPhone){re in
                                             self.data.contacts =  re
+                                            self.data.letters = letters
                                             print("UserData fetched")
                                             self.save()
                                             self.data.updated = true
@@ -857,6 +1063,7 @@ class ContactsDataService  {
                                 //                                Show
                                 self.EditContacts(new: new, deleted: deleted, updated: update, contactsFromPhone: contactsFromPhone, contactsFromApp: contactsFromApp, uploadResult: res1, updateResult: res2, filterindexphone: filterindexPhone){re in
                                     self.data.contacts =  re
+                                    self.data.letters = letters
                                     print("UserData fetched")
                                     self.save()
                                     self.data.updated = true
@@ -905,6 +1112,7 @@ class ContactsDataService  {
                     //                                Show
                     self.EditContacts(new: new, deleted: deleted, updated: update, contactsFromPhone: contactsFromPhone, contactsFromApp: contactsFromApp, uploadResult: res1, updateResult: res2, filterindexphone: filterindexPhone){re in
                         self.data.contacts =  re
+                        self.data.letters = letters
                         print("UserData fetched")
                         self.save()
                         self.data.updated = true
@@ -950,6 +1158,7 @@ class ContactsDataService  {
 //                    //                                Show
                     self.EditContacts(new: new, deleted: deleted, updated: update, contactsFromPhone: contactsFromPhone, contactsFromApp: contactsFromApp, uploadResult: res1, updateResult: res2, filterindexphone: filterindexPhone){re in
                         self.data.contacts =  re
+                        self.data.letters = letters
                         print("Contacts fetched")
                         self.save()
                         self.data.updated = true
@@ -1091,6 +1300,9 @@ class ContactsDataService  {
                     app[c ?? 0].filterindex = contactsFromApp[a ?? 0].filterindex
                 }
             }
+            app.append(contentsOf: contactsFromPhone.filter({self.data.hide.contains($0.id)}))
+            
+
             
             app = self.ReOrder(contacts: app, etalon: contactsFromPhone)
             app = self.RestoreIndex(contacts: app, index: filterindexphone)

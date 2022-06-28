@@ -70,7 +70,7 @@ struct InfoPageView: View {
     }
     func ResetButton2(){
 //        userData.data.reset()
-        contacts.reset()
+        contacts.reset(upload: false)
     }
     
     func ResetButton3(){

@@ -29,212 +29,247 @@ import SnapToScroll
 //}
 
 struct ContentView: View {
-
+    
     @EnvironmentObject var userData: UserDataView
-    @StateObject var contactsData: ContactsDataView = ContactsDataView()
-    @StateObject var historyData: HistoryDataView = HistoryDataView()
+    @EnvironmentObject var contactsData: ContactsDataView
+    //    @StateObject var contactsData: ContactsDataView = ContactsDataView()
     @Binding var alert: MyAlert
-
+    
     @AppStorage("big") var big: Bool = IsBig()
     @AppStorage("selectedTab") var selectedTab: Tab = .search
     @AppStorage("profile") var profile: Bool = false
     @AppStorage("fresh") var fresh: Bool = true
-    @StateObject private var model = ChatScreenModel()
+    @AppStorage("hideContacts") var hideContacts: Bool = false
+    @State var showHide: Bool = false
+    @State var showHideAlert: Bool = false
+    @EnvironmentObject private var model: ChatScreenModel
+    @EnvironmentObject var historyData: HistoryDataView
+
     @State var visible: Int = 0
-
+    @State var test: Bool = true
+    
     @Environment(\.scenePhase) var scenePhase
-
+    
     var body: some View {
-
-//        VStack{
-//            ScrollView{
-//                ZStack{
-//                    GeometryReader{reader -> AnyView in
-//                        let lyAxis=reader.frame(in: .global).minY
-//                        let lxAxis=reader.frame(in: .global).minX
-//
-//
-//                        print(lyAxis)
-//                        print(lxAxis)
-//
-//                        //                                    Path { path in
-//                        //
-//                        //
-//                        //                                        path.move(
-//                        //                                            to: CGPoint(
-//                        //                                                x: 1,
-//                        //                                                y: 1
-//                        //                                            )
-//                        //                                        )
-//                        //
-//                        //                                        path.addLine(
-//                        //                                            to: CGPoint(
-//                        //                                                x: 2,
-//                        //                                                y: 2
-//                        //                                            )
-//                        //                                        )
-//                        //                                        path.addLine(
-//                        //                                            to: CGPoint(
-//                        //                                                x: 3,
-//                        //                                                y: 3
-//                        //                                            )
-//                        //                                        )
-//                        //
-//                        //                                        path.closeSubpath()
-//                        //                                    }
-//
-//                        return AnyView(
-//                            ZStack{
-//                                Arrow(index: 1, total: 5)
-//                                Arrow(index: 2, total: 5)
-//                                Arrow(index: 3, total: 5)
-//                                Arrow(index: 4, total: 5)
-//                                Arrow(index: 5, total: 5)
-//                                //                                       Color.red.frame(width: 50)
-//
-//                            }
-////                                .background(.blue)
-//                        )
-//                    }
-//                    Scl(letter: "I", frame: 50, font: 20, color: .green, text: "I")
-////                        .background(.orange)
-//                    //                                .frame(height: 0)
-//
-//                }
-//                .frame(width: 70)
-////                .background(.red)
-//            }
-//            .padding(.top, 200)
-//        }
-
-
-                ZStack{
-                    ZStack {
-                        switch selectedTab {
-                        case .contacts:
-                            ContactsView(alert: $alert, visible: $visible)
-                                .environmentObject(contactsData)
-                                .safeAreaInset(edge: .top, content: {
-                                    Color.clear.frame(height: big ? 45: 75)
-                                })
-                                .safeAreaInset(edge: .bottom) {
-                                    Color.clear.frame(height: big ? 55: 70)
-                                }
-                        case .singleContact:
-                            SingleContactView()
-                                .environmentObject(contactsData)
-                                .environmentObject(historyData)
-//                                .safeAreaInset(edge: .top, content: {
-//                                    Color.clear.frame(height: big ? 45: 75)
-//                                })
-                                .safeAreaInset(edge: .bottom) {
-                                    Color.clear.frame(height: big ? 55: 70)
-                                }
-                        case .search:
-                            SearchList(alert: $alert)
-                                .environmentObject(historyData)
-                                .safeAreaInset(edge: .top, content: {
-                                    Color.clear.frame(height: big ? 45: 75)
-                                })
-//                                .safeAreaInset(edge: .bottom) {
-//                                    Color.clear.frame(height: big ? 55: 70)
-//                                }
-                        case .singleSearch:
-                            SingleSearchView()
-                                .environmentObject(historyData)
-                                .environmentObject(contactsData)
-                                .environmentObject(model)
-                                .safeAreaInset(edge: .top, content: {
-                                    Color.clear.frame(height: big ? 45: 75)
-                                })
-                                .safeAreaInset(edge: .bottom) {
-                                    Color.clear.frame(height: big ? 55: 70)
-                                }
-        //                    EmptyView()
-        //                    SingleContactView()
-        //                        .environmentObject(contactsData)
-                        case .chats:
-//                            VStack{
-
-                            AllChats(big: big)
-                                                        .environmentObject(model)
-                                                        .environmentObject(contactsData)
-                                                        .safeAreaInset(edge: .top, content: {
-                                                            Color.clear.frame(height: big ? 45: 75)
-                                                        })
-                                                        .safeAreaInset(edge: .bottom) {
-                                                            Color.clear.frame(height: big ? 55: 70)
-                                                        }
-
-//                            }
-                        case .singleChat:
-
-                            ChatScreen(alert: $alert)
-                                .environmentObject(model)
-                                .environmentObject(contactsData)
-                                .safeAreaInset(edge: .top, content: {
-                                    Color.clear.frame(height: big ? 45: 75)
-                                })
-                        }
-
-                    }
+        
+        //        VStack{
         //            ScrollView{
-        //                Example3ContentView()
-        //                Example3ContentView()
-        //                Example3ContentView()
-        //                Example3ContentView()
-        //                Example3ContentView()
-        //                Example3ContentView()
-        //                Example3ContentView()
-        //                Example3ContentView()
+        //                ZStack{
+        //                    GeometryReader{reader -> AnyView in
+        //                        let lyAxis=reader.frame(in: .global).minY
+        //                        let lxAxis=reader.frame(in: .global).minX
+        //
+        //
+        //                        print(lyAxis)
+        //                        print(lxAxis)
+        //
+        //                        //                                    Path { path in
+        //                        //
+        //                        //
+        //                        //                                        path.move(
+        //                        //                                            to: CGPoint(
+        //                        //                                                x: 1,
+        //                        //                                                y: 1
+        //                        //                                            )
+        //                        //                                        )
+        //                        //
+        //                        //                                        path.addLine(
+        //                        //                                            to: CGPoint(
+        //                        //                                                x: 2,
+        //                        //                                                y: 2
+        //                        //                                            )
+        //                        //                                        )
+        //                        //                                        path.addLine(
+        //                        //                                            to: CGPoint(
+        //                        //                                                x: 3,
+        //                        //                                                y: 3
+        //                        //                                            )
+        //                        //                                        )
+        //                        //
+        //                        //                                        path.closeSubpath()
+        //                        //                                    }
+        //
+        //                        return AnyView(
+        //                            ZStack{
+        //                                Arrow(index: 1, total: 5)
+        //                                Arrow(index: 2, total: 5)
+        //                                Arrow(index: 3, total: 5)
+        //                                Arrow(index: 4, total: 5)
+        //                                Arrow(index: 5, total: 5)
+        //                                //                                       Color.red.frame(width: 50)
+        //
+        //                            }
+        ////                                .background(.blue)
+        //                        )
+        //                    }
+        //                    Scl(letter: "I", frame: 50, font: 20, color: .green, text: "I")
+        ////                        .background(.orange)
+        //                    //                                .frame(height: 0)
+        //
+        //                }
+        //                .frame(width: 70)
+        ////                .background(.red)
         //            }
-
-
-
-                    TabBar()
-                }
-                .onAppear{
-                    if (fresh == true){
-                        contactsData.Delete()
-                        fresh = false
-                    }
-                        contactsData.Load()
-//
-//                    }
-                    contactsData.SetJwt( jwt: userData.data.jwt)
-                    historyData.SetJwt( jwt: userData.data.jwt)
-                    model.SetJwt( jwt: userData.data.jwt)
-                    onAppear()
-
-                    
-
-        //            print(String(data: try! JSONEncoder().encode(userData), encoding: String.Encoding.utf8))
-        //            print(contactsData.data)
-                }
-                .onDisappear(perform: onDisappear)
-                .onChange(of: scenePhase) { newPhase in
-                                if newPhase == .active {
-                                    print("Active")
-                                    onAppear()
-                                } else if newPhase == .inactive {
-                                    print("Inactive")
-                                } else if newPhase == .background {
-                                    print("Background")
-                                }
-                            }
-                .popover(isPresented: $profile) {
-                    InfoPageView()
-                        .environmentObject(userData)
+        //            .padding(.top, 200)
+        //        }
+        
+        
+        ZStack{
+            ZStack {
+                switch selectedTab {
+                case .contacts:
+                    ContactsView(alert: $alert, visible: $visible)
+                        .environmentObject(contactsData)
+                        .safeAreaInset(edge: .top, content: {
+                            Color.clear.frame(height: big ? 45: 75)
+                        })
+                        .safeAreaInset(edge: .bottom) {
+                            Color.clear.frame(height: big ? 55: 70)
+                        }
+                case .singleContact:
+                    SingleContactView()
                         .environmentObject(contactsData)
                         .environmentObject(historyData)
+                    //                                .safeAreaInset(edge: .top, content: {
+                    //                                    Color.clear.frame(height: big ? 45: 75)
+                    //                                })
+//                        .safeAreaInset(edge: .bottom) {
+//                            Color.clear.frame(height: big ? 55: 70)
+//                        }
+                case .search:
+                    SearchList(alert: $alert)
+                        .environmentObject(historyData)
+                        .safeAreaInset(edge: .top, content: {
+                            Color.clear.frame(height: big ? 45: 75)
+                        })
+                    //                                .safeAreaInset(edge: .bottom) {
+                    //                                    Color.clear.frame(height: big ? 55: 70)
+                    //                                }
+                case .singleSearch:
+                    SingleSearchView()
+                        .environmentObject(historyData)
+                        .environmentObject(contactsData)
                         .environmentObject(model)
+                        .safeAreaInset(edge: .top, content: {
+                            Color.clear.frame(height: big ? 45: 75)
+                        })
+//                        .safeAreaInset(edge: .bottom) {
+//                            Color.clear.frame(height: big ? 55: 70)
+//                        }
+                    //                    EmptyView()
+                    //                    SingleContactView()
+                    //                        .environmentObject(contactsData)
+                case .chats:
+                    //                            VStack{
+                    
+                    AllChats(big: big)
+                        .environmentObject(model)
+                        .environmentObject(contactsData)
+                        .safeAreaInset(edge: .top, content: {
+                            Color.clear.frame(height: big ? 45: 75)
+                        })
+                        .safeAreaInset(edge: .bottom) {
+                            Color.clear.frame(height: big ? 55: 70)
+                        }
+                    
+                    //                            }
+                case .singleChat:
+                    
+                    ChatScreen(alert: $alert)
+                        .environmentObject(model)
+                        .environmentObject(contactsData)
+//                        .safeAreaInset(edge: .top, content: {
+//                            Color.clear.frame(height: big ? 45: 75)
+//                        })
+                case .profile:
+                    Settings(showHide: $showHide, showHideAlert: $showHideAlert)
+                    .environmentObject(userData)
+                    .environmentObject(contactsData)
+                    .environmentObject(historyData)
+                    .environmentObject(model)
                 }
+                
+                
+            }
+            //            ScrollView{
+            //                Example3ContentView()
+            //                Example3ContentView()
+            //                Example3ContentView()
+            //                Example3ContentView()
+            //                Example3ContentView()
+            //                Example3ContentView()
+            //                Example3ContentView()
+            //                Example3ContentView()
+            //            }
+            
+            
+//            Button(action:{withAnimation{self.test.toggle()}}){
+//                Text("Hide")
+//            }
+            if ((selectedTab == .contacts) || (selectedTab == .search) || (selectedTab == .chats)){
+                TabBar()
+                    .zIndex(1)
+ 
+                    .transition(.move(edge: .bottom))
+            }
+        }
+        .onAppear{
+            contactsData.SetJwt( jwt: userData.data.jwt)
+            historyData.SetJwt( jwt: userData.data.jwt)
+            model.SetJwt( jwt: userData.data.jwt)
+            //                if (fresh == true){
+            //                    contactsData.Delete()
+            //                    fresh = false
+            //                }
+            if (hideContacts == false){
+            contactsData.Load(upload: false)
+            }
+            else{
+                contactsData.Load(upload: true)
+            }
+            //                    contactsData.Upload()
+            //
+            //                    }
+            
+            onAppear()
+            if (hideContacts == false){
+                showHide = true
+                showHideAlert = true
+                selectedTab = .profile
+            }
+            
+            
+            //            print(String(data: try! JSONEncoder().encode(userData), encoding: String.Encoding.utf8))
+            //            print(contactsData.data)
+        }
+        .onDisappear(perform: onDisappear)
+        .onChange(of: scenePhase) { newPhase in
+            if newPhase == .active {
+                print("Active")
+                onAppear()
+            } else if newPhase == .inactive {
+                print("Inactive")
+            } else if newPhase == .background {
+                print("Background")
+            }
+        }
+//        .popover(isPresented: $profile) {
+//            InfoPageView()
+//                .environmentObject(userData)
+//                .environmentObject(contactsData)
+//                .environmentObject(historyData)
+//                .environmentObject(model)
+//        }
+//        .popover(isPresented: $showHide) {
+//            HideContacts(close: $showHide, showHideAlert: $showHideAlert)
+//                .environmentObject(contactsData)
+//        }
     }
-
+    
     private func onAppear() {
         model.connect()
     }
-
+    
     private func onDisappear() {
         model.disconnect()
     }
@@ -382,9 +417,9 @@ struct Arrow: View {
     @State var height: Double = 100
     var body: some View{
         if (total % 2 == 1){
-//            Odd
+            //            Odd
             if (index > (total+1)/2){
-//                Down
+                //                Down
                 Path { path in
                     let lwidth = self.width
                     let lheight = self.height * Double(index-((total+1)/2))
@@ -412,7 +447,7 @@ struct Arrow: View {
                             x: 1 * lwidth,
                             y: 1 * lheight)
                     )
-
+                    
                     path.addLines([CGPoint(
                         x: 0.9 * lwidth,
                         y: 0.9 * lheight),
@@ -422,13 +457,13 @@ struct Arrow: View {
                                    CGPoint(
                                     x: 0.9 * lwidth,
                                     y: 1.1 * lheight)])
-
+                    
                 }
                 .stroke(Color.pink, lineWidth: 1)
                 .onAppear(){print("here111")}
             }
             else if (index == (total+1)/2){
-//                Middle
+                //                Middle
                 Path { path in
                     let lwidth = self.width
                     let lheight = self.height
@@ -446,7 +481,7 @@ struct Arrow: View {
                             x: 1 * lwidth,
                             y: 0.5 * lheight)
                     )
-//                    arrow
+                    //                    arrow
                     path.addLines([CGPoint(
                         x: 0.9 * lwidth,
                         y: 0.4 * lheight),
@@ -462,7 +497,7 @@ struct Arrow: View {
                 
             }
             else if (index < (total+1)/2){
-//                Up
+                //                Up
                 Path { path in
                     let lwidth = self.width
                     let lheight = self.height * Double(((total+1)/2)-index)
@@ -490,7 +525,7 @@ struct Arrow: View {
                             x: 1 * lwidth,
                             y: 0 * lheight)
                     )
-
+                    
                     path.addLines([CGPoint(
                         x: 0.9 * lwidth,
                         y: 0.1 * lheight),
@@ -500,21 +535,21 @@ struct Arrow: View {
                                    CGPoint(
                                     x: 0.9 * lwidth,
                                     y: -0.1 * lheight)])
-
+                    
                 }
                 .stroke(Color.pink, lineWidth: 1)
             }
         }
         else{
-//            Even
+            //            Even
             if (index > total/2){
-//                Down
+                //                Down
                 VStack{}
                     .background(.pink)
                     .onAppear(){print("here")}
             }
             else{
-//                Up
+                //                Up
                 VStack{}
                     .onAppear(){print("here")}
             }

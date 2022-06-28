@@ -32,6 +32,7 @@ enum Tab: String {
     case singleSearch
     case chats
     case singleChat
+    case profile
 //    case notifications
 //    case library
 }

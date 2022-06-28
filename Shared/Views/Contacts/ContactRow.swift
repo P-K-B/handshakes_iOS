@@ -13,7 +13,8 @@ struct ContactRow: View {
     
     var body: some View {
         HStack() {
-            Text("\(contact.index)")
+//            Text("\(contact.index)")
+//            Text("\(contact.id)")
             if (order == 3){
                 Text(contact.firstName == "" ? "" : (contact.firstName + " "))
                     .font(Font.system(size: 18, weight: .regular, design: .default))

@@ -11,6 +11,9 @@ struct LoginHi: View {
     
     @Binding var alert: MyAlert
     @EnvironmentObject var userData: UserDataView
+    @EnvironmentObject var contacts: ContactsDataView
+    @EnvironmentObject private var model: ChatScreenModel
+    @EnvironmentObject var historyData: HistoryDataView
     @State private var isShowingDetailView = false
     
     var body: some View {
@@ -43,7 +46,7 @@ struct LoginHi: View {
                     .offset(x: 0, y: -50)
                     .frame(maxWidth: .infinity, maxHeight: .infinity)
                     VStack{
-                        NavigationLink(destination: LoginView(alert: $alert).environmentObject(userData), isActive: $isShowingDetailView) { EmptyView() }
+                        NavigationLink(destination: LoginView(alert: $alert).environmentObject(userData).environmentObject(contacts).environmentObject(model).environmentObject(historyData), isActive: $isShowingDetailView) { EmptyView() }
                         
                         Button {
                             Task {

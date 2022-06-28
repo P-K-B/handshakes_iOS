@@ -82,7 +82,10 @@ struct NavigationBar: View {
                         }
                     }
                     if (showProfile){
-                        Button(action:{self.profile = true}){
+                        Button(action:{
+                            self.profile = true
+                            selectedTab = .profile
+                        }){
                             Image(systemName: "person.crop.circle")
                                 .font(.body.weight(.bold))
                                 .foregroundColor(Color.theme.accent)

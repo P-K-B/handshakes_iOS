@@ -37,24 +37,32 @@ struct ContactsView: View {
             ZStack{
                 Color.theme.background
                     .ignoresSafeArea()
-                if (!contacts.checkAccess()){
-                    Button(action:{
-                        if (!contacts.checkAccess()){
-                            alert = MyAlert(error: true, title: "Contacts access required.", text: "Go to Settings?", button: "Settings", button2: "Cancel", oneButton: false)
-                        }
-                        else{
-                            //                        contacts = ContactsData()
-                        }
-                    }){
-                        Text ("Fetch contacts")
-                    }
-                }
-                else{
+
+                GeometryReader { geometry in
+
                     ScrollViewReader { proxy in
                     ScrollView() {
+                        if (!contacts.checkAccess()){
+                            VStack{
+                            Button(action:{
+                                if (!contacts.checkAccess()){
+                                    alert = MyAlert(error: true, title: "Contacts access required.", text: "Go to Settings?", button: "Settings", button2: "Cancel", oneButton: false)
+                                }
+                                else{
+                                    //                        contacts = ContactsData()
+                                }
+                            }){
+                                Text ("Fetch contacts")
+                            }
+                            }
+                            .frame(width: geometry.size.width)      // Make the scroll view full-width
+                                        .frame(minHeight: geometry.size.height)
+                        }
+                        else{
                         //                            debugTime
                         GeometryElement(hasScrolled: $hasScrolled, big: big, hasBack: false)
                         Text("\(contacts.data.contacts.count)")
+                        Text("\(contacts.data.letters.count)")
                         
                         if (contacts.data.loaded){
                             if (!contacts.data.updated){
@@ -95,21 +103,23 @@ struct ContactsView: View {
                         }
                     }
                     }
+                    }
                     .overlay(
                         NavigationBar(title: "Contacts", hasScrolled: $hasScrolled, search: $search, showSearch: true, showProfile: true)
                            
                     )
-                    
                 }
+                    
+//                }
             }
         }
         .popover(isPresented: $search) {
-            HideContacts(close: $search, selectedContact: $selectedContact)
-//            SearchContacts(close: $search, selectedContact: $selectedContact)
-                .onAppear{
+//            HideContacts(showHideAlert: .constant(false))
+            SearchContacts(close: $search, selectedContact: $selectedContact)
+//                .onAppear{
 //                    print(contacts.data)
 //                    print(contacts.contactsDataService.data)
-                }
+//                }
         }
     }
     
@@ -119,9 +129,12 @@ struct ContactsView: View {
         
 //        LazyVStack(){
             ForEach(contacts.data.letters, id:\.self) { letter in
-                Section(header: SectionLetter(text:letter)) {
-                    ForEach(contacts.data.contacts
+                
+                    let a = contacts.data.contacts
                         .filter({ (contact) -> Bool in (contact.filterindex.prefix(1).uppercased() == letter)})
+                    if (a.filter({!contacts.data.hide.contains($0.id)}).count > 0){
+                        Section(header: SectionLetter(text:letter)) {
+                    ForEach(a
                     )
 //                    ForEach(contacts.data.contacts
 //                        .filter({ (contact) -> Bool in (contact.filterindex.prefix(1).uppercased() == letter)})
@@ -186,6 +199,7 @@ struct ContactsView: View {
                             .padding(.vertical, 3)
                             .id(contact.index)
                         }
+                    }
                     }
                 }
                 

@@ -70,19 +70,23 @@ struct SearchContacts: View {
 //                                self.searchText = $0
 //                                // do whatever you want here
 //                                print("Scrol")
-//                                proxy.scrollTo(contacts.data.contacts
-//                                    .filter { searchText.isEmpty || ($0.longSearch.localizedStandardContains(searchText)}[0] ?? []).index, anchor: .top)
+//                                if (contacts.data.contacts.filter { searchText.isEmpty || $0.longSearch.localizedStandardContains(searchText)}.count > 0){
+//                                proxy.scrollTo((contacts.data.contacts.filter { searchText.isEmpty || $0.longSearch.localizedStandardContains(searchText)}[0]).index, anchor: .top)
+//                                }
 //                            })
                     SearchBarMy(searchText: $searchText)
                 ScrollView() {
 //                    GeometryElement(hasScrolled: $hasScrolled, big: big, hasBack: false)
                     LazyVStack (pinnedViews: .sectionHeaders){
+                        Text("\(contacts.data.contacts.count)")
                         ContactsSearchList
                     }
                 }
 //                    .padding(.top, 5)
                 }
             }
+            .contentShape(Rectangle())
+
             .onTapGesture {
                 self.endEditing()
             }

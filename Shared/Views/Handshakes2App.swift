@@ -19,8 +19,13 @@ struct Handshakes2App: App {
     @State var alert = MyAlert()
     @State var logged: Bool = false
     @StateObject var userData: UserDataView = UserDataView()
+    @StateObject var contactsData: ContactsDataView = ContactsDataView()
+    @StateObject private var model = ChatScreenModel()
+    @StateObject var historyData: HistoryDataView = HistoryDataView()
+
     let phoneNumberKit = PhoneNumberKit()
     @State private var phoneField: PhoneNumberTextFieldView?
+    @State var hideContacts: Bool = true
     //        @State private var phoneNumber = String()
     //        @State private var validNumber: Bool = false
     //        @State private var validationError = false
@@ -28,6 +33,7 @@ struct Handshakes2App: App {
     //        @StateObject var contacts: ContactsData = ContactsData()
     
     @AppStorage("jwt") var jwt: String = ""
+    @AppStorage("fresh") var fresh: Bool = true
     
     @State var isAnimating = false
 //        var foreverAnimation: Animation {
@@ -59,13 +65,29 @@ struct Handshakes2App: App {
 //                    if (logged){
 
                     if (userData.data.loggedIn){
-                        ContentView(alert: $alert)
-                            .environmentObject(userData)
-//                            .transition(.scale)
+//                        if (contactsData.data.showedHide == false){
+//                            HideContacts(close: $hideContacts)
+//                                .environmentObject(contactsData)
+////                                .onAppear{
+////                                    print(contactsData)
+////                                }
+//                        }
+//                        else{
+                            ContentView(alert: $alert)
+                                .environmentObject(userData)
+                                .environmentObject(contactsData)
+                                .environmentObject(model)
+                                .environmentObject(historyData)
+    //                            .transition(.scale)
+//                        }
                     }
                     else{
                         LoginHi(alert: $alert)
                             .environmentObject(userData)
+                            .environmentObject(contactsData)
+                            .environmentObject(model)
+                            .environmentObject(historyData)
+                            
                             
                     }
                 }
@@ -75,6 +97,17 @@ struct Handshakes2App: App {
                 }
             }
             .onAppear{
+//                if (fresh == true){
+//                    contactsData.Delete()
+//                    fresh = false
+//                }
+
+    
+//                    self.hideContacts = !contactsData.data.showedHide
+//                print("Show Hide", contactsData.data.showedHide, self.hideContacts)
+//                if (hideContacts != true){
+//                    contactsData.Load(upload: false)
+//                }
                 //                        self.phoneField = PhoneNumberTextFieldView(phoneNumber: self.$phoneNumber, isEdeted: self.$validNumber)
                 
 //                Login
@@ -127,7 +160,7 @@ struct Handshakes2App: App {
                         //                        userData.data.loaded = true
                         userData.update(newData: UserUpdate(field: .loaded, bool: true))
                     }
-                    
+//                    contactsData.Load(upload: false)
                     DispatchQueue.main.async {
                         // Task consuming task has completed
                         // Update UI from this block of code

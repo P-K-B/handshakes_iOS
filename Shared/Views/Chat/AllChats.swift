@@ -25,8 +25,8 @@ struct AllChats: View{
                 Color.theme.background
                     .ignoresSafeArea()
 //                VStack{
+                GeometryReader { geometry in
                     ScrollView() {
-                        GeometryElement(hasScrolled: $hasScrolled, big: big, hasBack: false)
 //                        VStack{
 //                            ScrollView {
 //                                LazyVStack(spacing: 8) {
@@ -38,6 +38,9 @@ struct AllChats: View{
 //                            b.sort(by: {$0.value.last?.sent_on ?? 0 > $1.value.last?.sent_on ?? 0})
                         
 //                            .sorted(by: {$0.value.last?.sent_on ?? 0 > $1.value.last?.sent_on ?? 0})
+                        if (a.count > 0){
+                            GeometryElement(hasScrolled: $hasScrolled, big: big, hasBack: false)
+
                         Divider()
                         ForEach(a, id: \.key) { chatKey, val in
                             let chat = model.chats.allChats[chatKey]
@@ -49,6 +52,15 @@ struct AllChats: View{
                                             
                                         }
                                     }
+                        }
+                        else{
+                            VStack{
+                            Text("No chats yet")
+                                     .font(Font.system(size: 16, weight: .light, design: .default))
+                            }
+                            .frame(width: geometry.size.width)      // Make the scroll view full-width
+                                        .frame(minHeight: geometry.size.height)
+                        }
 //                                }
 //                            }
 //                        }
@@ -59,6 +71,7 @@ struct AllChats: View{
                 .overlay(
                     NavigationBar(title: "Messages", hasScrolled: $hasScrolled, search: $search, showSearch: false, showProfile: true)
                 )
+                }
             }
             .popover(isPresented: $search) {
                 SearchChats(close: $search, selectedChat:$selectedChat, selectedChatMsgID: $selectedChatMsgID)
