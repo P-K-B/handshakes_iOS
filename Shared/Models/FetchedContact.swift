@@ -33,6 +33,7 @@ struct Number: Hashable, Codable, Identifiable{
     let id: Int
     let title: String
     var phone: String
+    var guid: String
 }
 
 struct FullContact: Hashable, Codable {
@@ -253,7 +254,7 @@ class CList: Decodable, Encodable {
                     for number in contact.phoneNumbers{
                         let numberOk = number.value.stringValue
                         allNumbers.append(numberOk)
-                        nn.append(Number(id: i, title: number.label?.replacingOccurrences(of: "_$!<", with: "").replacingOccurrences(of: ">!$_", with: "") ?? "", phone: numberOk))
+                        nn.append(Number(id: i, title: number.label?.replacingOccurrences(of: "_$!<", with: "").replacingOccurrences(of: ">!$_", with: "") ?? "", phone: numberOk, guid: ""))
                         i+=1
                         lsn+=numberOk
                     }
@@ -379,7 +380,7 @@ class CList: Decodable, Encodable {
                     var newTelephone: [Number] = []
                     for j in 0..<contacts[i].telephone.count{
                         if (validatedPhoneNumber[p].type != .notParsed){
-                            newTelephone.append(Number(id: contacts[i].telephone[j].id, title: contacts[i].telephone[j].title, phone: phoneNumberKit.format(validatedPhoneNumber[p], toType: .international)))
+                            newTelephone.append(Number(id: contacts[i].telephone[j].id, title: contacts[i].telephone[j].title, phone: phoneNumberKit.format(validatedPhoneNumber[p], toType: .international), guid: ""))
                         }
                         p+=1
                     }

@@ -116,6 +116,8 @@ struct ContentView: View {
         
         ZStack{
             ZStack {
+                VStack{
+                    
                 switch selectedTab {
                 case .contacts:
                     ContactsView(alert: $alert, visible: $visible)
@@ -162,15 +164,20 @@ struct ContentView: View {
                 case .chats:
                     //                            VStack{
                     
-                    AllChats(big: big)
-                        .environmentObject(model)
-                        .environmentObject(contactsData)
-                        .safeAreaInset(edge: .top, content: {
-                            Color.clear.frame(height: big ? 45: 75)
-                        })
-                        .safeAreaInset(edge: .bottom) {
-                            Color.clear.frame(height: big ? 55: 70)
-                        }
+//                    AllChats(big: big)
+//                        .environmentObject(model)
+//                        .environmentObject(contactsData)
+//                        .safeAreaInset(edge: .top, content: {
+//                            Color.clear.frame(height: big ? 45: 75)
+//                        })
+//                        .safeAreaInset(edge: .bottom) {
+//                            Color.clear.frame(height: big ? 55: 70)
+//                        }
+                    InfoPageView()
+                                    .environmentObject(userData)
+                                    .environmentObject(contactsData)
+                                    .environmentObject(historyData)
+                                    .environmentObject(model)
                     
                     //                            }
                 case .singleChat:
@@ -188,7 +195,7 @@ struct ContentView: View {
                     .environmentObject(historyData)
                     .environmentObject(model)
                 }
-                
+                }
                 
             }
             //            ScrollView{

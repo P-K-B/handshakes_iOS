@@ -486,6 +486,7 @@ struct UploadContactsList: Codable{
 
 struct ContactWithInfo: Codable{
     var phone: String
+    var uuid: String
     var contact_info: String
 }
 
@@ -500,6 +501,7 @@ struct UploadContactsResponsePayload: Decodable{
 
 struct ResponseContact: Decodable{
     var phone: String
+    var uuid: String
     var title: String?
 }
 

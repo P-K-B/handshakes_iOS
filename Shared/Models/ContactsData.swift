@@ -163,6 +163,15 @@ class ContactsDataView: ObservableObject {
         contactsDataService.UploadLater()
     }
     
+    func HasGuid(contact: FetchedContact, guid: String) -> Bool{
+        for number in contact.telephone{
+            if (number.guid == guid){
+                return true
+            }
+        }
+        return false
+    }
+    
 //    func ShowedHideTrue(completion: @escaping (Bool) -> ()){
 //        DispatchQueue.global(qos: .userInitiated).async {
 //            self.contactsDataService.ShowedHideTrue()
@@ -512,7 +521,7 @@ class ContactsDataService  {
                         numberOk = "+" + numberOk
                     }
                     allNumbers.append(numberOk)
-                    nn.append(Number(id: i, title: number.label?.replacingOccurrences(of: "_$!<", with: "").replacingOccurrences(of: ">!$_", with: "") ?? "Phone", phone: numberOk))
+                    nn.append(Number(id: i, title: number.label?.replacingOccurrences(of: "_$!<", with: "").replacingOccurrences(of: ">!$_", with: "") ?? "Phone", phone: numberOk, guid: ""))
                     i+=1
                     lsn+=numberOk
                 }
@@ -641,7 +650,7 @@ class ContactsDataService  {
                 var newTelephone: [Number] = []
                 for j in 0..<contacts[i].telephone.count{
                     if (validatedPhoneNumber[p].type != .notParsed){
-                        newTelephone.append(Number(id: contacts[i].telephone[j].id, title: contacts[i].telephone[j].title, phone: phoneNumberKit.format(validatedPhoneNumber[p], toType: .international)))
+                        newTelephone.append(Number(id: contacts[i].telephone[j].id, title: contacts[i].telephone[j].title, phone: phoneNumberKit.format(validatedPhoneNumber[p], toType: .international), guid: ""))
                     }
                     p+=1
                 }
@@ -681,13 +690,13 @@ class ContactsDataService  {
         var allContacts: [ContactWithInfo] = []
         for contact in contacts{
             for number in contact.telephone{
-                allContacts.append(ContactWithInfo(phone: number.phone, contact_info: String(data: try JSONEncoder().encode(contact.fullContact), encoding: .utf8) ?? ""))
+                allContacts.append(ContactWithInfo(phone: number.phone, uuid: contact.id, contact_info: String(data: try JSONEncoder().encode(contact.fullContact), encoding: .utf8) ?? ""))
             }
         }
         let json = UploadContactsList(contacts: allContacts)
         let jsonData = try JSONEncoder().encode(json)
-        //        print(jsonData)
-        //        print(String(data: try! JSONEncoder().encode(json), encoding: String.Encoding.utf8)?.replacingOccurrences(of: "\\\"", with: "\"")  )
+//                print(jsonData)
+                print(String(data: try! JSONEncoder().encode(json), encoding: String.Encoding.utf8)?.replacingOccurrences(of: "\\\"", with: "\"")  )
         urlRequest.httpBody = jsonData
         contactsUploadSunscription = URLSession.shared.dataTaskPublisher(for: urlRequest).subscribe(on: DispatchQueue.global(qos: .default))
             .tryMap { (output) -> Data in
@@ -1105,7 +1114,7 @@ class ContactsDataService  {
                 do{
                 try self.UploadContacts(contacts: new)
                 { (reses2) in
-                    //                                    print(reses2)
+                                                        print(reses2)
                     //                                    self.data.time4 = Date()
                     res1 = reses2.payload
                     
@@ -1257,18 +1266,26 @@ class ContactsDataService  {
             
             var newNewGuid: [String:[String]] = [:]
             
+            var newGuidUuid: [String:String] = [:]
+            
             for guid in uploadResult.contacts{
                 if (newNewGuid[guid.value.phone] == nil){
                     newNewGuid[guid.value.phone] = []
                 }
                 newNewGuid[guid.value.phone]?.append(guid.key)
+                
+//                if (newGuidUuid[guid.value.phone + guid.value.uuid] == nil){
+//                    newGuidUuid[guid.value.phone + guid.value.uuid] = ""
+//                }
+                newGuidUuid[guid.value.phone + guid.value.uuid] = guid.key
             }
             //            print(newNewGuid)
             for contact in new {
                 var a = contact
                 for number in contact.telephone {
                     //                    a.guid.append(uploadResult.contacts.first{$0.value.phone == number.phone}?.key ?? "")
-                    a.guid.append(contentsOf: newNewGuid[number.phone] ?? [])
+//                    a.guid.append(contentsOf: newNewGuid[number.phone] ?? [])
+                    a.telephone[a.telephone.firstIndex(of: number) ?? 0].guid = newGuidUuid[number.phone + contact.id] ?? ""
                 }
                 newGuid.append(a)
             }
@@ -1365,6 +1382,11 @@ class ContactsDataService  {
             clean[index].guid = []
             clean[index].filterindex = ""
             clean[index].index = 0
+            var i = 0
+            while i < clean[index].telephone.count{
+                clean[index].telephone[i].guid = ""
+                i += 1
+            }
             index+=1
         }
         return (clean, ind)

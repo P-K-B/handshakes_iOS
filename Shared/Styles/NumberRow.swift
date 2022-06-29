@@ -21,6 +21,12 @@ struct NumberRow: View {
                 .font(Font.system(size: 20, weight: .medium, design: .default))
 //                .underline()
                 .padding(.leading, 5)
+            
+            Divider()
+            Text ("\(number.guid)")
+                .font(Font.system(size: 20, weight: .medium, design: .default))
+//                .underline()
+                .padding(.leading, 5)
         }
     }
 }
