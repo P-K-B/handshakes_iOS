@@ -116,7 +116,6 @@ struct ContentView: View {
         
         ZStack{
             ZStack {
-                VStack{
                     
                 switch selectedTab {
                 case .contacts:
@@ -194,7 +193,6 @@ struct ContentView: View {
                     .environmentObject(contactsData)
                     .environmentObject(historyData)
                     .environmentObject(model)
-                }
                 }
                 
             }

@@ -164,14 +164,14 @@ struct SingleContactView: View {
                             
                         }
                     }
-                                    ForEach (contacts.selectedContact?.guid ?? [], id: \.self){ number in
-                    
-                    
-                                        HStack{
-                                            Text(number)
-                                        }
-                    
-                                    }
+//                                    ForEach (contacts.selectedContact?.guid ?? [], id: \.self){ number in
+//                    
+//                    
+//                                        HStack{
+//                                            Text(number)
+//                                        }
+//                    
+//                                    }
                     
                     
                     

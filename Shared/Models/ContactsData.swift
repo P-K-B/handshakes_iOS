@@ -569,29 +569,29 @@ class ContactsDataService  {
                     if (sortOrder.rawValue == 3){
                         //                            familyName
                         if (l){
-                            contacts.append(FetchedContact(id: contact.identifier, firstName: contact.givenName, lastName: contact.familyName,  telephone: nn, filterindex: contact.familyName, shortSearch: contact.givenName + contact.familyName + lsn, longSearch: contact.givenName+contact.familyName+contact.jobTitle+lsn+lsm+contact.organizationName, guid: [], fullContact: fullContact, index: 0))
+                            contacts.append(FetchedContact(id: contact.identifier, firstName: contact.givenName, lastName: contact.familyName,  telephone: nn, filterindex: contact.familyName, shortSearch: contact.givenName + contact.familyName + lsn, longSearch: contact.givenName+contact.familyName+contact.jobTitle+lsn+lsm+contact.organizationName,  fullContact: fullContact, index: 0))
                         }
                         else{
                             if (contact.familyName.trimmingCharacters(in: CharacterSet(charactersIn: " ")) != ""){
-                                contacts.append(FetchedContact(id: contact.identifier,firstName: contact.givenName, lastName: contact.familyName,  telephone: nn, filterindex: contact.familyName, shortSearch: contact.givenName + contact.familyName + lsn, longSearch: contact.givenName+contact.familyName+contact.jobTitle+lsn+lsm+contact.organizationName, guid: [], fullContact: fullContact, index: 0))
+                                contacts.append(FetchedContact(id: contact.identifier,firstName: contact.givenName, lastName: contact.familyName,  telephone: nn, filterindex: contact.familyName, shortSearch: contact.givenName + contact.familyName + lsn, longSearch: contact.givenName+contact.familyName+contact.jobTitle+lsn+lsm+contact.organizationName,  fullContact: fullContact, index: 0))
                             }
                             else{
                                 //                                last name is not empty
                                 if (contact.givenName.trimmingCharacters(in: CharacterSet(charactersIn: " ")) != ""){
-                                    contacts.append(FetchedContact(id: contact.identifier,firstName: contact.givenName, lastName: contact.familyName,  telephone: nn, filterindex: contact.givenName, shortSearch: contact.givenName + contact.familyName + lsn, longSearch: contact.givenName+contact.familyName+contact.jobTitle+lsn+lsm+contact.organizationName, guid: [], fullContact: fullContact, index: 0))
+                                    contacts.append(FetchedContact(id: contact.identifier,firstName: contact.givenName, lastName: contact.familyName,  telephone: nn, filterindex: contact.givenName, shortSearch: contact.givenName + contact.familyName + lsn, longSearch: contact.givenName+contact.familyName+contact.jobTitle+lsn+lsm+contact.organizationName,  fullContact: fullContact, index: 0))
                                 }
                                 //                                    use company name
                                 else{
                                     if (contact.organizationName != ""){
-                                        contacts.append(FetchedContact(id: contact.identifier,firstName: contact.givenName, lastName: contact.familyName,  telephone: nn, filterindex: contact.organizationName, shortSearch: contact.givenName + contact.familyName + lsn, longSearch: contact.givenName+contact.familyName+contact.jobTitle+lsn+lsm+contact.organizationName, guid: [], fullContact: fullContact, index: 0))
+                                        contacts.append(FetchedContact(id: contact.identifier,firstName: contact.givenName, lastName: contact.familyName,  telephone: nn, filterindex: contact.organizationName, shortSearch: contact.givenName + contact.familyName + lsn, longSearch: contact.givenName+contact.familyName+contact.jobTitle+lsn+lsm+contact.organizationName,  fullContact: fullContact, index: 0))
                                     }
                                     //                                        use email
                                     else{
                                         if (em.count > 0){
-                                            contacts.append(FetchedContact(id: contact.identifier,firstName: contact.givenName, lastName: contact.familyName,  telephone: nn, filterindex: em[0], shortSearch: contact.givenName + contact.familyName + lsn, longSearch: contact.givenName+contact.familyName+contact.jobTitle+lsn+lsm+contact.organizationName, guid: [], fullContact: fullContact, index: 0))
+                                            contacts.append(FetchedContact(id: contact.identifier,firstName: contact.givenName, lastName: contact.familyName,  telephone: nn, filterindex: em[0], shortSearch: contact.givenName + contact.familyName + lsn, longSearch: contact.givenName+contact.familyName+contact.jobTitle+lsn+lsm+contact.organizationName,  fullContact: fullContact, index: 0))
                                         }
                                         else{
-                                            contacts.append(FetchedContact(id: contact.identifier,firstName: lsn, lastName: contact.familyName,  telephone: nn, filterindex: lsn, shortSearch: contact.givenName + contact.familyName + lsn, longSearch: contact.givenName+contact.familyName+contact.jobTitle+lsn+lsm+contact.organizationName, guid: [], fullContact: fullContact, index: 0))
+                                            contacts.append(FetchedContact(id: contact.identifier,firstName: lsn, lastName: contact.familyName,  telephone: nn, filterindex: lsn, shortSearch: contact.givenName + contact.familyName + lsn, longSearch: contact.givenName+contact.familyName+contact.jobTitle+lsn+lsm+contact.organizationName,  fullContact: fullContact, index: 0))
                                         }
                                     }
                                 }
@@ -602,29 +602,29 @@ class ContactsDataService  {
                         //                            givenName
                         //                            given name is number
                         if (f){
-                            contacts.append(FetchedContact(id: contact.identifier,firstName: contact.givenName, lastName: contact.familyName,  telephone: nn, filterindex: contact.givenName, shortSearch: contact.givenName + contact.familyName + lsn, longSearch: contact.givenName+contact.familyName+contact.jobTitle+lsn+lsm+contact.organizationName, guid: [], fullContact: fullContact, index: 0))
+                            contacts.append(FetchedContact(id: contact.identifier,firstName: contact.givenName, lastName: contact.familyName,  telephone: nn, filterindex: contact.givenName, shortSearch: contact.givenName + contact.familyName + lsn, longSearch: contact.givenName+contact.familyName+contact.jobTitle+lsn+lsm+contact.organizationName,  fullContact: fullContact, index: 0))
                         }
                         else{
                             if (contact.givenName.trimmingCharacters(in: CharacterSet(charactersIn: " ")) != ""){
-                                contacts.append(FetchedContact(id: contact.identifier,firstName: contact.givenName, lastName: contact.familyName,  telephone: nn, filterindex: contact.givenName, shortSearch: contact.givenName + contact.familyName + lsn, longSearch: contact.givenName+contact.familyName+contact.jobTitle+lsn+lsm+contact.organizationName, guid: [], fullContact: fullContact, index: 0))
+                                contacts.append(FetchedContact(id: contact.identifier,firstName: contact.givenName, lastName: contact.familyName,  telephone: nn, filterindex: contact.givenName, shortSearch: contact.givenName + contact.familyName + lsn, longSearch: contact.givenName+contact.familyName+contact.jobTitle+lsn+lsm+contact.organizationName,  fullContact: fullContact, index: 0))
                             }
                             else{
                                 //                                last name is not empty
                                 if (contact.familyName.trimmingCharacters(in: CharacterSet(charactersIn: " ")) != ""){
-                                    contacts.append(FetchedContact(id: contact.identifier,firstName: contact.givenName, lastName: contact.familyName,  telephone: nn, filterindex: contact.familyName, shortSearch: contact.givenName + contact.familyName + lsn, longSearch: contact.givenName+contact.familyName+contact.jobTitle+lsn+lsm+contact.organizationName, guid: [], fullContact: fullContact, index: 0))
+                                    contacts.append(FetchedContact(id: contact.identifier,firstName: contact.givenName, lastName: contact.familyName,  telephone: nn, filterindex: contact.familyName, shortSearch: contact.givenName + contact.familyName + lsn, longSearch: contact.givenName+contact.familyName+contact.jobTitle+lsn+lsm+contact.organizationName,  fullContact: fullContact, index: 0))
                                 }
                                 //                                    use company name
                                 else{
                                     if (contact.organizationName != ""){
-                                        contacts.append(FetchedContact(id: contact.identifier,firstName: contact.givenName, lastName: contact.familyName,  telephone: nn, filterindex: contact.organizationName, shortSearch: contact.givenName + contact.familyName + lsn, longSearch: contact.givenName+contact.familyName+contact.jobTitle+lsn+lsm+contact.organizationName, guid: [], fullContact: fullContact, index: 0))
+                                        contacts.append(FetchedContact(id: contact.identifier,firstName: contact.givenName, lastName: contact.familyName,  telephone: nn, filterindex: contact.organizationName, shortSearch: contact.givenName + contact.familyName + lsn, longSearch: contact.givenName+contact.familyName+contact.jobTitle+lsn+lsm+contact.organizationName,  fullContact: fullContact, index: 0))
                                     }
                                     //                                        use email
                                     else{
                                         if (em.count > 0){
-                                            contacts.append(FetchedContact(id: contact.identifier,firstName: contact.givenName, lastName: contact.familyName,  telephone: nn, filterindex: em[0], shortSearch: contact.givenName + contact.familyName + lsn, longSearch: contact.givenName+contact.familyName+contact.jobTitle+lsn+lsm+contact.organizationName, guid: [], fullContact: fullContact, index: 0))
+                                            contacts.append(FetchedContact(id: contact.identifier,firstName: contact.givenName, lastName: contact.familyName,  telephone: nn, filterindex: em[0], shortSearch: contact.givenName + contact.familyName + lsn, longSearch: contact.givenName+contact.familyName+contact.jobTitle+lsn+lsm+contact.organizationName,  fullContact: fullContact, index: 0))
                                         }
                                         else{
-                                            contacts.append(FetchedContact(id: contact.identifier,firstName: lsn, lastName: contact.familyName,  telephone: nn, filterindex: lsn, shortSearch: contact.givenName + contact.familyName + lsn, longSearch: contact.givenName+contact.familyName+contact.jobTitle+lsn+lsm+contact.organizationName, guid: [], fullContact: fullContact, index: 0))
+                                            contacts.append(FetchedContact(id: contact.identifier,firstName: lsn, lastName: contact.familyName,  telephone: nn, filterindex: lsn, shortSearch: contact.givenName + contact.familyName + lsn, longSearch: contact.givenName+contact.familyName+contact.jobTitle+lsn+lsm+contact.organizationName,  fullContact: fullContact, index: 0))
                                         }
                                     }
                                 }
@@ -655,7 +655,7 @@ class ContactsDataService  {
                     p+=1
                 }
                 if (!newTelephone.isEmpty){
-                    newContacts.append(FetchedContact(id: contacts[i].id, firstName: contacts[i].firstName, lastName: contacts[i].lastName, telephone: newTelephone, filterindex: contacts[i].filterindex, shortSearch: contacts[i].shortSearch, longSearch: contacts[i].longSearch, guid: contacts[i].guid, fullContact: contacts[i].fullContact, index: 0))
+                    newContacts.append(FetchedContact(id: contacts[i].id, firstName: contacts[i].firstName, lastName: contacts[i].lastName, telephone: newTelephone, filterindex: contacts[i].filterindex, shortSearch: contacts[i].shortSearch, longSearch: contacts[i].longSearch, fullContact: contacts[i].fullContact, index: 0))
                     if (!letters.contains(String(contacts[i].filterindex.prefix(1)).uppercased())){
                         letters.append(String(contacts[i].filterindex.prefix(1)).uppercased())
                     }
@@ -1313,7 +1313,7 @@ class ContactsDataService  {
                 if ((b != nil) && (c != nil)){
 //                var b = contactsFromApp[a ?? 0]
                     app[c ?? 0] = contactsFromPhone[b ?? 0]
-                    app[c ?? 0].guid = contactsFromApp[a ?? 0].guid
+//                    app[c ?? 0].guid = contactsFromApp[a ?? 0].guid
                     app[c ?? 0].filterindex = contactsFromApp[a ?? 0].filterindex
                 }
             }
@@ -1379,7 +1379,7 @@ class ContactsDataService  {
         var index = 0
         while index < clean.count {
             ind[clean[index].id] = clean[index].filterindex
-            clean[index].guid = []
+//            clean[index].guid = []
             clean[index].filterindex = ""
             clean[index].index = 0
             var i = 0
