@@ -487,6 +487,7 @@ struct UploadContactsList: Codable{
 struct ContactWithInfo: Codable{
     var phone: String
     var uuid: String
+    var guid: String
     var contact_info: String
 }
 

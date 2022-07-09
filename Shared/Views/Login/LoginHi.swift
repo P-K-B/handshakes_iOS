@@ -16,6 +16,8 @@ struct LoginHi: View {
     @EnvironmentObject var historyData: HistoryDataView
     @State private var isShowingDetailView = false
     
+    @Environment(\.presentationMode) private var presentationMode: Binding<PresentationMode>
+    
     var body: some View {
         NavigationView{
             ZStack{

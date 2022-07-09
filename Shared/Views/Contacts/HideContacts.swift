@@ -41,16 +41,19 @@ struct HideContacts: View {
                             Button(action: {
 //                                if (contacts.data.hide != hide){
 //                                    contacts.ShowedHideTrue(){ res in
-                                        contacts.updateHide(id: hide)
+                                        
 //                                        close = false
                                 showHide = false
-
+                                contacts.updateHide(id: hide, upload: false)
                                 if (hideContacts == false){
                                     contacts.Upload()
+//                                    contacts.updateHide(id: hide, upload: true)
                                     hideContacts = true
+                                    showHideAlert = false
                                     selectedTab = .profile
                                 }
                                 else{
+//                                    contacts.updateHide(id: hide, upload: false)
                                     selectedTab = .search
                                 }
 //                                    }
@@ -91,10 +94,10 @@ struct HideContacts: View {
         }
         .onAppear{
             print(contacts.data.updated)
-            if (contacts.data.updated == false){
-                contacts.Load(upload: false)
+//            if (contacts.data.updated == false){
+//                contacts.Load(upload: false)
 //                print(contacts.data.contacts)
-            }
+//            }
             self.hide = contacts.data.hide
             self.showHideAlertLoacl = self.showHideAlert
         }

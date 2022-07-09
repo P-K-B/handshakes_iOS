@@ -31,7 +31,7 @@ struct ContactsData: Encodable, Decodable {
     var time7: Date = Date()
     var time10: Date = Date()
     var time11: Date = Date()
-//    var showedHide: Bool = false
+    //    var showedHide: Bool = false
 }
 
 struct CD: Encodable,Decodable{
@@ -39,7 +39,7 @@ struct CD: Encodable,Decodable{
     var letters: [String] = []
     var order: Int
     var hide: [String] = []
-//    var showHide: Bool
+    //    var showHide: Bool
 }
 
 class ContactsDataView: ObservableObject {
@@ -70,7 +70,7 @@ class ContactsDataView: ObservableObject {
                 }
             } receiveValue: { returnedData in
                 self.data=returnedData
-//                print("CONTACTS DATA: contacts = \(returnedData.contacts)")
+                //                print("CONTACTS DATA: contacts = \(returnedData.contacts)")
             }
             .store(in: &cansellables)
         
@@ -155,8 +155,8 @@ class ContactsDataView: ObservableObject {
         contactsDataService.removeHide(id: id)
     }
     
-    func updateHide(id: [String]){
-        contactsDataService.updateHide(id: id)
+    func updateHide(id: [String], upload: Bool){
+        contactsDataService.updateHide(id: id, upload: upload)
     }
     
     func Upload(){
@@ -172,14 +172,14 @@ class ContactsDataView: ObservableObject {
         return false
     }
     
-//    func ShowedHideTrue(completion: @escaping (Bool) -> ()){
-//        DispatchQueue.global(qos: .userInitiated).async {
-//            self.contactsDataService.ShowedHideTrue()
-//            DispatchQueue.main.async {
-//                completion(true)
-//            }
-//        }
-//    }
+    //    func ShowedHideTrue(completion: @escaping (Bool) -> ()){
+    //        DispatchQueue.global(qos: .userInitiated).async {
+    //            self.contactsDataService.ShowedHideTrue()
+    //            DispatchQueue.main.async {
+    //                completion(true)
+    //            }
+    //        }
+    //    }
 }
 
 class ContactsDataService  {
@@ -188,7 +188,7 @@ class ContactsDataService  {
     @Published var jwt: String = ""
     @Published var selectedContact: FetchedContact?
     @Published var order: Int = 0
-//    @AppStorage("fresh") var fresh: Bool = true
+    //    @AppStorage("fresh") var fresh: Bool = true
     
     var contactsUploadSunscription: AnyCancellable?
     var contactsDeleteSunscription: AnyCancellable?
@@ -201,6 +201,8 @@ class ContactsDataService  {
     var update: [FetchedContact] = []
     var contactsFromAppGuid: [FetchedContact] = []
     var res: ([FetchedContact], [String], Int) = ([],[],0)
+    var update_deleted: [String] = []
+    var contactsFromPhoneAll: [FetchedContact] = []
     @AppStorage("hideContacts") var hideContacts: Bool = false
     
     init() {
@@ -221,35 +223,92 @@ class ContactsDataService  {
         self.save()
     }
     
-//    func ShowedHideTrue(){
-//        self.data.showedHide = true
-//        self.save()
-//    }
+    //    func ShowedHideTrue(){
+    //        self.data.showedHide = true
+    //        self.save()
+    //    }
     
-    func updateHide(id: [String]){
-//        self.data.showedHide = true
+    func updateHide(id: [String], upload: Bool){
+        //        self.data.showedHide = true
         if (self.data.hide.sorted(by: {$0 > $1}) != id.sorted(by: {$0 > $1})){
             let old = self.data.hide
+            let unhide = old.filter({!id.contains($0)})
+            for i in id{
+                let index = self.data.contacts.firstIndex(where: {$0.id == i})
+                if (index != nil){
+                    self.data.contacts[index ?? 0].hiden = true
+                    if (self.data.contacts[index ?? 0].telephone.count > 0){
+                        for j in 0...(self.data.contacts[index ?? 0].telephone.count - 1){
+                            self.data.contacts[index ?? 0].telephone[j].guid = ""
+                        }
+                    }
+                }
+            }
+            
+            do{
+                try self.DeleteContacts(contacts: self.data.contacts.filter({id.contains($0.id)}), update: [])
+                { (reses) in
+                    self.save()
+                }
+            }
+            catch{
+                
+            }
+            
+            for i in unhide{
+                let index = self.data.contacts.firstIndex(where: {$0.id == i})
+                if (index != nil){
+                    self.data.contacts[index ?? 0].hiden = false
+                }
+            }
+            
+            
+            do{
+                try self.UploadContacts(contacts: self.data.contacts.filter({unhide.contains($0.id)}))
+                { (reses2) in
+                    print(reses2)
+                    //                                    self.data.time4 = Date()
+                    //                            res1 = reses2.payload
+                    var newNewGuid: [String:[String]] = [:]
+                    
+                    var newGuidUuid: [String:String] = [:]
+                    
+                    for guid in reses2.payload.contacts{
+                        if (newNewGuid[guid.value.phone] == nil){
+                            newNewGuid[guid.value.phone] = []
+                        }
+                        newNewGuid[guid.value.phone]?.append(guid.key)
+                        
+                        //                if (newGuidUuid[guid.value.phone + guid.value.uuid] == nil){
+                        //                    newGuidUuid[guid.value.phone + guid.value.uuid] = ""
+                        //                }
+                        newGuidUuid[guid.value.phone + guid.value.uuid] = guid.key
+                    }
+                    //            print(newNewGuid)
+                    for contact in self.data.contacts.filter({unhide.contains($0.id)}) {
+                        //                                var a = contact
+                        let index = self.data.contacts.firstIndex(where: {$0.id == contact.id})
+                        for number in contact.telephone {
+                            //                    a.guid.append(uploadResult.contacts.first{$0.value.phone == number.phone}?.key ?? "")
+                            //                    a.guid.append(contentsOf: newNewGuid[number.phone] ?? [])
+                            if (newGuidUuid[number.phone + self.data.contacts[index ?? 0].id] != ""){
+                                self.data.contacts[index ?? 0].telephone[self.data.contacts[index ?? 0].telephone.firstIndex(of: number) ?? 0].guid = newGuidUuid[number.phone + self.data.contacts[index ?? 0].id] ?? ""
+                            }
+                        }
+                        //                                newGuid.append(a)
+                    }
+                    self.save()
+                }
+            }
+            catch{}
+            
+            
             self.data.hide = id
             self.save()
-//            contactsFromApp.difference(from: deleted)
-            
-//            Upload!
-//            let deleted = old.filter({!id.contains($0)})
-//            let new = id.filter({!old.contains($0)})
-////            print(deleted)
-////            print(new)
-//            let newContacts = self.data.contacts.filter({new.contains($0.id)})
-//            let deletedContacts = self.data.contacts.filter({deleted.contains($0.id)})
-//                        print(deletedContacts)
-//                        print(newContacts)
-//
-//            if (!new.isEmpty || !deleted.isEmpty || !update.isEmpty){
-//
-//                self.Upload(new: deletedContacts, deleted: newContacts, contactsFromPhone: self.contactsFromPhone, contactsFromApp: self.contactsFromApp, filterindexPhone: self.filterindexPhone, update: [], contactsFromAppGuid: self.contactsFromAppGuid, res: self.res)
-//            }
             
         }
+        self.GetNewContacts(upload: false)
+        //        self.UploadLater()
     }
     
     func Load(upload: Bool){
@@ -260,8 +319,8 @@ class ContactsDataService  {
                 self.data.letters = decoded.letters
                 self.order = decoded.order
                 self.data.hide = decoded.hide
-//                self.data.showedHide = decoded.showHide
-                                self.data.loaded = true
+                //                self.data.showedHide = decoded.showHide
+                self.data.loaded = true
                 DispatchQueue.global(qos: .userInitiated).async {
                     self.GetNewContacts(upload: upload)
                     DispatchQueue.main.async {
@@ -278,12 +337,12 @@ class ContactsDataService  {
         else{
             self.data.contacts = []
             self.data.letters = []
-//            self.data.hide = []
-//            self.data.showedHide = false
+            //            self.data.hide = []
+            //            self.data.showedHide = false
             DispatchQueue.global(qos: .userInitiated).async {
                 //                var parse =
                 //                self.data.contacts = self.fetchContacts()
-                                self.data.loaded = true
+                self.data.loaded = true
                 self.GetNewContacts(upload: upload)
                 DispatchQueue.main.async {
                     // Task consuming task has completed
@@ -569,29 +628,29 @@ class ContactsDataService  {
                     if (sortOrder.rawValue == 3){
                         //                            familyName
                         if (l){
-                            contacts.append(FetchedContact(id: contact.identifier, firstName: contact.givenName, lastName: contact.familyName,  telephone: nn, filterindex: contact.familyName, shortSearch: contact.givenName + contact.familyName + lsn, longSearch: contact.givenName+contact.familyName+contact.jobTitle+lsn+lsm+contact.organizationName,  fullContact: fullContact, index: 0))
+                            contacts.append(FetchedContact(id: contact.identifier, firstName: contact.givenName, lastName: contact.familyName,  telephone: nn, filterindex: contact.familyName, shortSearch: contact.givenName + contact.familyName + lsn, longSearch: contact.givenName+contact.familyName+contact.jobTitle+lsn+lsm+contact.organizationName,  fullContact: fullContact, index: 0, hiden: false))
                         }
                         else{
                             if (contact.familyName.trimmingCharacters(in: CharacterSet(charactersIn: " ")) != ""){
-                                contacts.append(FetchedContact(id: contact.identifier,firstName: contact.givenName, lastName: contact.familyName,  telephone: nn, filterindex: contact.familyName, shortSearch: contact.givenName + contact.familyName + lsn, longSearch: contact.givenName+contact.familyName+contact.jobTitle+lsn+lsm+contact.organizationName,  fullContact: fullContact, index: 0))
+                                contacts.append(FetchedContact(id: contact.identifier,firstName: contact.givenName, lastName: contact.familyName,  telephone: nn, filterindex: contact.familyName, shortSearch: contact.givenName + contact.familyName + lsn, longSearch: contact.givenName+contact.familyName+contact.jobTitle+lsn+lsm+contact.organizationName,  fullContact: fullContact, index: 0, hiden: false))
                             }
                             else{
                                 //                                last name is not empty
                                 if (contact.givenName.trimmingCharacters(in: CharacterSet(charactersIn: " ")) != ""){
-                                    contacts.append(FetchedContact(id: contact.identifier,firstName: contact.givenName, lastName: contact.familyName,  telephone: nn, filterindex: contact.givenName, shortSearch: contact.givenName + contact.familyName + lsn, longSearch: contact.givenName+contact.familyName+contact.jobTitle+lsn+lsm+contact.organizationName,  fullContact: fullContact, index: 0))
+                                    contacts.append(FetchedContact(id: contact.identifier,firstName: contact.givenName, lastName: contact.familyName,  telephone: nn, filterindex: contact.givenName, shortSearch: contact.givenName + contact.familyName + lsn, longSearch: contact.givenName+contact.familyName+contact.jobTitle+lsn+lsm+contact.organizationName,  fullContact: fullContact, index: 0, hiden: false))
                                 }
                                 //                                    use company name
                                 else{
                                     if (contact.organizationName != ""){
-                                        contacts.append(FetchedContact(id: contact.identifier,firstName: contact.givenName, lastName: contact.familyName,  telephone: nn, filterindex: contact.organizationName, shortSearch: contact.givenName + contact.familyName + lsn, longSearch: contact.givenName+contact.familyName+contact.jobTitle+lsn+lsm+contact.organizationName,  fullContact: fullContact, index: 0))
+                                        contacts.append(FetchedContact(id: contact.identifier,firstName: contact.givenName, lastName: contact.familyName,  telephone: nn, filterindex: contact.organizationName, shortSearch: contact.givenName + contact.familyName + lsn, longSearch: contact.givenName+contact.familyName+contact.jobTitle+lsn+lsm+contact.organizationName,  fullContact: fullContact, index: 0, hiden: false))
                                     }
                                     //                                        use email
                                     else{
                                         if (em.count > 0){
-                                            contacts.append(FetchedContact(id: contact.identifier,firstName: contact.givenName, lastName: contact.familyName,  telephone: nn, filterindex: em[0], shortSearch: contact.givenName + contact.familyName + lsn, longSearch: contact.givenName+contact.familyName+contact.jobTitle+lsn+lsm+contact.organizationName,  fullContact: fullContact, index: 0))
+                                            contacts.append(FetchedContact(id: contact.identifier,firstName: contact.givenName, lastName: contact.familyName,  telephone: nn, filterindex: em[0], shortSearch: contact.givenName + contact.familyName + lsn, longSearch: contact.givenName+contact.familyName+contact.jobTitle+lsn+lsm+contact.organizationName,  fullContact: fullContact, index: 0, hiden: false))
                                         }
                                         else{
-                                            contacts.append(FetchedContact(id: contact.identifier,firstName: lsn, lastName: contact.familyName,  telephone: nn, filterindex: lsn, shortSearch: contact.givenName + contact.familyName + lsn, longSearch: contact.givenName+contact.familyName+contact.jobTitle+lsn+lsm+contact.organizationName,  fullContact: fullContact, index: 0))
+                                            contacts.append(FetchedContact(id: contact.identifier,firstName: lsn, lastName: contact.familyName,  telephone: nn, filterindex: lsn, shortSearch: contact.givenName + contact.familyName + lsn, longSearch: contact.givenName+contact.familyName+contact.jobTitle+lsn+lsm+contact.organizationName,  fullContact: fullContact, index: 0, hiden: false))
                                         }
                                     }
                                 }
@@ -602,29 +661,29 @@ class ContactsDataService  {
                         //                            givenName
                         //                            given name is number
                         if (f){
-                            contacts.append(FetchedContact(id: contact.identifier,firstName: contact.givenName, lastName: contact.familyName,  telephone: nn, filterindex: contact.givenName, shortSearch: contact.givenName + contact.familyName + lsn, longSearch: contact.givenName+contact.familyName+contact.jobTitle+lsn+lsm+contact.organizationName,  fullContact: fullContact, index: 0))
+                            contacts.append(FetchedContact(id: contact.identifier,firstName: contact.givenName, lastName: contact.familyName,  telephone: nn, filterindex: contact.givenName, shortSearch: contact.givenName + contact.familyName + lsn, longSearch: contact.givenName+contact.familyName+contact.jobTitle+lsn+lsm+contact.organizationName,  fullContact: fullContact, index: 0, hiden: false))
                         }
                         else{
                             if (contact.givenName.trimmingCharacters(in: CharacterSet(charactersIn: " ")) != ""){
-                                contacts.append(FetchedContact(id: contact.identifier,firstName: contact.givenName, lastName: contact.familyName,  telephone: nn, filterindex: contact.givenName, shortSearch: contact.givenName + contact.familyName + lsn, longSearch: contact.givenName+contact.familyName+contact.jobTitle+lsn+lsm+contact.organizationName,  fullContact: fullContact, index: 0))
+                                contacts.append(FetchedContact(id: contact.identifier,firstName: contact.givenName, lastName: contact.familyName,  telephone: nn, filterindex: contact.givenName, shortSearch: contact.givenName + contact.familyName + lsn, longSearch: contact.givenName+contact.familyName+contact.jobTitle+lsn+lsm+contact.organizationName,  fullContact: fullContact, index: 0, hiden: false))
                             }
                             else{
                                 //                                last name is not empty
                                 if (contact.familyName.trimmingCharacters(in: CharacterSet(charactersIn: " ")) != ""){
-                                    contacts.append(FetchedContact(id: contact.identifier,firstName: contact.givenName, lastName: contact.familyName,  telephone: nn, filterindex: contact.familyName, shortSearch: contact.givenName + contact.familyName + lsn, longSearch: contact.givenName+contact.familyName+contact.jobTitle+lsn+lsm+contact.organizationName,  fullContact: fullContact, index: 0))
+                                    contacts.append(FetchedContact(id: contact.identifier,firstName: contact.givenName, lastName: contact.familyName,  telephone: nn, filterindex: contact.familyName, shortSearch: contact.givenName + contact.familyName + lsn, longSearch: contact.givenName+contact.familyName+contact.jobTitle+lsn+lsm+contact.organizationName,  fullContact: fullContact, index: 0, hiden: false))
                                 }
                                 //                                    use company name
                                 else{
                                     if (contact.organizationName != ""){
-                                        contacts.append(FetchedContact(id: contact.identifier,firstName: contact.givenName, lastName: contact.familyName,  telephone: nn, filterindex: contact.organizationName, shortSearch: contact.givenName + contact.familyName + lsn, longSearch: contact.givenName+contact.familyName+contact.jobTitle+lsn+lsm+contact.organizationName,  fullContact: fullContact, index: 0))
+                                        contacts.append(FetchedContact(id: contact.identifier,firstName: contact.givenName, lastName: contact.familyName,  telephone: nn, filterindex: contact.organizationName, shortSearch: contact.givenName + contact.familyName + lsn, longSearch: contact.givenName+contact.familyName+contact.jobTitle+lsn+lsm+contact.organizationName,  fullContact: fullContact, index: 0, hiden: false))
                                     }
                                     //                                        use email
                                     else{
                                         if (em.count > 0){
-                                            contacts.append(FetchedContact(id: contact.identifier,firstName: contact.givenName, lastName: contact.familyName,  telephone: nn, filterindex: em[0], shortSearch: contact.givenName + contact.familyName + lsn, longSearch: contact.givenName+contact.familyName+contact.jobTitle+lsn+lsm+contact.organizationName,  fullContact: fullContact, index: 0))
+                                            contacts.append(FetchedContact(id: contact.identifier,firstName: contact.givenName, lastName: contact.familyName,  telephone: nn, filterindex: em[0], shortSearch: contact.givenName + contact.familyName + lsn, longSearch: contact.givenName+contact.familyName+contact.jobTitle+lsn+lsm+contact.organizationName,  fullContact: fullContact, index: 0, hiden: false))
                                         }
                                         else{
-                                            contacts.append(FetchedContact(id: contact.identifier,firstName: lsn, lastName: contact.familyName,  telephone: nn, filterindex: lsn, shortSearch: contact.givenName + contact.familyName + lsn, longSearch: contact.givenName+contact.familyName+contact.jobTitle+lsn+lsm+contact.organizationName,  fullContact: fullContact, index: 0))
+                                            contacts.append(FetchedContact(id: contact.identifier,firstName: lsn, lastName: contact.familyName,  telephone: nn, filterindex: lsn, shortSearch: contact.givenName + contact.familyName + lsn, longSearch: contact.givenName+contact.familyName+contact.jobTitle+lsn+lsm+contact.organizationName,  fullContact: fullContact, index: 0, hiden: false))
                                         }
                                     }
                                 }
@@ -655,7 +714,7 @@ class ContactsDataService  {
                     p+=1
                 }
                 if (!newTelephone.isEmpty){
-                    newContacts.append(FetchedContact(id: contacts[i].id, firstName: contacts[i].firstName, lastName: contacts[i].lastName, telephone: newTelephone, filterindex: contacts[i].filterindex, shortSearch: contacts[i].shortSearch, longSearch: contacts[i].longSearch, fullContact: contacts[i].fullContact, index: 0))
+                    newContacts.append(FetchedContact(id: contacts[i].id, firstName: contacts[i].firstName, lastName: contacts[i].lastName, telephone: newTelephone, filterindex: contacts[i].filterindex, shortSearch: contacts[i].shortSearch, longSearch: contacts[i].longSearch, fullContact: contacts[i].fullContact, index: 0, hiden: false))
                     if (!letters.contains(String(contacts[i].filterindex.prefix(1)).uppercased())){
                         letters.append(String(contacts[i].filterindex.prefix(1)).uppercased())
                     }
@@ -690,13 +749,13 @@ class ContactsDataService  {
         var allContacts: [ContactWithInfo] = []
         for contact in contacts{
             for number in contact.telephone{
-                allContacts.append(ContactWithInfo(phone: number.phone, uuid: contact.id, contact_info: String(data: try JSONEncoder().encode(contact.fullContact), encoding: .utf8) ?? ""))
+                allContacts.append(ContactWithInfo(phone: number.phone, uuid: contact.id, guid: number.guid, contact_info: String(data: try JSONEncoder().encode(contact.fullContact), encoding: .utf8) ?? ""))
             }
         }
         let json = UploadContactsList(contacts: allContacts)
         let jsonData = try JSONEncoder().encode(json)
-//                print(jsonData)
-                print(String(data: try! JSONEncoder().encode(json), encoding: String.Encoding.utf8)?.replacingOccurrences(of: "\\\"", with: "\"")  )
+        //                print(jsonData)
+        print(String(data: try! JSONEncoder().encode(json), encoding: String.Encoding.utf8)?.replacingOccurrences(of: "\\\"", with: "\"")  )
         urlRequest.httpBody = jsonData
         contactsUploadSunscription = URLSession.shared.dataTaskPublisher(for: urlRequest).subscribe(on: DispatchQueue.global(qos: .default))
             .tryMap { (output) -> Data in
@@ -724,7 +783,7 @@ class ContactsDataService  {
             }
     }
     
-    func DeleteContacts(contacts: [FetchedContact] , completion: @escaping (StatusResponse) -> ()) throws {
+    func DeleteContacts(contacts: [FetchedContact], update: [String] , completion: @escaping (StatusResponse) -> ()) throws {
 #if DEBUG
         let baseUrl="https://develop.freekiller.net"
 #else
@@ -738,14 +797,19 @@ class ContactsDataService  {
         urlRequest.setValue("application/json", forHTTPHeaderField: "Accept")
         urlRequest.setValue("application/json", forHTTPHeaderField: "Content-Type")
         urlRequest.setValue( "Bearer \(jwt)", forHTTPHeaderField: "Authorization")
-        
-        var allContacts: [String] = []
-        for contact in contacts {
-            for number in contact.telephone{
-                allContacts.append(number.phone)
+        var json = AllContacts(contacts: [])
+        if (update.isEmpty){
+            var allContacts: [String] = []
+            for contact in contacts {
+                for number in contact.telephone{
+                    allContacts.append(number.phone)
+                }
             }
+            json = AllContacts(contacts: allContacts)
         }
-        let json = AllContacts(contacts: allContacts)
+        else{
+            json = AllContacts(contacts: update)
+        }
         //        let json = AllContacts(contacs: [])
         
         let jsonData = try JSONEncoder().encode(json)
@@ -786,9 +850,20 @@ class ContactsDataService  {
         return res
     }
     
+    func GetNumbers(contacts: [FetchedContact]) -> [String]{
+        var res: [String] = []
+        for contact in contacts{
+            for number in contact.telephone{
+                res.append(number.phone)
+            }
+        }
+        return res
+    }
+    
     func GetNewContacts(upload: Bool){
         
         print("HERE!!!")
+        print(self.data.hide)
         self.data.updated = false
         let res = self.fetchContacts()
         
@@ -798,11 +873,12 @@ class ContactsDataService  {
         }
         
         //        var contactsFromPhone = res.0
-
+        
         self.order = res.2
         let contactsFromAppGuid = self.data.contacts
         let res2 = self.CleanMemoryContacts(contacts: self.data.contacts)
         let res3 = self.CleanMemoryContacts(contacts: res.0)
+        //        let contactsFromPhoneFilter = res.0
         let contactsFromApp = res2.0
         let contactsFromPhone = res3.0
         //        let filterindexApp = res2.1
@@ -814,6 +890,9 @@ class ContactsDataService  {
         var new_id: [String] = []
         var deleted_id: [String] = []
         var update_id: [String] = []
+        var phone_id: [String] = GetIds(contacts: contactsFromPhone)
+        var app_id: [String] = GetIds(contacts: contactsFromApp)
+        var update_deleted: [String] = []
         if (contactsFromPhone != contactsFromApp){
             //            self.data.updated = false
             print("New contacts found")
@@ -828,46 +907,75 @@ class ContactsDataService  {
             update_id = GetIds(contacts: update)
             new = new.filter({!update_id.contains($0.id)})
             deleted = deleted.filter({!update_id.contains($0.id)})
+            let updated_deleted_c = contactsFromAppGuid.filter({update_id.contains( $0.id )})
+            let numbers = GetNumbers(contacts: update)
+            let numbers_deleted = GetNumbers(contacts: updated_deleted_c)
+            update_deleted = numbers_deleted.filter({!numbers.contains($0)})
+            
+            
+            //                    new = new.filter({!self.data.hide.contains($0.id)})
+            //                    deleted = deleted.filter({!self.data.hide.contains($0.id)})
+            //                    update = update.filter({!self.data.hide.contains($0.id)})
+            
+            
+            if (!update.isEmpty){
+                for i in 0...update.count-1{
+                    let index = contactsFromAppGuid.firstIndex(where: {$0.id == update[i].id})
+                    if (index != nil){
+                        for k in 0...update[i].telephone.count-1{
+                            //                        print(k)
+                            update[i].telephone[k].guid = contactsFromAppGuid[index ?? 0].telephone.first(where: {$0.phone == update[i].telephone[k].phone})?.guid ?? ""
+                        }
+                    }
+                }
+            }
+            //            update = contactsFromAppGuid.filter({update_id.contains($0.id)})
             
             print("New contacts")
-            print(new.count)
+            print(new)
             print("Deleted contacts")
-            print(deleted.count)
+            print(deleted)
             print("Updated contacts")
-            print(update.count)
+            print(update)
+            print("Updated_deleted contacts")
+            print(update_deleted)
+            
+            self.new = new
+            self.deleted = deleted
+            self.contactsFromPhone = contactsFromPhone
+            self.contactsFromApp = contactsFromApp
+            self.filterindexPhone = filterindexPhone
+            self.update = update
+            self.contactsFromAppGuid = contactsFromAppGuid
+            self.res = res
+            self.update_deleted = update_deleted
+            self.contactsFromPhoneAll = res3.0
         }
         else{
             print("Contacts hasn't changed")
         }
-        new = new.filter({!self.data.hide.contains($0.id)})
-        deleted = deleted.filter({!self.data.hide.contains($0.id)})
-        update = update.filter({!self.data.hide.contains($0.id)})
+        //        new = new.filter({!self.data.hide.contains($0.id)})
+        //        deleted = deleted.filter({!self.data.hide.contains($0.id)})
+        //        update = update.filter({!self.data.hide.contains($0.id)})
         
-        self.new = new
-        self.deleted = deleted
-        self.contactsFromPhone = contactsFromPhone
-        self.contactsFromApp = contactsFromApp
-        self.filterindexPhone = filterindexPhone
-        self.update = update
-        self.contactsFromAppGuid = contactsFromAppGuid
-        self.res = res
+        
         
         //        self.data.time2 = Date()
         if (!new.isEmpty || !deleted.isEmpty || !update.isEmpty){
-//            if (contactsFromApp.count != 0){
-//                self.data.contacts = contactsFromAppGuid
-//                self.data.letters = res.1
-//            }
-//            //            else{
-//            //                self.data.contacts = contactsFromPhone
-//            //            }
-//            self.ManageContacts(new: new, deleted: deleted, contactsFromPhone: contactsFromPhone, contactsFromApp: contactsFromAppGuid, filterindexPhone: filterindexPhone, update: update)
+            //            if (contactsFromApp.count != 0){
+            //                self.data.contacts = contactsFromAppGuid
+            //                self.data.letters = res.1
+            //            }
+            //            //            else{
+            //            //                self.data.contacts = contactsFromPhone
+            //            //            }
+            //            self.ManageContacts(new: new, deleted: deleted, contactsFromPhone: contactsFromPhone, contactsFromApp: contactsFromAppGuid, filterindexPhone: filterindexPhone, update: update)
             if (upload){
-
-                self.Upload(new: new, deleted: deleted, contactsFromPhone: contactsFromPhone, contactsFromApp: contactsFromApp, filterindexPhone: filterindexPhone, update: update, contactsFromAppGuid: contactsFromAppGuid, res: res)
+                
+                self.Upload(new: new, deleted: deleted, contactsFromPhone: contactsFromPhone, contactsFromApp: contactsFromAppGuid, filterindexPhone: filterindexPhone, update: update, contactsFromAppGuid: contactsFromAppGuid, res: res, update_deleted: update_deleted, contactsFromPhoneAll: res3.0)
             }
             else{
-
+                
                 
                 var app = self.ReOrder(contacts: contactsFromPhone, etalon: contactsFromPhone)
                 app = self.RestoreIndex(contacts: app, index: filterindexPhone)
@@ -891,116 +999,14 @@ class ContactsDataService  {
         //        return contactsFromApp
     }
     
-//    func UploadHide(){
-//
-////        print("HERE!!!")
-////        self.data.updated = false
-//        let res = self.fetchContacts()
-//
-//        if (self.order != res.2){
-//            print("ReOrder")
-////            self.data.contacts = self.ReOrder(contacts: self.data.contacts, etalon: res.0)
-//        }
-//
-//        //        var contactsFromPhone = res.0
-//
-//        self.order = res.2
-//        let contactsFromAppGuid = self.data.contacts
-//        let res2 = self.CleanMemoryContacts(contacts: self.data.contacts)
-//        let res3 = self.CleanMemoryContacts(contacts: res.0)
-//        let contactsFromApp = res2.0
-//        let contactsFromPhone = res3.0
-//        //        let filterindexApp = res2.1
-//        let filterindexPhone = res3.1
-//        //        self.data.time11 = Date()
-//        var new: [FetchedContact] = []
-//        var deleted: [FetchedContact] = []
-//        var update: [FetchedContact] = []
-//        var new_id: [String] = []
-//        var deleted_id: [String] = []
-//        var update_id: [String] = []
-//        if (contactsFromPhone != contactsFromApp){
-//            //            self.data.updated = false
-//            print("New contacts found")
-//            let compareSetNew = Set(contactsFromApp)
-//            let compareSetDeleted = Set(contactsFromPhone)
-//            new = contactsFromPhone.filter { !compareSetNew.contains($0) }
-//            deleted = contactsFromApp.filter { !compareSetDeleted.contains($0) }
-//
-//            new_id = GetIds(contacts: new)
-//            deleted_id = GetIds(contacts: deleted)
-//            update = new.filter({ (new_id.contains($0.id) && (deleted_id.contains($0.id)))})
-//            update_id = GetIds(contacts: update)
-//            new = new.filter({!update_id.contains($0.id)})
-//            deleted = deleted.filter({!update_id.contains($0.id)})
-//
-//            print("New contacts")
-//            print(new.count)
-//            print("Deleted contacts")
-//            print(deleted.count)
-//            print("Updated contacts")
-//            print(update.count)
-//        }
-//        else{
-//            print("Contacts hasn't changed")
-//        }
-//        new = new.filter({!self.data.hide.contains($0.id)})
-//        deleted = deleted.filter({!self.data.hide.contains($0.id)})
-//        update = update.filter({!self.data.hide.contains($0.id)})
-//        //        self.data.time2 = Date()
-//        if (!new.isEmpty || !deleted.isEmpty || !update.isEmpty){
-////            if (contactsFromApp.count != 0){
-////                self.data.contacts = contactsFromAppGuid
-////                self.data.letters = res.1
-////            }
-////            //            else{
-////            //                self.data.contacts = contactsFromPhone
-////            //            }
-////            self.ManageContacts(new: new, deleted: deleted, contactsFromPhone: contactsFromPhone, contactsFromApp: contactsFromAppGuid, filterindexPhone: filterindexPhone, update: update)
-//            if (upload){
-//
-//                self.Upload(new: new, deleted: deleted, contactsFromPhone: contactsFromPhone, contactsFromApp: contactsFromApp, filterindexPhone: filterindexPhone, update: update, contactsFromAppGuid: contactsFromAppGuid, res: res)
-//            }
-//            else{
-//                self.new = new
-//                self.deleted = deleted
-//                self.contactsFromPhone = contactsFromPhone
-//                self.contactsFromApp = contactsFromApp
-//                self.filterindexPhone = filterindexPhone
-//                self.update = update
-//                self.contactsFromAppGuid = contactsFromAppGuid
-//                self.res = res
-//
-//                var app = self.ReOrder(contacts: contactsFromPhone, etalon: contactsFromPhone)
-//                app = self.RestoreIndex(contacts: app, index: filterindexPhone)
-//                self.data.contacts = app
-//                self.data.letters = res.1
-//                self.save()
-//                //            self.data.loaded = true
-//                //            sleep(1)
-//                self.data.updated = true
-//            }
-//        }
-//        else{
-//            print("Contacts fetched")
-//            self.data.letters = res.1
-//            self.save()
-//            //            self.data.loaded = true
-//            //            sleep(1)
-//            self.data.updated = true
-//            //            self.data.time10 = Date()
-//        }
-//        //        return contactsFromApp
-//    }
-    
     func UploadLater(){
-        let new = self.new.filter({!self.data.hide.contains($0.id)})
-        let deleted = self.deleted.filter({!self.data.hide.contains($0.id)})
-        let update = self.update.filter({!self.data.hide.contains($0.id)})
-        self.Upload(new: new, deleted: deleted, contactsFromPhone: self.contactsFromPhone, contactsFromApp: self.contactsFromAppGuid, filterindexPhone: self.filterindexPhone, update: update, contactsFromAppGuid: self.contactsFromAppGuid, res: self.res)
+        //        let new = self.new.filter({!self.data.hide.contains($0.id)})
+        //        let deleted = self.deleted.filter({!self.data.hide.contains($0.id)})
+        //        let update = self.update.filter({!self.data.hide.contains($0.id)})
+        self.Upload(new: self.new, deleted: self.deleted, contactsFromPhone: self.contactsFromPhone, contactsFromApp: self.contactsFromAppGuid, filterindexPhone: self.filterindexPhone, update: self.update, contactsFromAppGuid: self.contactsFromAppGuid, res: self.res, update_deleted: self.update_deleted, contactsFromPhoneAll: self.contactsFromPhone)
     }
     
-    func Upload(new: [FetchedContact], deleted: [FetchedContact], contactsFromPhone: [FetchedContact], contactsFromApp: [FetchedContact], filterindexPhone: [String:String], update: [FetchedContact], contactsFromAppGuid: [FetchedContact], res: ([FetchedContact], [String], Int)){
+    func Upload(new: [FetchedContact], deleted: [FetchedContact], contactsFromPhone: [FetchedContact], contactsFromApp: [FetchedContact], filterindexPhone: [String:String], update: [FetchedContact], contactsFromAppGuid: [FetchedContact], res: ([FetchedContact], [String], Int), update_deleted: [String], contactsFromPhoneAll: [FetchedContact]){
         if (!new.isEmpty || !deleted.isEmpty || !update.isEmpty){
             if (contactsFromApp.count != 0){
                 self.data.contacts = contactsFromAppGuid
@@ -1009,13 +1015,13 @@ class ContactsDataService  {
             //            else{
             //                self.data.contacts = contactsFromPhone
             //            }
-            self.ManageContacts(new: new, deleted: deleted, contactsFromPhone: contactsFromPhone, contactsFromApp: contactsFromAppGuid, filterindexPhone: filterindexPhone, update: update, letters: res.1)
+            self.ManageContacts(new: new, deleted: deleted, contactsFromPhone: contactsFromPhone, contactsFromApp: contactsFromAppGuid, filterindexPhone: filterindexPhone, update: update, letters: res.1, update_deleted: update_deleted, contactsFromPhoneAll: contactsFromPhoneAll)
         }
     }
     
     
     
-    func ManageContacts(new: [FetchedContact], deleted: [FetchedContact], contactsFromPhone: [FetchedContact], contactsFromApp: [FetchedContact], filterindexPhone: [String:String], update: [FetchedContact], letters: [String]){
+    func ManageContacts(new: [FetchedContact], deleted: [FetchedContact], contactsFromPhone: [FetchedContact], contactsFromApp: [FetchedContact], filterindexPhone: [String:String], update: [FetchedContact], letters: [String], update_deleted: [String], contactsFromPhoneAll: [FetchedContact]){
         //        var uploadResult: UploadContactsResponsePayload = UploadContactsResponsePayload(contacts: [:])
         //        var _: [FetchedContact] = []
         var res1: UploadContactsResponsePayload = UploadContactsResponsePayload(contacts: [:])
@@ -1036,9 +1042,9 @@ class ContactsDataService  {
                 
                 // wait ...
                 group.wait()
-//                sleep(3)
+                //                sleep(3)
                 do{
-                    try self.DeleteContacts(contacts: deleted)
+                    try self.DeleteContacts(contacts: deleted, update: [])
                     { (reses) in
                         //                        print(reses)
                         if (reses.status_code == 0){
@@ -1048,18 +1054,84 @@ class ContactsDataService  {
                                 do{
                                     try self.UploadContacts(contacts: new)
                                     { (reses2) in
-                                        //                                    print(reses2)
+                                        print(reses2)
                                         //                                    self.data.time4 = Date()
                                         res1 = reses2.payload
                                         
-                                        //                                Show
-                                        self.EditContacts(new: new, deleted: deleted, updated: update, contactsFromPhone: contactsFromPhone, contactsFromApp: contactsFromApp, uploadResult: res1, updateResult: res2, filterindexphone: filterindexPhone){re in
-                                            self.data.contacts =  re
-                                            self.data.letters = letters
-                                            print("UserData fetched")
-                                            self.save()
-                                            self.data.updated = true
-                                            //                                        self.data.time10 = Date()
+                                        if (!update.isEmpty){
+                                            if (!update_deleted.isEmpty){
+                                                do{
+                                                    try self.DeleteContacts(contacts: [], update: update_deleted.filter({!self.data.hide.contains($0)}))
+                                                    { (reses4) in
+                                                        
+                                                        do{
+                                                            try self.UploadContacts(contacts: update.filter({!self.data.hide.contains($0.id)}))
+                                                            { (reses3) in
+                                                                //                                                        print(reses2)
+                                                                //                    //                                    self.data.time4 = Date()
+                                                                res2 = reses3.payload
+                                                                //
+                                                                //                    //                                Show
+                                                                self.EditContacts(new: new, deleted: deleted, updated: update, contactsFromPhone: contactsFromPhone, contactsFromApp: contactsFromApp, uploadResult: res1, updateResult: res2, filterindexphone: filterindexPhone, contactsFromPhoneAll: contactsFromPhoneAll){re in
+                                                                    self.data.contacts =  re
+                                                                    self.data.letters = letters
+                                                                    print("Contacts fetched")
+                                                                    self.save()
+                                                                    self.data.updated = true
+                                                                    //                                        self.data.time10 = Date()
+                                                                }
+                                                                //
+                                                            }
+                                                        }
+                                                        catch{
+                                                            
+                                                        }
+                                                        
+                                                    }
+                                                    //
+                                                }
+                                                catch{
+                                                    
+                                                }
+                                            }
+                                            else{
+                                                //                sleep(3)
+                                                do{
+                                                    try self.UploadContacts(contacts: update.filter({!self.data.hide.contains($0.id)}))
+                                                    { (reses3) in
+                                                        //                                                        print(reses2)
+                                                        //                    //                                    self.data.time4 = Date()
+                                                        res2 = reses3.payload
+                                                        //
+                                                        //                    //                                Show
+                                                        self.EditContacts(new: new, deleted: deleted, updated: update, contactsFromPhone: contactsFromPhone, contactsFromApp: contactsFromApp, uploadResult: res1, updateResult: res2, filterindexphone: filterindexPhone, contactsFromPhoneAll: contactsFromPhoneAll){re in
+                                                            self.data.contacts =  re
+                                                            self.data.letters = letters
+                                                            print("Contacts fetched")
+                                                            self.save()
+                                                            self.data.updated = true
+                                                            //                                        self.data.time10 = Date()
+                                                        }
+                                                        //
+                                                    }
+                                                }
+                                                catch{
+                                                    
+                                                }
+                                            }
+                                            
+                                        }
+                                        
+                                        else{
+                                            //                                Show
+                                            self.EditContacts(new: new, deleted: deleted, updated: update, contactsFromPhone: contactsFromPhone, contactsFromApp: contactsFromApp, uploadResult: res1, updateResult: res2, filterindexphone: filterindexPhone, contactsFromPhoneAll: contactsFromPhoneAll){re in
+                                                self.data.contacts =  re
+                                                self.data.letters = letters
+                                                print("UserData fetched")
+                                                self.save()
+                                                self.data.updated = true
+                                                //                                        self.data.time10 = Date()
+                                            }
                                         }
                                         
                                     }
@@ -1070,7 +1142,7 @@ class ContactsDataService  {
                             }
                             else{
                                 //                                Show
-                                self.EditContacts(new: new, deleted: deleted, updated: update, contactsFromPhone: contactsFromPhone, contactsFromApp: contactsFromApp, uploadResult: res1, updateResult: res2, filterindexphone: filterindexPhone){re in
+                                self.EditContacts(new: new, deleted: deleted, updated: update, contactsFromPhone: contactsFromPhone, contactsFromApp: contactsFromApp, uploadResult: res1, updateResult: res2, filterindexphone: filterindexPhone, contactsFromPhoneAll: contactsFromPhoneAll){re in
                                     self.data.contacts =  re
                                     self.data.letters = letters
                                     print("UserData fetched")
@@ -1110,29 +1182,95 @@ class ContactsDataService  {
                 
                 // wait ...
                 group.wait()
-//                sleep(3)
+                //                sleep(3)
                 do{
-                try self.UploadContacts(contacts: new)
-                { (reses2) in
-                                                        print(reses2)
-                    //                                    self.data.time4 = Date()
-                    res1 = reses2.payload
-                    
-                    //                                Show
-                    self.EditContacts(new: new, deleted: deleted, updated: update, contactsFromPhone: contactsFromPhone, contactsFromApp: contactsFromApp, uploadResult: res1, updateResult: res2, filterindexphone: filterindexPhone){re in
-                        self.data.contacts =  re
-                        self.data.letters = letters
-                        print("UserData fetched")
-                        self.save()
-                        self.data.updated = true
-                        //                                        self.data.time10 = Date()
+                    try self.UploadContacts(contacts: new)
+                    { (reses2) in
+                        print(reses2)
+                        //                                    self.data.time4 = Date()
+                        res1 = reses2.payload
+                        
+                        if (!update.isEmpty){
+                            if (!update_deleted.isEmpty){
+                                do{
+                                    try self.DeleteContacts(contacts: [], update: update_deleted.filter({!self.data.hide.contains($0)}))
+                                    { (reses4) in
+                                        
+                                        do{
+                                            try self.UploadContacts(contacts: update.filter({!self.data.hide.contains($0.id)}))
+                                            { (reses3) in
+                                                //                                                        print(reses2)
+                                                //                    //                                    self.data.time4 = Date()
+                                                res2 = reses3.payload
+                                                //
+                                                //                    //                                Show
+                                                self.EditContacts(new: new, deleted: deleted, updated: update, contactsFromPhone: contactsFromPhone, contactsFromApp: contactsFromApp, uploadResult: res1, updateResult: res2, filterindexphone: filterindexPhone, contactsFromPhoneAll: contactsFromPhoneAll){re in
+                                                    self.data.contacts =  re
+                                                    self.data.letters = letters
+                                                    print("Contacts fetched")
+                                                    self.save()
+                                                    self.data.updated = true
+                                                    //                                        self.data.time10 = Date()
+                                                }
+                                                //
+                                            }
+                                        }
+                                        catch{
+                                            
+                                        }
+                                        
+                                    }
+                                    //
+                                }
+                                catch{
+                                    
+                                }
+                            }
+                            else{
+                                //                sleep(3)
+                                do{
+                                    try self.UploadContacts(contacts: update.filter({!self.data.hide.contains($0.id)}))
+                                    { (reses3) in
+                                        //                                                        print(reses2)
+                                        //                    //                                    self.data.time4 = Date()
+                                        res2 = reses3.payload
+                                        //
+                                        //                    //                                Show
+                                        self.EditContacts(new: new, deleted: deleted, updated: update, contactsFromPhone: contactsFromPhone, contactsFromApp: contactsFromApp, uploadResult: res1, updateResult: res2, filterindexphone: filterindexPhone, contactsFromPhoneAll: contactsFromPhoneAll){re in
+                                            self.data.contacts =  re
+                                            self.data.letters = letters
+                                            print("Contacts fetched")
+                                            self.save()
+                                            self.data.updated = true
+                                            //                                        self.data.time10 = Date()
+                                        }
+                                        //
+                                    }
+                                }
+                                catch{
+                                    
+                                }
+                            }
+                            
+                        }
+                        
+                        else{
+                            //                                Show
+                            self.EditContacts(new: new, deleted: deleted, updated: update, contactsFromPhone: contactsFromPhone, contactsFromApp: contactsFromApp, uploadResult: res1, updateResult: res2, filterindexphone: filterindexPhone, contactsFromPhoneAll: contactsFromPhoneAll){re in
+                                self.data.contacts =  re
+                                self.data.letters = letters
+                                print("UserData fetched")
+                                self.save()
+                                self.data.updated = true
+                                //                                        self.data.time10 = Date()
+                            }
+                        }
+                        
                     }
+                }
+                catch{
                     
                 }
-            }
-            catch{
-                
-            }
                 DispatchQueue.main.async {
                     // Task consuming task has completed
                     // Update UI from this block of code
@@ -1156,29 +1294,68 @@ class ContactsDataService  {
                 
                 // wait ...
                 group.wait()
-//                sleep(3)
-                do{
-//                try self.UpdateContacts(contacts: new)
-//                { (reses2) in
-//                    //                                    print(reses2)
-//                    //                                    self.data.time4 = Date()
-//                    res2 = reses2.payload
-//
-//                    //                                Show
-                    self.EditContacts(new: new, deleted: deleted, updated: update, contactsFromPhone: contactsFromPhone, contactsFromApp: contactsFromApp, uploadResult: res1, updateResult: res2, filterindexphone: filterindexPhone){re in
-                        self.data.contacts =  re
-                        self.data.letters = letters
-                        print("Contacts fetched")
-                        self.save()
-                        self.data.updated = true
-                        //                                        self.data.time10 = Date()
-                    }
-//
-//                }
-            }
-            catch{
                 
-            }
+                
+                if (!update_deleted.isEmpty){
+                    do{
+                        try self.DeleteContacts(contacts: [], update: update_deleted.filter({!self.data.hide.contains($0)}))
+                        { (reses4) in
+                            
+                            do{
+                                try self.UploadContacts(contacts: update.filter({!self.data.hide.contains($0.id)}))
+                                { (reses3) in
+                                    //                                                        print(reses2)
+                                    //                    //                                    self.data.time4 = Date()
+                                    res2 = reses3.payload
+                                    //
+                                    //                    //                                Show
+                                    self.EditContacts(new: new, deleted: deleted, updated: update, contactsFromPhone: contactsFromPhone, contactsFromApp: contactsFromApp, uploadResult: res1, updateResult: res2, filterindexphone: filterindexPhone, contactsFromPhoneAll: contactsFromPhoneAll){re in
+                                        self.data.contacts =  re
+                                        self.data.letters = letters
+                                        print("Contacts fetched")
+                                        self.save()
+                                        self.data.updated = true
+                                        //                                        self.data.time10 = Date()
+                                    }
+                                    //
+                                }
+                            }
+                            catch{
+                                
+                            }
+                            
+                        }
+                        //
+                    }
+                    catch{
+                        
+                    }
+                }
+                else{
+                    //                sleep(3)
+                    do{
+                        try self.UploadContacts(contacts: update)
+                        { (reses3) in
+                            //                                                        print(reses2)
+                            //                    //                                    self.data.time4 = Date()
+                            res2 = reses3.payload
+                            //
+                            //                    //                                Show
+                            self.EditContacts(new: new, deleted: deleted, updated: update, contactsFromPhone: contactsFromPhone, contactsFromApp: contactsFromApp, uploadResult: res1, updateResult: res2, filterindexphone: filterindexPhone, contactsFromPhoneAll: contactsFromPhoneAll){re in
+                                self.data.contacts =  re
+                                self.data.letters = letters
+                                print("Contacts fetched")
+                                self.save()
+                                self.data.updated = true
+                                //                                        self.data.time10 = Date()
+                            }
+                            //
+                        }
+                    }
+                    catch{
+                        
+                    }
+                }
                 DispatchQueue.main.async {
                     // Task consuming task has completed
                     // Update UI from this block of code
@@ -1189,22 +1366,22 @@ class ContactsDataService  {
         }
         
         
-//                if (!update.isEmpty){
-//                    do{
-//                        try self.UpdateContacts(contacts: new)
-//                        { (reses2) in
-//                            //                                    print(reses2)
-//        //                                    self.data.time4 = Date()
-//                            res2 = reses2.payload
-//
-//
-//
-//                        }
-//                    }
-//                    catch{
-//
-//                    }
-//                }
+        //                if (!update.isEmpty){
+        //                    do{
+        //                        try self.UpdateContacts(contacts: new)
+        //                        { (reses2) in
+        //                            //                                    print(reses2)
+        //        //                                    self.data.time4 = Date()
+        //                            res2 = reses2.payload
+        //
+        //
+        //
+        //                        }
+        //                    }
+        //                    catch{
+        //
+        //                    }
+        //                }
         
         
         //        else{
@@ -1258,7 +1435,7 @@ class ContactsDataService  {
         
     }
     
-    func EditContacts(new: [FetchedContact], deleted: [FetchedContact], updated: [FetchedContact], contactsFromPhone: [FetchedContact], contactsFromApp: [FetchedContact], uploadResult: UploadContactsResponsePayload, updateResult: UploadContactsResponsePayload, filterindexphone: [String:String] , completion: @escaping ([FetchedContact]) -> ()){
+    func EditContacts(new: [FetchedContact], deleted: [FetchedContact], updated: [FetchedContact], contactsFromPhone: [FetchedContact], contactsFromApp: [FetchedContact], uploadResult: UploadContactsResponsePayload, updateResult: UploadContactsResponsePayload, filterindexphone: [String:String], contactsFromPhoneAll: [FetchedContact] , completion: @escaping ([FetchedContact]) -> ()){
         var newGuid: [FetchedContact] = []
         var app: [FetchedContact] = []
         
@@ -1274,9 +1451,9 @@ class ContactsDataService  {
                 }
                 newNewGuid[guid.value.phone]?.append(guid.key)
                 
-//                if (newGuidUuid[guid.value.phone + guid.value.uuid] == nil){
-//                    newGuidUuid[guid.value.phone + guid.value.uuid] = ""
-//                }
+                //                if (newGuidUuid[guid.value.phone + guid.value.uuid] == nil){
+                //                    newGuidUuid[guid.value.phone + guid.value.uuid] = ""
+                //                }
                 newGuidUuid[guid.value.phone + guid.value.uuid] = guid.key
             }
             //            print(newNewGuid)
@@ -1284,7 +1461,7 @@ class ContactsDataService  {
                 var a = contact
                 for number in contact.telephone {
                     //                    a.guid.append(uploadResult.contacts.first{$0.value.phone == number.phone}?.key ?? "")
-//                    a.guid.append(contentsOf: newNewGuid[number.phone] ?? [])
+                    //                    a.guid.append(contentsOf: newNewGuid[number.phone] ?? [])
                     a.telephone[a.telephone.firstIndex(of: number) ?? 0].guid = newGuidUuid[number.phone + contact.id] ?? ""
                 }
                 newGuid.append(a)
@@ -1294,34 +1471,55 @@ class ContactsDataService  {
                 app = contactsFromApp
             }
             else{
-                app = contactsFromApp.difference(from: deleted)
+                let ids: [String] = self.GetIds(contacts: deleted)
+                app = contactsFromApp.filter({!ids.contains($0.id)})
             }
             
             app.append(contentsOf: newGuid)
             
-//            Update
+            //            Update
             if (updateResult.contacts.count > 0){
                 print("Error?")
             }
             
             for contact in updated{
-//                let guid = contact.guid
-//                let filter = contact.filterindex
+                //                let guid = contact.guid
+                //                let filter = contact.filterindex
                 let a = contactsFromApp.firstIndex(where: {$0.id == contact.id})
                 let b = contactsFromPhone.firstIndex(where: {$0.id == contact.id})
                 let c = app.firstIndex(where: {$0.id == contact.id})
                 if ((b != nil) && (c != nil)){
-//                var b = contactsFromApp[a ?? 0]
+                    //                var b = contactsFromApp[a ?? 0]
                     app[c ?? 0] = contactsFromPhone[b ?? 0]
-//                    app[c ?? 0].guid = contactsFromApp[a ?? 0].guid
-                    app[c ?? 0].filterindex = contactsFromApp[a ?? 0].filterindex
+                    for number in app[c ?? 0].telephone{
+                        let n = app[c ?? 0].telephone.firstIndex(of: number)
+                        if (n != nil){
+                            app[c ?? 0].telephone[n ?? 0].guid = contactsFromApp.first(where: {$0.id == contact.id})?.telephone.first(where: {$0.phone == number.phone})?.guid ?? ""
+                        }
+                    }
+                    app[c ?? 0].hiden = contactsFromApp[a ?? 0].hiden
+                    //                    app[c ?? 0].filterindex = contactsFromApp[a ?? 0].filterindex
+                    
                 }
             }
-            app.append(contentsOf: contactsFromPhone.filter({self.data.hide.contains($0.id)}))
             
-
             
-            app = self.ReOrder(contacts: app, etalon: contactsFromPhone)
+            for guid in updateResult.contacts{
+                let index = app.firstIndex(where: {$0.id == guid.value.uuid})
+                if (index != nil){
+                    let index2 = app[index ?? 0].telephone.firstIndex(where: {$0.phone == guid.value.phone})
+                    if (index2 != nil){
+                        app[index ?? 0].telephone[index2 ?? 0].guid = guid.key
+                    }
+                }
+            }
+            
+            //            app.append(contentsOf: contactsFromPhoneAll.filter({self.data.hide.contains($0.id)}))
+            //            app.append(contentsOf: contactsFromPhoneAll.filter({self.data.hide.contains($0.id)}))
+            
+            
+            
+            app = self.ReOrder(contacts: app, etalon: contactsFromPhoneAll)
             app = self.RestoreIndex(contacts: app, index: filterindexphone)
             
             //            self.data.time7 = Date()
@@ -1379,9 +1577,10 @@ class ContactsDataService  {
         var index = 0
         while index < clean.count {
             ind[clean[index].id] = clean[index].filterindex
-//            clean[index].guid = []
+            //            clean[index].guid = []
             clean[index].filterindex = ""
             clean[index].index = 0
+            clean[index].hiden = false
             var i = 0
             while i < clean[index].telephone.count{
                 clean[index].telephone[i].guid = ""

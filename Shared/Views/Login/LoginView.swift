@@ -23,7 +23,10 @@ struct LoginView: View {
     @EnvironmentObject var historyData: HistoryDataView
     
     @AppStorage("big") var big: Bool = IsBig()
-    @AppStorage("fresh") var fresh: Bool = true
+//    @AppStorage("fresh") var fresh: Bool = true
+    @AppStorage("hideContacts") var hideContacts: Bool = false
+    
+    @Environment(\.presentationMode) private var presentationMode: Binding<PresentationMode>
     
     
     //    PhoneNumberKit
@@ -353,6 +356,7 @@ struct LoginView: View {
                     contacts.Delete()
                     model.reset()
                     historyData.reset()
+                    self.hideContacts = false
                     withAnimation(){
                         //                        userData.data.loggedIn = true
                         userData.update(newData: UserUpdate(field: .loggedIn, bool: true))

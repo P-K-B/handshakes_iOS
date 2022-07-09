@@ -45,6 +45,7 @@ struct SingleContactView: View {
                 HStack{
                     VStack(alignment: .leading, spacing: 0){
                         HStack (alignment: .bottom){
+                            
 //                            VStack{
 //                                Spacer()
                         Text((contacts.order == 3) ? (contacts.selectedContact?.firstName == "" ? "" : ((contacts.selectedContact?.firstName ?? "") + " ")) : (contacts.selectedContact?.lastName == "" ? "" : ((contacts.selectedContact?.lastName ?? "") + " ")))

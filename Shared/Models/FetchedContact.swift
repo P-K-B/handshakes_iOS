@@ -20,6 +20,7 @@ struct FetchedContact: Hashable, Encodable, Decodable,  Identifiable {
 //    var guid: [String]
     let fullContact: FullContact
     var index: Int
+    var hiden: Bool
 }
 
 struct FetchedGroup: Hashable, Codable, Identifiable {
