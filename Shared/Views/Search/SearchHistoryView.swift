@@ -12,7 +12,10 @@ struct SearchList: View, KeyboardReadable {
     
     //    App data
     @Binding var alert: MyAlert
-    @EnvironmentObject var history: HistoryDataView
+    @EnvironmentObject var historyData: HistoryDataView
+    @EnvironmentObject var contactsData: ContactsDataView
+    @EnvironmentObject var model: ChatScreenModel
+    @EnvironmentObject var userData: UserDataView
     
     //    view data
     @State var hasScrolled: Bool = false
@@ -28,25 +31,44 @@ struct SearchList: View, KeyboardReadable {
     @State private var validNumber: Bool = false
     @State var welcomeText: String = "Enter phone number to search:"
     @State private var isKeyboardVisible = false
+    @State var selector: Bool = false
+    @State var number: String = ""
+    
+    @AppStorage("hideContacts") var hideContacts: Bool = false
 
 
     
     var body: some View {
         //        lazyV
 //        VStack{
+        NavigationView{
             hardV
+            .navigationBarHidden(true)
+            .navigationBarBackButtonHidden(true)
             .onTapGesture {
                 self.endEditing()
             }
+            .safeAreaInset(edge: .top, content: {
+                                        Color.clear.frame(height: big ? 45: 75)
+                                    })
             .safeAreaInset(edge: .bottom) {
                 Color.clear.frame(height: isKeyboardVisible ? 0 : (big ? 55: 70))
             }
 //        }
-//            .onAppear{
+            .onAppear{
 //                if (history.datta.count < 5){
 //                history.Add(number: "\(UUID())")
 //                }
-//            }
+                print("History Data")
+                print(historyData.datta)
+            }
+            .overlay{
+                TabBar()
+                    .zIndex(1)
+                    .transition(.move(edge: .bottom))
+            }
+        }
+       
     }
     
        
@@ -62,6 +84,7 @@ struct SearchList: View, KeyboardReadable {
     
     var inputRow: some View{
         VStack{
+            Text("\(hideContacts ? "true" : "false")")
             Text(welcomeText)
                 .font(Font.custom("SFProDisplay-Regular", size: 20))
                 .padding()
@@ -71,20 +94,36 @@ struct SearchList: View, KeyboardReadable {
                                 print("Is keyboard visible? ", newIsKeyboardVisible)
                                 isKeyboardVisible = newIsKeyboardVisible
                             }
+            
+            
+            NavigationLink(destination: SingleSearchView2(alert: $alert)
+                .environmentObject(historyData)
+                .environmentObject(contactsData)
+                .environmentObject(model)
+                .environmentObject(userData)
+                           , isActive: $selector
+            )
+            {
+                EmptyView()
+            }
+            
+//                            .isDetailLink(false)
+            .navigationViewStyle(.stack)
+            .foregroundColor(Color.black)
+            .simultaneousGesture(TapGesture().onEnded{
+//                                    print("Hello world!")
+//                historyData.Add(number: number)
+            })
+            
+            
             Button{Task {
                 do{
                     //                                    Send code
                     let validatedPhoneNumber = try self.phoneNumberKit.parse(self.phoneNumber)
-                    let number = self.phoneNumberKit.format(validatedPhoneNumber, toType: .international)
-                    withAnimation(){
-                        selectedHistory = history.Add(number: number)
-                        
-//                        sleep(1)
-//                        print(history.datta)
-//                        print(history.selectedHistory)
-//                        selectedTab = .singleSearch
-//                        history.save()
-                    }
+                    number = self.phoneNumberKit.format(validatedPhoneNumber, toType: .international)
+                    historyData.Add(number: number)
+                    
+                    selector = true
                 }
                 catch {
                     alert = MyAlert(error: true, title: "", text: "Please enter a valid phone number", button: "Ok", oneButton: true)
@@ -121,8 +160,8 @@ struct SearchList: View, KeyboardReadable {
                     ScrollView() {
                         //                            debugTime
 //                        GeometryElement(hasScrolled: $hasScrolled, big: big, hasBack: false)
-                        if (history.datta.count > 0){
-                        if (history.updated){
+                        if (historyData.datta.count > 0){
+                        if (historyData.updated){
                                 //                                ForEach(contacts.data.contacts){ contact in
                                 //                                    HStack() {
                             HistoryRows
@@ -148,7 +187,8 @@ struct SearchList: View, KeyboardReadable {
             }
                 }
                     .overlay(
-                        NavigationBar(title: "Search", hasScrolled: $hasScrolled, search: .constant(false), showSearch: false, showProfile: true)
+                        NavigationBar(title: "Search", search: .constant(false), showSearch: false, showProfile: true, hasBack: false)
+                            
                     )
             }
         }
@@ -158,7 +198,7 @@ struct SearchList: View, KeyboardReadable {
         LazyVStack(){
 //            ForEach(contacts.data.letters, id: \.self) { letter in
 //                Section(header: SectionLetter(text:letter)) {
-            ForEach(history.datta) { search in
+            ForEach(historyData.datta) { search in
                         ZStack{
                             //                            Button (action:{
                             //                                withAnimation{
@@ -174,34 +214,66 @@ struct SearchList: View, KeyboardReadable {
                                 //                                        .font(Font.custom("SFProDisplay-Regular", size: 20))
                                 
                                 //                                NavigationLink("", destination: SingleContactView(), tag: contact.id, selection: $selectedContact)
-                                Button(action: {
-                                    withAnimation(){
-                                        history.selectedHistory = search.id
-//                                        print(history.selectedHistory)
-                                        selectedTab = .singleSearch
-                                    }
-                                }, label: {
-                                    HStack{
-                                        HistoryRow(history: search)
-//                                            .onAppear{
-//                                                if (search.id == selectedHistory){
-//                                                    withAnimation(){
-////                                                        history.selectedHistory = search.id
-////                                                        print(history.selectedHistory)
-//                                                        selectedTab = .singleSearch
-//                                                    }
-//                                                }
-//                                            }
-                                        Spacer()
-                                        Image(systemName: "chevron.right")
-                                            .resizable()
-                                            .aspectRatio(contentMode: .fit)
-                                            .frame(width: 7)
-                                            .foregroundColor(Color.accentColor) //Apply color for arrow only
-                                            .padding(.trailing, 5)
-                                    }
+                                
+                                
+                                
+                                
+                                NavigationLink(destination: SingleSearchView2(alert: $alert)
+                                    .environmentObject(historyData)
+                                    .environmentObject(contactsData)
+                                    .environmentObject(model)
+                                    .environmentObject(userData)
+                                ) {                                      HStack{
+                                    HistoryRow(history: search)
+                                    Spacer()
+                                    Image(systemName: "chevron.right")
+                                        .resizable()
+                                        .aspectRatio(contentMode: .fit)
+                                        .frame(width: 7)
+                                        .foregroundColor(Color.accentColor) //Apply color for arrow only
+                                        .padding(.trailing, 5)
+                                }
+//                                    .background(.black)
+                                }
+                                .foregroundColor(Color.black)
+                                .simultaneousGesture(TapGesture().onEnded{
+//                                    print("Hello world!")
+                                    
+                                    historyData.selectedHistory = search.id
                                 })
-                                .foregroundColor(.black)
+                                
+                                
+                                
+                                
+                                
+//                                Button(action: {
+//                                    withAnimation(){
+//                                        history.selectedHistory = search.id
+////                                        print(history.selectedHistory)
+//                                        selectedTab = .singleSearch
+//                                    }
+//                                }, label: {
+//                                    HStack{
+//                                        HistoryRow(history: search)
+////                                            .onAppear{
+////                                                if (search.id == selectedHistory){
+////                                                    withAnimation(){
+//////                                                        history.selectedHistory = search.id
+//////                                                        print(history.selectedHistory)
+////                                                        selectedTab = .singleSearch
+////                                                    }
+////                                                }
+////                                            }
+//                                        Spacer()
+//                                        Image(systemName: "chevron.right")
+//                                            .resizable()
+//                                            .aspectRatio(contentMode: .fit)
+//                                            .frame(width: 7)
+//                                            .foregroundColor(Color.accentColor) //Apply color for arrow only
+//                                            .padding(.trailing, 5)
+//                                    }
+//                                })
+//                                .foregroundColor(.black)
                                 
                             }
                             .padding(.horizontal, 15)
@@ -219,8 +291,31 @@ struct SearchList: View, KeyboardReadable {
     }
 }
 
-//struct SearchList_Previews: PreviewProvider {
-//    static var previews: some View {
-//        SearchList()
-//    }
-//}
+struct SearchList_Previews: PreviewProvider {
+    
+    static let debug: DebugData = DebugData()
+    
+    static let historyData: HistoryDataView = debug.historyData
+    static let contactsData: ContactsDataView = debug.contactsData
+    static let model: ChatScreenModel = debug.model
+    static let userData: UserDataView = debug.userData
+    
+    static var previews: some View {
+        Group {
+            SearchList(alert: .constant(MyAlert()))
+                .environmentObject(historyData)
+                .environmentObject(contactsData)
+                .environmentObject(model)
+                .environmentObject(userData)
+                
+                .previewDevice(PreviewDevice(rawValue: "iPhone SE (2nd generation)"))
+            SearchList(alert: .constant(MyAlert()))
+                .environmentObject(DebugData().historyData)
+                .environmentObject(DebugData().contactsData)
+                .environmentObject(DebugData().userData)
+                .environmentObject(DebugData().model)
+                
+                .previewDevice(PreviewDevice(rawValue: "iPhone 13 Pro Max"))
+        }
+    }
+}

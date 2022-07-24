@@ -53,66 +53,68 @@ class ContactsDataView: ObservableObject {
     
     private var cansellables = Set<AnyCancellable>()
     
-    init(){
+    init(d: Bool){
         print("CONTACTS DATA: updated = \(data.updated)")
-        addDataSubscriber()
+        addDataSubscriber(d: d)
     }
     
-    func addDataSubscriber(){
-        contactsDataService.$data
-            .receive(on: DispatchQueue.main)
-            .sink { (completion) in
-                switch completion{
-                case .finished:
-                    break
-                case .failure(let error):
-                    print (error.localizedDescription)
+    func addDataSubscriber(d: Bool){
+        if (d != true){
+            contactsDataService.$data
+                .receive(on: DispatchQueue.main)
+                .sink { (completion) in
+                    switch completion{
+                    case .finished:
+                        break
+                    case .failure(let error):
+                        print (error.localizedDescription)
+                    }
+                } receiveValue: { returnedData in
+                    self.data=returnedData
+                    //                print("CONTACTS DATA: contacts = \(returnedData.contacts)")
                 }
-            } receiveValue: { returnedData in
-                self.data=returnedData
-                //                print("CONTACTS DATA: contacts = \(returnedData.contacts)")
-            }
-            .store(in: &cansellables)
-        
-        contactsDataService.$jwt
-            .receive(on: DispatchQueue.main)
-            .sink { (completion) in
-                switch completion{
-                case .finished:
-                    break
-                case .failure(let error):
-                    print (error.localizedDescription)
+                .store(in: &cansellables)
+            
+            contactsDataService.$jwt
+                .receive(on: DispatchQueue.main)
+                .sink { (completion) in
+                    switch completion{
+                    case .finished:
+                        break
+                    case .failure(let error):
+                        print (error.localizedDescription)
+                    }
+                } receiveValue: { returnedData in
+                    self.jwt=returnedData
                 }
-            } receiveValue: { returnedData in
-                self.jwt=returnedData
-            }
-            .store(in: &cansellables)
-        contactsDataService.$selectedContact
-            .receive(on: DispatchQueue.main)
-            .sink { (completion) in
-                switch completion{
-                case .finished:
-                    break
-                case .failure(let error):
-                    print (error.localizedDescription)
+                .store(in: &cansellables)
+            contactsDataService.$selectedContact
+                .receive(on: DispatchQueue.main)
+                .sink { (completion) in
+                    switch completion{
+                    case .finished:
+                        break
+                    case .failure(let error):
+                        print (error.localizedDescription)
+                    }
+                } receiveValue: { returnedData in
+                    self.selectedContact=returnedData
                 }
-            } receiveValue: { returnedData in
-                self.selectedContact=returnedData
-            }
-            .store(in: &cansellables)
-        contactsDataService.$order
-            .receive(on: DispatchQueue.main)
-            .sink { (completion) in
-                switch completion{
-                case .finished:
-                    break
-                case .failure(let error):
-                    print (error.localizedDescription)
+                .store(in: &cansellables)
+            contactsDataService.$order
+                .receive(on: DispatchQueue.main)
+                .sink { (completion) in
+                    switch completion{
+                    case .finished:
+                        break
+                    case .failure(let error):
+                        print (error.localizedDescription)
+                    }
+                } receiveValue: { returnedData in
+                    self.order=returnedData
                 }
-            } receiveValue: { returnedData in
-                self.order=returnedData
-            }
-            .store(in: &cansellables)
+                .store(in: &cansellables)
+        }
     }
     
     func save() {
@@ -155,8 +157,18 @@ class ContactsDataView: ObservableObject {
         contactsDataService.removeHide(id: id)
     }
     
-    func updateHide(id: [String], upload: Bool){
-        contactsDataService.updateHide(id: id, upload: upload)
+    func updateHide(id: [String], upload: Bool, force: Bool, completion: @escaping (Bool) -> ()){
+        do {
+            contactsDataService.updateHide(id: id, upload: upload, force: force){
+                (res) in
+                //                DispatchQueue.main.async {
+                completion(res)
+                //                }
+            }
+        }
+        //        DispatchQueue.main.async {
+        //            completion(false)
+        //        }
     }
     
     func Upload(){
@@ -228,8 +240,9 @@ class ContactsDataService  {
     //        self.save()
     //    }
     
-    func updateHide(id: [String], upload: Bool){
+    func updateHide(id: [String], upload: Bool, force: Bool, completion: @escaping (Bool) -> ()){
         //        self.data.showedHide = true
+        
         if (self.data.hide.sorted(by: {$0 > $1}) != id.sorted(by: {$0 > $1})){
             let old = self.data.hide
             let unhide = old.filter({!id.contains($0)})
@@ -245,69 +258,103 @@ class ContactsDataService  {
                 }
             }
             
+            //            Check delete
             do{
-                try self.DeleteContacts(contacts: self.data.contacts.filter({id.contains($0.id)}), update: [])
-                { (reses) in
-                    self.save()
+                try self.ChainsContacts(contacts: self.data.contacts.filter({id.contains($0.id)})){
+                    chanRes in
+                    var ch: [String] = []
+                    print(chanRes)
+                    if (chanRes.payload?.chains != nil){
+                        ch = chanRes.payload?.chains ?? []
+                    }
+                    if ((ch.count > 0) && (force == false)){
+                        //                            DispatchQueue.main.async {
+                        completion(false)
+                        //                            }
+                    }
+                    else{
+                        //                            Delete
+                        do{
+                            try self.DeleteContacts(contacts: self.data.contacts.filter({id.contains($0.id)}), update: [])
+                            { (reses) in
+                                //                                    self.save()
+                                //            Upload
+                                for i in unhide{
+                                    let index = self.data.contacts.firstIndex(where: {$0.id == i})
+                                    if (index != nil){
+                                        self.data.contacts[index ?? 0].hiden = false
+                                    }
+                                }
+                                
+                                
+                                do{
+                                    try self.UploadContacts(contacts: self.data.contacts.filter({unhide.contains($0.id)}))
+                                    { (reses2) in
+                                        print(reses2)
+                                        //                                    self.data.time4 = Date()
+                                        //                            res1 = reses2.payload
+                                        var newNewGuid: [String:[String]] = [:]
+                                        
+                                        var newGuidUuid: [String:String] = [:]
+                                        
+                                        for guid in reses2.payload.contacts{
+                                            if (newNewGuid[guid.value.phone] == nil){
+                                                newNewGuid[guid.value.phone] = []
+                                            }
+                                            newNewGuid[guid.value.phone]?.append(guid.key)
+                                            
+                                            //                if (newGuidUuid[guid.value.phone + guid.value.uuid] == nil){
+                                            //                    newGuidUuid[guid.value.phone + guid.value.uuid] = ""
+                                            //                }
+                                            newGuidUuid[guid.value.phone + guid.value.uuid] = guid.key
+                                        }
+                                        //            print(newNewGuid)
+                                        for contact in self.data.contacts.filter({unhide.contains($0.id)}) {
+                                            //                                var a = contact
+                                            let index = self.data.contacts.firstIndex(where: {$0.id == contact.id})
+                                            for number in contact.telephone {
+                                                //                    a.guid.append(uploadResult.contacts.first{$0.value.phone == number.phone}?.key ?? "")
+                                                //                    a.guid.append(contentsOf: newNewGuid[number.phone] ?? [])
+                                                if (newGuidUuid[number.phone + self.data.contacts[index ?? 0].id] != ""){
+                                                    self.data.contacts[index ?? 0].telephone[self.data.contacts[index ?? 0].telephone.firstIndex(of: number) ?? 0].guid = newGuidUuid[number.phone + self.data.contacts[index ?? 0].id] ?? ""
+                                                }
+                                            }
+                                            //                                newGuid.append(a)
+                                        }
+                                        self.data.hide = id
+                                        self.save()
+                                        completion(true)
+                                    }
+                                }
+                                catch{}
+                            }
+                        }
+                        catch{
+                            
+                        }
+                    }
+                    
                 }
+                
+                
             }
             catch{
                 
             }
             
-            for i in unhide{
-                let index = self.data.contacts.firstIndex(where: {$0.id == i})
-                if (index != nil){
-                    self.data.contacts[index ?? 0].hiden = false
-                }
-            }
             
             
-            do{
-                try self.UploadContacts(contacts: self.data.contacts.filter({unhide.contains($0.id)}))
-                { (reses2) in
-                    print(reses2)
-                    //                                    self.data.time4 = Date()
-                    //                            res1 = reses2.payload
-                    var newNewGuid: [String:[String]] = [:]
-                    
-                    var newGuidUuid: [String:String] = [:]
-                    
-                    for guid in reses2.payload.contacts{
-                        if (newNewGuid[guid.value.phone] == nil){
-                            newNewGuid[guid.value.phone] = []
-                        }
-                        newNewGuid[guid.value.phone]?.append(guid.key)
-                        
-                        //                if (newGuidUuid[guid.value.phone + guid.value.uuid] == nil){
-                        //                    newGuidUuid[guid.value.phone + guid.value.uuid] = ""
-                        //                }
-                        newGuidUuid[guid.value.phone + guid.value.uuid] = guid.key
-                    }
-                    //            print(newNewGuid)
-                    for contact in self.data.contacts.filter({unhide.contains($0.id)}) {
-                        //                                var a = contact
-                        let index = self.data.contacts.firstIndex(where: {$0.id == contact.id})
-                        for number in contact.telephone {
-                            //                    a.guid.append(uploadResult.contacts.first{$0.value.phone == number.phone}?.key ?? "")
-                            //                    a.guid.append(contentsOf: newNewGuid[number.phone] ?? [])
-                            if (newGuidUuid[number.phone + self.data.contacts[index ?? 0].id] != ""){
-                                self.data.contacts[index ?? 0].telephone[self.data.contacts[index ?? 0].telephone.firstIndex(of: number) ?? 0].guid = newGuidUuid[number.phone + self.data.contacts[index ?? 0].id] ?? ""
-                            }
-                        }
-                        //                                newGuid.append(a)
-                    }
-                    self.save()
-                }
-            }
-            catch{}
             
-            
-            self.data.hide = id
-            self.save()
+            //            self.data.hide = id
+            //            self.save()
             
         }
-        self.GetNewContacts(upload: false)
+        else{
+            self.GetNewContacts(upload: false)
+            //            DispatchQueue.main.async {
+            completion(true)
+            //            }
+        }
         //        self.UploadLater()
     }
     
@@ -380,6 +427,7 @@ class ContactsDataService  {
         self.data.contacts = []
         self.data.letters = []
         self.data.hide = []
+        self.hideContacts = false
         self.save()
         //        self.data.time = Date()
         DispatchQueue.global(qos: .userInitiated).async {
@@ -573,12 +621,12 @@ class ContactsDataService  {
                 var nn:[Number] = []
                 for number in contact.phoneNumbers{
                     var numberOk = number.value.stringValue
-                    if (numberOk.prefix(1) == "8"){
-                        numberOk = "+7" + numberOk.dropFirst()
-                    }
-                    if (numberOk.prefix(1) != "+"){
-                        numberOk = "+" + numberOk
-                    }
+                    //                    if (numberOk.prefix(1) == "8"){
+                    //                        numberOk = "+7" + numberOk.dropFirst()
+                    //                    }
+                    //                    if (numberOk.prefix(1) != "+"){
+                    //                        numberOk = "+" + numberOk
+                    //                    }
                     allNumbers.append(numberOk)
                     nn.append(Number(id: i, title: number.label?.replacingOccurrences(of: "_$!<", with: "").replacingOccurrences(of: ">!$_", with: "") ?? "Phone", phone: numberOk, guid: ""))
                     i+=1
@@ -810,6 +858,65 @@ class ContactsDataService  {
         else{
             json = AllContacts(contacts: update)
         }
+        //        let json = AllContacts(contacs: [])
+        
+        let jsonData = try JSONEncoder().encode(json)
+        //        print(jsonData)
+        urlRequest.httpBody = jsonData
+        //        print(urlRequest)
+        contactsDeleteSunscription = URLSession.shared.dataTaskPublisher(for: urlRequest).subscribe(on: DispatchQueue.global(qos: .default))
+            .tryMap { (output) -> Data in
+                print(output.response)
+                guard let response = output.response as? HTTPURLResponse,
+                      response.statusCode >= 200 && response.statusCode < 300 else{
+                    throw URLError(.badServerResponse)
+                }
+                return output.data
+            }
+            .receive(on: DispatchQueue.main)
+            .decode(type: StatusResponse.self, decoder: JSONDecoder())
+            .sink { (completion) in
+                switch completion{
+                case .finished:
+                    break
+                case .failure(let error):
+                    print (error.localizedDescription)
+                }
+            } receiveValue: { statusResponce in
+                DispatchQueue.main.async {
+                    completion(statusResponce)
+                }
+                self.contactsDeleteSunscription?.cancel()
+            }
+    }
+    
+    func ChainsContacts(contacts: [FetchedContact] , completion: @escaping (StatusResponse) -> ()) throws {
+#if DEBUG
+        let baseUrl="https://develop.freekiller.net"
+#else
+        let baseUrl="https://hand.freekiller.net"
+#endif
+        guard let url = URL(string: baseUrl + "/api/clients/contacts/chains") else { fatalError("Missing URL") }
+        var urlRequest = URLRequest(url: url)
+        
+        urlRequest.httpMethod = "POST"
+        // Set HTTP Request Header
+        urlRequest.setValue("application/json", forHTTPHeaderField: "Accept")
+        urlRequest.setValue("application/json", forHTTPHeaderField: "Content-Type")
+        urlRequest.setValue( "Bearer \(jwt)", forHTTPHeaderField: "Authorization")
+        var json = AllContacts(contacts: [])
+        //        if (update.isEmpty){
+        var allContacts: [String] = []
+        for contact in contacts {
+            for number in contact.telephone{
+                allContacts.append(number.phone)
+            }
+        }
+        json = AllContacts(contacts: allContacts)
+        //        }
+        //        else{
+        //            json = AllContacts(contacts: update)
+        //        }
         //        let json = AllContacts(contacs: [])
         
         let jsonData = try JSONEncoder().encode(json)

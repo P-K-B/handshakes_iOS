@@ -25,6 +25,8 @@ struct SearchHistory:  Codable, Identifiable, Equatable, Hashable {
     
 }
 
+
+
 class HistoryDataView: ObservableObject {
     
     @Published var datta: [SearchHistory] = []
@@ -32,75 +34,77 @@ class HistoryDataView: ObservableObject {
     @Published var selectedHistory: UUID?
     @Published var updated: Bool = false
     
-    @AppStorage("selectedTab") var selectedTab: Tab = .search
+//    @AppStorage("selectedTab") var selectedTab: Tab = .search
     
     private let historyDataService = HistoryDataService()
     
     private var cansellables = Set<AnyCancellable>()
     
-    init(){
-        addDataSubscriber()
+    init(d: Bool){
+        addDataSubscriber(d: d)
     }
     
-    func addDataSubscriber(){
-        historyDataService.$data
-            .receive(on: DispatchQueue.main)
-            .sink { (completion) in
-                switch completion{
-                case .finished:
-                    break
-                case .failure(let error):
-                    print (error.localizedDescription)
+    func addDataSubscriber(d: Bool){
+        if (d == false){
+            historyDataService.$data
+                .receive(on: DispatchQueue.main)
+                .sink { (completion) in
+                    switch completion{
+                    case .finished:
+                        break
+                    case .failure(let error):
+                        print (error.localizedDescription)
+                    }
+                } receiveValue: { returnedData in
+                    self.datta=returnedData
                 }
-            } receiveValue: { returnedData in
-                self.datta=returnedData
-            }
-            .store(in: &cansellables)
-        
-        historyDataService.$jwt
-            .receive(on: DispatchQueue.main)
-            .sink { (completion) in
-                switch completion{
-                case .finished:
-                    break
-                case .failure(let error):
-                    print (error.localizedDescription)
+                .store(in: &cansellables)
+            
+            historyDataService.$jwt
+                .receive(on: DispatchQueue.main)
+                .sink { (completion) in
+                    switch completion{
+                    case .finished:
+                        break
+                    case .failure(let error):
+                        print (error.localizedDescription)
+                    }
+                } receiveValue: { returnedData in
+                    self.jwt=returnedData
                 }
-            } receiveValue: { returnedData in
-                self.jwt=returnedData
-            }
-            .store(in: &cansellables)
-        historyDataService.$selectedHistory
-            .receive(on: DispatchQueue.main)
-            .sink { (completion) in
-                switch completion{
-                case .finished:
-                    break
-                case .failure(let error):
-                    print (error.localizedDescription)
-                }
-            } receiveValue: { returnedData in
-                self.selectedHistory=returnedData
-                if (!self.datta.isEmpty){
-                    if (self.selectedHistory == self.datta[0].id){
-                        self.selectedTab = .singleSearch
+                .store(in: &cansellables)
+            historyDataService.$selectedHistory
+                .receive(on: DispatchQueue.main)
+                .sink { (completion) in
+                    switch completion{
+                    case .finished:
+                        break
+                    case .failure(let error):
+                        print (error.localizedDescription)
+                    }
+                } receiveValue: { returnedData in
+                    self.selectedHistory=returnedData
+                    if (!self.datta.isEmpty){
+                        if (self.selectedHistory == self.datta[0].id){
+//                            self.selectedTab = .singleSearch
+                        }
                     }
                 }
-            }
-            .store(in: &cansellables)
-        historyDataService.$updated
-            .receive(on: DispatchQueue.main)
-            .sink { (completion) in
-                switch completion{
-                case .finished:
-                    break
-                case .failure(let error):
-                    print (error.localizedDescription)
+                .store(in: &cansellables)
+            historyDataService.$updated
+                .receive(on: DispatchQueue.main)
+                .sink { (completion) in
+                    switch completion{
+                    case .finished:
+                        break
+                    case .failure(let error):
+                        print (error.localizedDescription)
+                    }
+                } receiveValue: { returnedData in
+                    self.updated=returnedData
                 }
-            } receiveValue: { returnedData in
-                self.updated=returnedData
+                .store(in: &cansellables)
             }
-            .store(in: &cansellables)
     }
     
     func save() {
@@ -126,6 +130,10 @@ class HistoryDataView: ObservableObject {
     func Delete(){
         historyDataService.Delete()
     }
+    
+    func Load(){
+        historyDataService.Load()
+    }
 }
 
 class HistoryDataService {
@@ -138,6 +146,7 @@ class HistoryDataService {
     var pathSubscription: AnyCancellable?
     
     init() {
+        
         self.updated = false
         if let data = UserDefaults.standard.data(forKey: "HistoryData") {
             if let decoded = try? JSONDecoder().decode([SearchHistory].self, from: data) {
@@ -152,6 +161,9 @@ class HistoryDataService {
             self.updated = true
         }
         
+    }
+    
+    func Load(){
         
     }
     
@@ -184,7 +196,7 @@ class HistoryDataService {
                     print("here1")
                 }
             }
-            
+
             DispatchQueue.main.async {
                 // Task consuming task has completed
                 // Update UI from this block of code

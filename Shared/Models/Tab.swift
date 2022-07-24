@@ -27,12 +27,12 @@ var tabItems = [
 
 enum Tab: String {
     case contacts
-    case singleContact
+//    case singleContact
     case search
-    case singleSearch
+//    case singleSearch
     case chats
-    case singleChat
-    case profile
+//    case singleChat
+//    case profile
 //    case notifications
 //    case library
 }

@@ -10,6 +10,7 @@ import PhoneNumberKit
 import Combine
 import Lottie
 
+
 @main
 struct Handshakes2App: App {
     
@@ -19,13 +20,14 @@ struct Handshakes2App: App {
     @State var alert = MyAlert()
     @State var logged: Bool = false
     @StateObject var userData: UserDataView = UserDataView()
-    @StateObject var contactsData: ContactsDataView = ContactsDataView()
+    @StateObject var contactsData: ContactsDataView = ContactsDataView(d: false)
     @StateObject private var model = ChatScreenModel()
-    @StateObject var historyData: HistoryDataView = HistoryDataView()
+    @StateObject var historyData: HistoryDataView = HistoryDataView(d: false)
+    
+    //    @StateObject var UIState: UIStateModel = UIStateModel()
     
     let phoneNumberKit = PhoneNumberKit()
     @State private var phoneField: PhoneNumberTextFieldView?
-    @State var hideContacts: Bool = true
     //        @State private var phoneNumber = String()
     //        @State private var validNumber: Bool = false
     //        @State private var validationError = false
@@ -36,70 +38,39 @@ struct Handshakes2App: App {
     //    @AppStorage("fresh") var fresh: Bool = true
     
     @State var isAnimating = false
-//    @Environment(\.colorScheme) var colorScheme
+    //    @Environment(\.colorScheme) var colorScheme
     //        var foreverAnimation: Animation {
     //            Animation.linear(duration: 1.0)
     //                .repeatForever(autoreverses: false)
     //        }
     
-//    Navigation
-    @State var contectView: Bool = false
-    @State var loginHi: Bool = false
-    
     
     
     var body: some Scene {
         WindowGroup {
-            
-            //            VStack{
-            //                Text(String(data.data.number))
-            //                Button {
-            //                    Task {
-            ////                                                DataService().Plus()
-            //                        data.Plus()
-            //                    }
-            //                } label: {
-            //                    Text("Plus")
-            //                    //                .buttonStyleLogin(fontSize: 15, color: Color.secondary)
-            //                }
-            //            }
-            
-            
             VStack{
                 NavigationView{
                     if (userData.data.loaded){
-//                                            if (userData.data.loggedIn){
-//                                                NavigationLink(destination: ContentView(alert: $alert)
-//                                                    .environmentObject(userData)
-//                                                    .environmentObject(contactsData)
-//                                                    .environmentObject(model)
-//                                                    .environmentObject(historyData),
-//                                                               isActive: $contectView) { EmptyView() }
-//
-//
-//    //                                            ContentView(alert: $alert)
-//    //                                                .environmentObject(userData)
-//    //                                                .environmentObject(contactsData)
-//    //                                                .environmentObject(model)
-//    //                                                .environmentObject(historyData)
-//                                            }
-//                                            else{
-//                                                NavigationLink(destination: LoginHi(alert: $alert)
-//                                                    .environmentObject(userData)
-//                                                    .environmentObject(contactsData)
-//                                                    .environmentObject(model)
-//                                                    .environmentObject(historyData),
-//                                                               isActive: $loginHi) { EmptyView() }
-//
-//    //                                            LoginHi(alert: $alert)
-//    //                                                .environmentObject(userData)
-//    //                                                .environmentObject(contactsData)
-//    //                                                .environmentObject(model)
-//    //                                                .environmentObject(historyData)
-//
-//
-//                                            }
-                        V1()
+                                                if (userData.data.loggedIn){
+                                                    ContentView(alert: $alert)
+                                                        .environmentObject(historyData)
+                                                        .environmentObject(contactsData)
+                                                        .environmentObject(model)
+                                                        .environmentObject(userData)
+                                                }
+                                                else{
+                        
+                                                    LoginHi(alert: $alert)
+                                                        .environmentObject(historyData)
+                                                        .environmentObject(contactsData)
+                                                        .environmentObject(model)
+                                                        .environmentObject(userData)
+                        
+                        
+                                                }
+                        
+//                        V1()
+                        //                            .environmentObject(UIState)
                     }
                     else{
                         appLoading
@@ -115,7 +86,7 @@ struct Handshakes2App: App {
                         let group = DispatchGroup()
                         group.enter()
                         
-//                        Wait for user data to be loaded
+                        //                        Wait for user data to be loaded
                         DispatchQueue.global().async {
                             while userData.data.loaded != true {
                             }
@@ -125,10 +96,10 @@ struct Handshakes2App: App {
                         group.wait()
                         userData.update(newData: UserUpdate(field: .loaded, bool: false))
                         //                                                                        sleep(3)
-//                        Check that user has a valid phone
+                        //                        Check that user has a valid phone
                         try self.phoneNumberKit.parse(userData.data.number)
                         do{
-//                            Try to sing in using app token
+                            //                            Try to sing in using app token
                             try userData.SignInUpCallAppToken()
                             { (reses) in
                                 print(reses)
@@ -245,69 +216,159 @@ struct LottieView: UIViewRepresentable {
 
 struct V1: View {
     
-//    @State private var isShowingNextView: Bool = false
-    @StateObject var myNav: MyNavigation = MyNavigation()
+    @State private var isShowingNextView: Bool = false
+    //    @StateObject var c1: C1 = C1(d: false)
+    @StateObject var historyData: HistoryDataView = HistoryDataView(d: false)
     @Environment(\.colorScheme) var colorScheme
     
+    @State var currentPage = 0
+    @State var numberOfPages = 6
+    
     var body: some View{
-        NavigationView{
-            VStack{
-                Text("V1")
-                Text(myNav.contentView == true ? "contentView" : "no contentView")
-                
-                
-                NavigationLink(destination: V2().environmentObject(myNav), isActive: $myNav.contentView) { EmptyView() }
-                
-                //            Button(action: {
-                //
-                //            }, label: {
-                //                Text("back")
-                //            })
-                
-                Button(action: {
-//                    isShowingNextView = true
-                    myNav.SetTMPRoot(view: .root)
-                    myNav.Forward(view: .contentView)
-                }, label: {
-                    Text("next")
-                })
+        VStack{
+            VStack {
+                //                                    Spacer()
+                PageControlView(currentPage: $currentPage, numberOfPages: numberOfPages)
             }
+            TabView(selection: $currentPage) {
+                ScrollView{
+                    Text("Item 1")
+                        .foregroundColor(.white)
+                        .font(.largeTitle)
+                        .frame(width: 200, height: 1000)
+                        .background(.red)
+                }.tag(0)
+                ScrollView{
+                    Text("Item 2")
+                        .foregroundColor(.white)
+                        .font(.largeTitle)
+                        .frame(width: 200, height: 200)
+                        .background(.blue)
+                }.tag(1)
+                Text("First").tag(2)
+                Text("Second").tag(3)
+                Text("Third").tag(4)
+                Text("Fourth").tag(5)
+            }
+            //        .frame(width: 200, height: 200)
+            //                .tabViewStyle(.page)
+            //                .indexViewStyle(.page(backgroundDisplayMode: .always))
+            .tabViewStyle(.page(indexDisplayMode: .never))
+            .indexViewStyle(.page(backgroundDisplayMode: .always))
         }
-        .navigationBarHidden(true)
-        .navigationBarBackButtonHidden(true)
+        
+        //        GeometryReader { geometry in
+        //
+        //            ScrollViewReader { proxy in
+        //
+        //                ScrollView(.horizontal) {
+        //                    VStack{
+        //
+        //                        HStack(spacing: 20) {
+        //                            GeometryElement(x: $xScroll, y: $yScroll)
+        //                            //                ForEach(0..<10) {
+        //                            //                    VStack{
+        //                            //                    ScrollView{
+        //                            Text("Item 1")
+        //                                .foregroundColor(.white)
+        //                                .font(.largeTitle)
+        //                                .frame(width: cardWidth, height: 300)
+        //                                .background(.red)
+        ////                                .offset(x: -xScroll)
+        //                            //                    }
+        //                            //                ScrollView{
+        //                                            Text("Item 2")
+        //                                                .foregroundColor(.white)
+        //                                                .font(.largeTitle)
+        //                                                .frame(width: cardWidth, height: 200)
+        //                                                .background(.blue)
+        ////                                                .offset(x: -xScroll*2)
+        //                            //                }
+        //                            //                ScrollView{
+        //                            //                Text("Item 3")
+        //                            //                    .foregroundColor(.white)
+        //                            //                    .font(.largeTitle)
+        //                            //                    .frame(width: 200, height: 800)
+        //                            //                    .background(.red)
+        //                            //                    }
+        //                            //                    }
+        //                        }
+        //                    }
+        //                    .background(.green)
+        //                    .frame(width: geometry.size.width)      // Make the scroll view full-width
+        //                    .frame(minHeight: geometry.size.height)
+        ////                    .offset(x:)
+        //                }
+        //                .background(.pink)
+        //            }
+        //
+        //        }
+        //            .modifier(ScrollingHStackModifier(items: 3, itemWidth: 200, itemSpacing: 30))
+        //        }
+        
+        
+        
+        //        NavigationView{
+        //            VStack{
+        //                Text("V1")
+        //                Text(colorScheme == .dark ? "In dark mode" : "In light mode")
+        //
+        //
+        //                NavigationLink(destination: V2(back: $isShowingNextView, root: $isShowingNextView).environmentObject(historyData), isActive: $isShowingNextView) { EmptyView() }
+        //
+        //                //            Button(action: {
+        //                //
+        //                //            }, label: {
+        //                //                Text("back")
+        //                //            })
+        //
+        //                Button(action: {
+        //                    isShowingNextView = true
+        //                }, label: {
+        //                    Text("next")
+        //                })
+        //            }
+        //        }
+        //
+        //        .navigationBarHidden(true)
+        //        .navigationBarBackButtonHidden(true)
     }
     
 }
 
 struct V2: View {
     
-//    @Binding var back: Bool
-//    @Binding var root: Bool
-//    @State private var isShowingNextView: Bool = false
-    @EnvironmentObject var myNav: MyNavigation
+    @Binding var back: Bool
+    @Binding var root: Bool
+    @State private var isShowingNextView: Bool = false
+    @EnvironmentObject var historyData: HistoryDataView
     
     var body: some View{
         NavigationView{
             VStack{
                 Text("V2")
                 
-                NavigationLink(destination: V3().environmentObject(myNav), isActive: $myNav.loginHi) { EmptyView() }
+                NavigationLink(destination: V3(back: $isShowingNextView, root: $root)) { Text("V2") }
+                    .simultaneousGesture(TapGesture().onEnded{
+                        //                                    print("Hello world!")
+                        historyData.Add(number: "123")
+                    })
                 
                 Button(action: {
-//                    back = false
-                    myNav.Back()
+                    back = false
                 }, label: {
                     Text("back")
                 })
                 
                 Button(action: {
-//                    isShowingNextView = true
-                    myNav.Forward(view: .loginHi)
+                    historyData.Add(number: "123")
+                    isShowingNextView = true
                 }, label: {
                     Text("next")
                 })
             }
         }
+        .environmentObject(historyData)
         .navigationBarHidden(true)
         .navigationBarBackButtonHidden(true)
     }
@@ -316,30 +377,34 @@ struct V2: View {
 
 struct V3: View {
     
-//    @Binding var back: Bool
-//    @Binding var root: Bool
-//    @State private var isShowingNextView: Bool = false
-    @EnvironmentObject var myNav: MyNavigation
+    @Binding var back: Bool
+    @Binding var root: Bool
+    @State private var isShowingNextView: Bool = false
+    @EnvironmentObject var historyData: HistoryDataView
     
     var body: some View{
         NavigationView{
             VStack{
                 Text("V3")
+                //                Text(historyData)
                 
                 //                NavigationLink(destination: V2(back: $isShowingNextView), isActive: $isShowingNextView) { EmptyView() }
                 
                 Button(action: {
-//                    back = false
-                    myNav.Back()
+                    back = false
                 }, label: {
                     Text("back")
                 })
                 
                 Button(action: {
-//                    root = false
-                    myNav.ToTMPRoot()
+                    root = false
                 }, label: {
                     Text("root")
+                })
+                Button(action: {
+                    historyData.Add(number: "123")
+                }, label: {
+                    Text("update")
                 })
                 
                 //                Button(action: {
@@ -355,80 +420,64 @@ struct V3: View {
     
 }
 
-
-class MyNavigation: ObservableObject{
-    var root: Bool = false
-    var contentView: Bool = false
-    var loginHi: Bool = false
+class C1: ObservableObject {
     
-    var stack: [MyView] = []
-    var view: MyView = .root
-    var tmpRoot: MyView = .root
+    @Published var text: String = ""
     
-    func ToRoot(){
-        Close()
-        self.view = .root
-        self.stack = [.root]
-        Open()
+    private let DataService = C2()
+    
+    private var cansellables = Set<AnyCancellable>()
+    
+    init(d: Bool){
+        addDataSubscriber(d: d)
     }
     
-    func ToTMPRoot(){
-        Close()
-        while self.view != self.tmpRoot{
-            self.view = self.stack.last ?? .root
-            self.stack = self.stack.dropLast()
-        }
-        Open()
-    }
-    
-    func SetTMPRoot(view: MyView){
-        self.tmpRoot = view
-    }
-    
-    func Forward(view: MyView){
-        Close()
-        self.stack.append(view)
-        self.view = view
-        Open()
-    }
-    
-    func Back(){
-        Close()
-        self.view = self.stack.last ?? .root
-        self.stack = self.stack.dropLast()
-        Open()
-    }
-    
-    func AllFalse(){
-    }
-    
-    func Open(){
-        switch self.view{
-        case .root:
-            self.root = true
-        case .contentView:
-            self.contentView = true
-        case .loginHi:
-            self.loginHi = true
+    func addDataSubscriber(d: Bool){
+        if (d == false){
+            DataService.$text
+                .receive(on: DispatchQueue.main)
+                .sink { (completion) in
+                    switch completion{
+                    case .finished:
+                        break
+                    case .failure(let error):
+                        print (error.localizedDescription)
+                    }
+                } receiveValue: { returnedData in
+                    self.text=returnedData
+                }
+                .store(in: &cansellables)
         }
     }
     
-    func Close(){
-        switch self.stack.last{
-        case .root:
-            self.root = false
-        case .contentView:
-            self.contentView = false
-        case .loginHi:
-            self.loginHi = false
-        case .none:
-            return
-        }
+    func upd(){
+        DataService.upd()
     }
 }
 
-enum MyView: String{
-    case root
-    case contentView
-    case loginHi
+class C2{
+    @Published var text: String = "V3_1"
+    
+    func upd(){
+        self.text = "V3_2"
+    }
+}
+
+
+struct PageControlView: UIViewRepresentable {
+    @Binding var currentPage: Int
+    @State var numberOfPages: Int
+    
+    func makeUIView(context: Context) -> UIPageControl {
+        let uiView = UIPageControl()
+        uiView.backgroundStyle = .prominent
+        uiView.currentPage = currentPage
+        uiView.numberOfPages = numberOfPages
+        return uiView
+    }
+    
+    func updateUIView(_ uiView: UIPageControl, context: Context) {
+        uiView.currentPage = currentPage
+        uiView.numberOfPages = numberOfPages
+    }
 }

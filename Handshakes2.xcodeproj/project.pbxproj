@@ -60,7 +60,6 @@
 		059C02B32843F8AC0073AFD6 /* SearchHistoryView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 059C02B22843F8AC0073AFD6 /* SearchHistoryView.swift */; };
 		059C02B52843FA760073AFD6 /* HistoryRow.swift in Sources */ = {isa = PBXBuildFile; fileRef = 059C02B42843FA760073AFD6 /* HistoryRow.swift */; };
 		059C02B72843FF540073AFD6 /* SingleSearchView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 059C02B62843FF540073AFD6 /* SingleSearchView.swift */; };
-		059C02BC28452D8F0073AFD6 /* SnapToScroll in Frameworks */ = {isa = PBXBuildFile; productRef = 059C02BB28452D8F0073AFD6 /* SnapToScroll */; };
 		059C02BF2846079B0073AFD6 /* ChatScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = 059C02BE2846079B0073AFD6 /* ChatScreen.swift */; };
 		05F1A595286B7E9700CE5681 /* Settings.swift in Sources */ = {isa = PBXBuildFile; fileRef = 05F1A594286B7E9700CE5681 /* Settings.swift */; };
 		DE23B2FD285B897300088E78 /* SearchChats.swift in Sources */ = {isa = PBXBuildFile; fileRef = DE23B2FC285B897300088E78 /* SearchChats.swift */; };
@@ -133,7 +132,6 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				059C02BC28452D8F0073AFD6 /* SnapToScroll in Frameworks */,
 				0578ABB928341D2B00810E70 /* PhoneNumberKit in Frameworks */,
 				DEBF70E828591FBE001D0EB5 /* Lottie in Frameworks */,
 			);
@@ -331,7 +329,6 @@
 			name = "Handshakes2 (iOS)";
 			packageProductDependencies = (
 				0578ABB828341D2B00810E70 /* PhoneNumberKit */,
-				059C02BB28452D8F0073AFD6 /* SnapToScroll */,
 				DEBF70E728591FBE001D0EB5 /* Lottie */,
 			);
 			productName = "Handshakes2 (iOS)";
@@ -384,7 +381,6 @@
 			mainGroup = 0578AB9328341C6F00810E70;
 			packageReferences = (
 				0578ABB728341D2B00810E70 /* XCRemoteSwiftPackageReference "PhoneNumberKit" */,
-				059C02BA28452D8F0073AFD6 /* XCRemoteSwiftPackageReference "hstack-snap-to-scroll" */,
 				DEBF70E628591FBE001D0EB5 /* XCRemoteSwiftPackageReference "lottie-ios" */,
 			);
 			productRefGroup = 0578ABA128341C7000810E70 /* Products */;
@@ -766,14 +762,6 @@
 				minimumVersion = 3.4.0;
 			};
 		};
-		059C02BA28452D8F0073AFD6 /* XCRemoteSwiftPackageReference "hstack-snap-to-scroll" */ = {
-			isa = XCRemoteSwiftPackageReference;
-			repositoryURL = "https://github.com/swiftui-library/hstack-snap-to-scroll";
-			requirement = {
-				kind = upToNextMajorVersion;
-				minimumVersion = 1.0.0;
-			};
-		};
 		DEBF70E628591FBE001D0EB5 /* XCRemoteSwiftPackageReference "lottie-ios" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/airbnb/lottie-ios.git";
@@ -789,11 +777,6 @@
 			isa = XCSwiftPackageProductDependency;
 			package = 0578ABB728341D2B00810E70 /* XCRemoteSwiftPackageReference "PhoneNumberKit" */;
 			productName = PhoneNumberKit;
-		};
-		059C02BB28452D8F0073AFD6 /* SnapToScroll */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = 059C02BA28452D8F0073AFD6 /* XCRemoteSwiftPackageReference "hstack-snap-to-scroll" */;
-			productName = SnapToScroll;
 		};
 		DEBF70E728591FBE001D0EB5 /* Lottie */ = {
 			isa = XCSwiftPackageProductDependency;

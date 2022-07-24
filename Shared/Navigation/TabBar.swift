@@ -71,7 +71,7 @@ struct TabBar: View {
     var background: some View {
         HStack {
             if selectedTab == .search { Spacer() }
-            if ((selectedTab == .chats) || (selectedTab == .singleChat)) { Spacer() }
+            if ((selectedTab == .chats) ) { Spacer() }
 //            if selectedTab == .notifications {
 //                Spacer()
 //                Spacer()
@@ -82,7 +82,7 @@ struct TabBar: View {
 //                Spacer()
 //                Spacer()
 //            }
-            if ((selectedTab == .contacts) || (selectedTab == .singleContact)) { Spacer() }
+            if ((selectedTab == .contacts) ) { Spacer() }
         }
         .padding(.horizontal, 8)
     }
@@ -90,7 +90,7 @@ struct TabBar: View {
     var overlay: some View {
         HStack {
             if selectedTab == .search { Spacer() }
-            if ((selectedTab == .chats) || (selectedTab == .singleChat)) { Spacer() }
+            if ((selectedTab == .chats) ) { Spacer() }
 //            if selectedTab == .notifications {
 //                Spacer()
 //                Spacer()
@@ -106,7 +106,7 @@ struct TabBar: View {
 //                Spacer()
 //                Spacer()
 //            }
-            if ((selectedTab == .contacts) || (selectedTab == .singleContact)) { Spacer() }
+            if ((selectedTab == .contacts)) { Spacer() }
         }
         .padding(.horizontal, 8)
     }

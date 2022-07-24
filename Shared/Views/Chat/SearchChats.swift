@@ -44,7 +44,7 @@ struct SearchChats: View {
 
                 SearchBarMy(searchText: $searchText)
                 ScrollView() {
-                    GeometryElement(hasScrolled: $hasScrolled, big: big, hasBack: false)
+//                    GeometryElement(hasScrolled: $hasScrolled, big: big, hasBack: false)
                     LazyVStack (pinnedViews: .sectionHeaders){
                         ChatsSearchList(searchData: searchData, searchedText: searchText)
                     }

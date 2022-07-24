@@ -17,10 +17,10 @@ struct LoginView: View {
     
     //    Data:
     @Binding var alert: MyAlert
-    @EnvironmentObject var userData: UserDataView
-    @EnvironmentObject var contacts: ContactsDataView
-    @EnvironmentObject private var model: ChatScreenModel
     @EnvironmentObject var historyData: HistoryDataView
+    @EnvironmentObject var contactsData: ContactsDataView
+    @EnvironmentObject var model: ChatScreenModel
+    @EnvironmentObject var userData: UserDataView
     
     @AppStorage("big") var big: Bool = IsBig()
 //    @AppStorage("fresh") var fresh: Bool = true
@@ -353,7 +353,7 @@ struct LoginView: View {
                     userData.update(newData: UserUpdate(field: .jwt, string: reses.payload?.jwt.jwt ?? ""))
                     userData.update(newData: UserUpdate(field: .id, string: String(reses.payload?.jwt.id ?? -1)))
                     //                    fresh = true
-                    contacts.Delete()
+                    contactsData.Delete()
                     model.reset()
                     historyData.reset()
                     self.hideContacts = false

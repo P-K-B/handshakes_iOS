@@ -6,12 +6,12 @@
 //
 
 import SwiftUI
-import SnapToScroll
+
 
 struct SingleSearchView: View {
     @EnvironmentObject var history: HistoryDataView
     @EnvironmentObject var contacts: ContactsDataView
-    @State var hasScrolled: Bool = false
+    //    @State var hasScrolled: Bool = false
     @AppStorage("big") var big: Bool = IsBig()
     @AppStorage("selectedTab") var selectedTab: Tab = .search
     //    @State var currentSearch: SearchHistory?
@@ -19,105 +19,87 @@ struct SingleSearchView: View {
     @EnvironmentObject var userData: UserDataView
     
     var body: some View {
-        GeometryElement(hasScrolled: $hasScrolled, big: big, hasBack: false)
-        VStack() {
-            Text("Searching for: " + (history.datta.first(where: {$0.id == history.selectedHistory})?.number ?? ""))
-                .font(Font.custom("SFProDisplay-Regular", size: 20))
-                .padding()
-                .frame(maxWidth: .infinity, alignment: .leading)
-            //                Text(history.datta.first(where: {$0.id == history.selectedHistory})?.number ?? "")
-            //                    .font(Font.custom("SFProDisplay-Regular", size: 20))
-            //                    .padding()
-            //                    .frame(maxWidth: .infinity, alignment: .leading)
-            Divider()
-            VStack{
+        //        GeometryElement(hasScrolled: $hasScrolled, big: big, hasBack: false)
+        NavigationView {
+            VStack() {
+                Text("Searching for: " + (history.datta.first(where: {$0.id == history.selectedHistory})?.number ?? ""))
+                    .font(Font.custom("SFProDisplay-Regular", size: 20))
+                    .padding()
+                    .frame(maxWidth: .infinity, alignment: .leading)
+                //                Text(history.datta.first(where: {$0.id == history.selectedHistory})?.number ?? "")
+                //                    .font(Font.custom("SFProDisplay-Regular", size: 20))
+                //                    .padding()
+                //                    .frame(maxWidth: .infinity, alignment: .leading)
+                Divider()
                 VStack{
-                    if (history.datta.first(where: {$0.id == history.selectedHistory})?.handhsakes != nil){
-                    HStackSnap(alignment: .center(32)) {
-                        if (history.datta.first(where: {$0.id == history.selectedHistory})?.handhsakes?.count == 0){
-                            Text("No results")
-                                .frame(minHeight:200)
-                                .frame(maxHeight: 1000)
-                                .snapAlignmentHelper(id: "")
+                    VStack{
+                        if (history.datta.first(where: {$0.id == history.selectedHistory})?.handhsakes != nil){
+                            
+                                if (history.datta.first(where: {$0.id == history.selectedHistory})?.handhsakes?.count == 0){
+                                    Text("No results")
+                                        .frame(minHeight:200)
+                                        .frame(maxHeight: 1000)
+                                        
+                                }
+                                else{
+                                    //                    ScrollView(){
+                                    //                        HStack{
+                                    //                            VStack{
+                                    
+                                    ForEach (((history.datta.first(where: {$0.id == history.selectedHistory})?.handhsakes!.sorted(by: {$0.path.count < $1.path.count})))!, id: \.self){ handhsake in
+                                        //                                Text("Path #\(index+1)")
+                                        //                                Text("\(handhsake.path.count)")
+                                        Grid_old(handshake: handhsake, alert: .constant(MyAlert()))
+                                            .environmentObject(history)
+                                            .environmentObject(contacts)
+                                            .environmentObject(model)
+                                            .environmentObject(userData)
+                                            .frame(minHeight:200)
+                                        //                                                                    .padding()
+                                            .background(.ultraThinMaterial, in: RoundedRectangle(cornerRadius: 20, style: .continuous))
+                                            .frame(maxHeight: 1000)
+                                        
+                                            
+                                            .onAppear{print(handhsake)}
+                                        
+                                    }
+                                }
+                                
+                                //                        }
+                                
+                            
                         }
                         else{
-                        //                    ScrollView(){
-                        //                        HStack{
-                        //                            VStack{
-                        
-                            ForEach (((history.datta.first(where: {$0.id == history.selectedHistory})?.handhsakes!.sorted(by: {$0.path.count < $1.path.count})))!, id: \.self){ handhsake in
-                                //                                Text("Path #\(index+1)")
-                                //                                Text("\(handhsake.path.count)")
-                                Grid_old(handshake: handhsake)
-                                    .environmentObject(history)
-                                    .environmentObject(contacts)
-                                    .environmentObject(model)
-                                    .environmentObject(userData)
+                                ProgressView()
                                     .frame(minHeight:200)
-                                //                                                                    .padding()
-                                    .background(.ultraThinMaterial, in: RoundedRectangle(cornerRadius: 20, style: .continuous))
                                     .frame(maxHeight: 1000)
-                                
-                                    .snapAlignmentHelper(id: "")
-                                    .onAppear{print(handhsake)}
-                                
-                            }
-                        }
                             
-//                        }
-                        
-                    } eventHandler: { event in
-                        //
-                        handleSnapToScrollEvent(event: event)
-                    }
-                    }
-                    else{
-                        HStackSnap(alignment: .center(32)) {
-                            ProgressView()
-                                .frame(minHeight:200)
-                                .frame(maxHeight: 1000)
-                                .snapAlignmentHelper(id: "")
-                        } eventHandler: { event in
-                            //
-                            handleSnapToScrollEvent(event: event)
                         }
+                        
+                        //                    .background(.red)
                     }
+                    //                                .padding(.vertical, 200)
+                    //                                .frame(maxHeight: 1000)
                     
-                    //                    .background(.red)
                 }
-                //                                .padding(.vertical, 200)
-                //                                .frame(maxHeight: 1000)
                 
             }
             
-        }
-        
-        .overlay(
-            NavigationBar(title: "Searching", hasScrolled: $hasScrolled, search: .constant(false), showSearch: false, showProfile: false, back: .search)
+            .overlay(
+                NavigationBar(title: "Searching", search: .constant(false), showSearch: false, showProfile: false, hasBack: true)
         )
-        .onAppear{
-            if ((history.selectedHistory == nil) && (selectedTab == .singleSearch)){
-                selectedTab = .search
-            }
         }
+        //        .onAppear{
+        //            if ((history.selectedHistory == nil) && (selectedTab == .singleSearch)){
+        //                selectedTab = .search
+        //            }
+        //        }
     }
     
-    func handleSnapToScrollEvent(event: SnapToScrollEvent) {
-        switch event {
-        case let .didLayout(layoutInfo: layoutInfo):
-            
-            print("\(layoutInfo.keys.count) items layed out")
-            
-        case let .swipe(index: index):
-            
-            print("swiped to index: \(index)")
-            selectedGettingStartedIndex = index
-        }
-    }
+    
     
     // MARK: Private
     
-    @State private var selectedGettingStartedIndex: Int = 0
 }
 
 //struct SingleSearchView_Previews: PreviewProvider {
@@ -164,16 +146,16 @@ struct OneMore: View{
                 else{
                     BigLetter(letter: String(a[0].filterindex.prefix(1)), frame: 60, font: 24, color: colors[mloop(index: i-1)])
                 }
-//                ContactRow(contact: a[0], order: order)
+                //                ContactRow(contact: a[0], order: order)
                 if (a.count > 1){
                     BigLetter(letter: String("+" + String(a.count - 1)), frame: 16, font: 10, color: Color.blue)
                         .offset(x: 25, y: -25)
                 }
             }
-//            HStack{
-//                Text ("Chat with")
-//                ContactRow(contact: a[0], order: order)
-//            }
+            //            HStack{
+            //                Text ("Chat with")
+            //                ContactRow(contact: a[0], order: order)
+            //            }
         }
     }
     
@@ -196,9 +178,9 @@ struct OneMore2: View{
                 ContactRowN(string: "Someone")
             }
             else{
-//                ZStack{
-                    BigLetter(letter: String("S"), frame: 60, font: 24, color: Color.theme.accent)
-//                }
+                //                ZStack{
+                BigLetter(letter: String("S"), frame: 60, font: 24, color: Color.theme.accent)
+                //                }
                 ContactRowN(string: "Number")
             }
         }
@@ -222,7 +204,10 @@ struct Grid_old: View{
     @State var oneContact: Bool = false
     @State var extra: [FetchedContact] = []
     @State var openContact: FetchedContact?
+    @Binding var alert: MyAlert
     
+    
+
     
     var body: some View{
         HStack{
@@ -239,46 +224,79 @@ struct Grid_old: View{
                         //                                                        Text(path.number == "-" ? "You" : path.number)
                         
                         if (path.number != ""){
-
+                            
                             OneMore3(i: i, c: c)
                             
                             let a = contacts.data.contacts.filter({$0.telephone.contains(where: {$0.phone == path.number})})
                             if (a.count > 0){
                                 //                        ForEach (a){contact in
-//                                Button (action:{
-//                                    self.openContact = a[0]
-//                                    withAnimation{
-//                                        //                                        print(extra)
-//                                        oneContact = true
-//                                    }
-//                                }) {
-                                    
-                                    OneMore(a: a, i: i, m: c - 1, order: contacts.order)
-                                    
-//                                }
+                                //                                Button (action:{
+                                //                                    self.openContact = a[0]
+                                //                                    withAnimation{
+                                //                                        //                                        print(extra)
+                                //                                        oneContact = true
+                                //                                    }
+                                //                                }) {
+                                
+                                OneMore(a: a, i: i, m: c - 1, order: contacts.order)
+                                
+                                //                                }
                                 
                                 
                                 //                                .frame(height: 300)
                                 
-                                                                Button (action:{
-                                                                    withAnimation{
-                                                                        model.OpenChat(chat: handshake.path_id)
-                                                                        //                                        model.openChat = handshake.path_id
-                                                                        model.toGuid = path.guid
-                                                                        model.addChat(a: handshake.path_id, to: path.guid)
-                                                                        model.send(text: "", searchGuid: handshake.path_id, toGuid: path.guid, meta: Meta(number: history.datta.first(where: {$0.id == history.selectedHistory})?.number ?? "", asking_number: userData.data.number, res: path.number))
-                                                                        model.send(text: "Searching info about number \(path.number)", searchGuid: handshake.path_id, toGuid: path.guid, meta: nil)
-                                                                        selectedTab = .singleChat
                                 
-                                                                    }
-                                                                }) {
-                                                                    HStack {
-                                                                        
-                                                                        //                                                                        Text(a[0].firstName)
-                                                                        Text("Chat with ")
-                                                                        ContactRow(contact: a[0], order: contacts.order )
-                                                                    }
-                                                                }
+                                
+                                NavigationLink(destination:
+                                                ChatScreen(alert: $alert)
+                                    .environmentObject(history)
+                                    .environmentObject(contacts)
+                                    .environmentObject(model)
+                                    .environmentObject(userData)
+                                )
+                                {
+                                    HStack {
+                                        
+                                        //                                                                        Text(a[0].firstName)
+                                        Text("Chat with ")
+                                        ContactRow(contact: a[0], order: contacts.order )
+                                    }
+                                    
+                                }
+                                
+                                //                            .isDetailLink(false)
+                                .navigationViewStyle(.stack)
+                                .foregroundColor(Color.black)
+                                .simultaneousGesture(TapGesture().onEnded{
+                                    model.OpenChat(chat: handshake.path_id)
+                                    //                                        model.openChat = handshake.path_id
+                                    model.toGuid = path.guid
+                                    model.addChat(a: handshake.path_id, to: path.guid)
+                                    model.send(text: "", searchGuid: handshake.path_id, toGuid: path.guid, meta: Meta(number: history.datta.first(where: {$0.id == history.selectedHistory})?.number ?? "", asking_number: userData.data.number, res: path.number))
+                                    model.send(text: "Searching info about number \(path.number)", searchGuid: handshake.path_id, toGuid: path.guid, meta: nil)
+                                    
+                                })
+                                
+                                
+                                //                                Button (action:{
+                                //                                    withAnimation{
+                                //                                        model.OpenChat(chat: handshake.path_id)
+                                //                                        //                                        model.openChat = handshake.path_id
+                                //                                        model.toGuid = path.guid
+                                //                                        model.addChat(a: handshake.path_id, to: path.guid)
+                                //                                        model.send(text: "", searchGuid: handshake.path_id, toGuid: path.guid, meta: Meta(number: history.datta.first(where: {$0.id == history.selectedHistory})?.number ?? "", asking_number: userData.data.number, res: path.number))
+                                //                                        model.send(text: "Searching info about number \(path.number)", searchGuid: handshake.path_id, toGuid: path.guid, meta: nil)
+                                //                                        selectedTab = .singleChat
+                                //
+                                //                                    }
+                                //                                }) {
+                                //                                    HStack {
+                                //
+                                //                                        //                                                                        Text(a[0].firstName)
+                                //                                        Text("Chat with ")
+                                //                                        ContactRow(contact: a[0], order: contacts.order )
+                                //                                    }
+                                //                                }
                                 //                                .padding(.horizontal, 15)
                                 //                                .padding()
                                 //                        }
@@ -326,22 +344,7 @@ struct Grid_old: View{
         
     }
     
-    func handleSnapToScrollEvent(event: SnapToScrollEvent) {
-        switch event {
-        case let .didLayout(layoutInfo: layoutInfo):
-            
-            print("\(layoutInfo.keys.count) items layed out")
-            
-        case let .swipe(index: index):
-            
-            print("swiped to index: \(index)")
-            selectedGettingStartedIndex = index
-        }
-    }
     
-    // MARK: Private
-    
-    @State private var selectedGettingStartedIndex: Int = 0
     
 }
 
@@ -364,11 +367,11 @@ struct OneMore3: View{
     var c:Int
     
     var body: some View{
-            if (i < 2){
-                Text(i == (c - 1) ? "You know this number as:" : "Person who may know this number:")
-                    .font(Font.system(size: 18, weight: .regular, design: .default))
-                    .foregroundColor(Color.theme.contactsHeadLetter)
-                    .padding(5)
+        if (i < 2){
+            Text(i == (c - 1) ? "You know this number as:" : "Person who may know this number:")
+                .font(Font.system(size: 18, weight: .regular, design: .default))
+                .foregroundColor(Color.theme.contactsHeadLetter)
+                .padding(5)
         }
     }
 }
@@ -394,19 +397,19 @@ struct MoreContacts: View{
     }
 }
 
-struct Grid_Previews: PreviewProvider {
-    static var previews: some View {
-        Grid_old(handshake: SearchPathDecoded(path_id: "233DCB1EE69511ECAE590242AC120003", dep: 0, print: ["-", "+7 903 668-90-41", ""], path: [SearchPathDecodedPath(number: "-", guid: "233D3773E69511ECAE590242AC120003"), SearchPathDecodedPath(number: "+7 903 668-90-41", guid: "233D47D4E69511ECAE590242AC120003"), SearchPathDecodedPath(number: "", guid: "233DB13EE69511ECAE590242AC120003")]))
-            .environmentObject(DebugData().historyData)
-            .environmentObject(DebugData().contactsData)
-            .environmentObject(DebugData().model)
-            .environmentObject(DebugData().userData)
-        
-        //            .environmentObject(history)
-        //            .environmentObject(contacts)
-        //            .environmentObject(model)
-    }
-}
+//struct Grid_Previews: PreviewProvider {
+//    static var previews: some View {
+//        Grid_old(handshake: SearchPathDecoded(path_id: "233DCB1EE69511ECAE590242AC120003", dep: 0, print: ["-", "+7 903 668-90-41", ""], path: [SearchPathDecodedPath(number: "-", guid: "233D3773E69511ECAE590242AC120003"), SearchPathDecodedPath(number: "+7 903 668-90-41", guid: "233D47D4E69511ECAE590242AC120003"), SearchPathDecodedPath(number: "", guid: "233DB13EE69511ECAE590242AC120003")]))
+//            .environmentObject(DebugData().historyData)
+//            .environmentObject(DebugData().contactsData)
+//            .environmentObject(DebugData().model)
+//            .environmentObject(DebugData().userData)
+//
+//        //            .environmentObject(history)
+//        //            .environmentObject(contacts)
+//        //            .environmentObject(model)
+//    }
+//}
 
 struct Scl: View{
     @State var letter: String
@@ -585,3 +588,222 @@ struct Scl: View{
 //
 //    @State private var selectedGettingStartedIndex: Int = 0
 //}
+
+
+
+
+struct SingleSearchView2: View {
+    @EnvironmentObject var history: HistoryDataView
+    @EnvironmentObject var contacts: ContactsDataView
+    @State var hasScrolled: Bool = false
+    @AppStorage("big") var big: Bool = IsBig()
+    @AppStorage("selectedTab") var selectedTab: Tab = .search
+    //    @State var currentSearch: SearchHistory?
+    @EnvironmentObject private var model: ChatScreenModel
+    @EnvironmentObject var userData: UserDataView
+    @Environment(\.presentationMode) private var presentationMode: Binding<PresentationMode>
+    @Binding var alert: MyAlert
+    
+
+    @State var currentPage = 0
+    @State var numberOfPages = 0
+    //    @State var number: Number?
+    
+    
+    var body: some View {
+        //        GeometryElement(hasScrolled: $hasScrolled, big: big, hasBack: false)
+        NavigationView {
+            VStack {
+                
+                //            Head
+                VStack{
+                    ZStack {
+                        VStack (alignment: .leading){
+                            HStack{
+                                Button(action:{
+                                    withAnimation(){
+                                        presentationMode.wrappedValue.dismiss()
+                                    }
+                                }){
+                                    HStack(spacing: 10){
+                                        Image(systemName: "chevron.left")
+                                            .resizable()
+                                            .aspectRatio(contentMode: .fit)
+                                            .frame(width: 15)
+                                            .foregroundColor(Color.accentColor) //Apply color for arrow only
+                                        Text("Searching2")
+                                            .animatableFont(size: hasScrolled ? 22 : 36, weight: .bold)
+                                            .foregroundColor(.black)
+                                    }
+                                }
+                                Spacer()
+                            }
+                            .padding(.top, 30)
+                        }
+                        .frame(maxWidth: .infinity, alignment: .leading)
+                        .padding(.leading, 20)
+                        .padding(.top, 30)
+                        .offset(y: hasScrolled ? -4 : 0)
+                    }
+                    .ignoresSafeArea()
+                }
+                
+                
+                
+                
+                Text("Searching for: " + (history.datta.first(where: {$0.id == history.selectedHistory})?.number ?? ""))
+                    .font(Font.custom("SFProDisplay-Regular", size: 20))
+                    .padding()
+                    .frame(maxWidth: .infinity, alignment: .leading)
+                //                            Text(history.datta.first(where: {$0.id == history.selectedHistory})?.number ?? "")
+                //                                .font(Font.custom("SFProDisplay-Regular", size: 20))
+                //                                .padding()
+                //                                .frame(maxWidth: .infinity, alignment: .leading)
+                Divider()
+                VStack{
+                    VStack{
+                        if (history.datta.first(where: {$0.id == history.selectedHistory})?.handhsakes != nil){
+                                if (history.datta.first(where: {$0.id == history.selectedHistory})?.handhsakes?.count == 0){
+                                    Text("No results")
+                                        .frame(minHeight:200)
+                                        .frame(maxHeight: 1000)
+                                }
+                                else{
+                                    //                    ScrollView(){
+                                    //                        HStack{
+                                    //                            VStack{
+                                    let a = (history.datta.first(where: {$0.id == history.selectedHistory})?.handhsakes!.sorted(by: {$0.path.count < $1.path.count}))!
+//                                    self.numberOfPages = a.count
+
+                                    VStack {
+                                        //                                    Spacer()
+                                        PageControlView(currentPage: $currentPage, numberOfPages: a.count)
+                                    }
+                                    TabView(selection: $currentPage) {
+                                    ForEach (a.indices, id: \.self){ index in
+                                        let handhsake = a[index]
+                                        //                                Text("Path #\(index+1)")
+                                        //                                Text("\(handhsake.path.count)")
+                                        ScrollView{
+                                        Grid_old(handshake: handhsake, alert: $alert)
+                                            .environmentObject(history)
+                                            .environmentObject(contacts)
+                                            .environmentObject(model)
+                                            .environmentObject(userData)
+                                            .frame(minHeight:200)
+                                        //                                                                    .padding()
+                                            .background(.ultraThinMaterial, in: RoundedRectangle(cornerRadius: 20, style: .continuous))
+                                            .frame(maxHeight: 1000)
+                                        
+                                            .onAppear{print(handhsake)}
+                                            
+                                        
+                                    }
+                                        .tag(index)
+                                    }
+                                }
+                                    .tabViewStyle(.page(indexDisplayMode: .never))
+                                    .indexViewStyle(.page(backgroundDisplayMode: .always))
+                                }
+                                
+                                //                        }
+                                
+                           
+                        }
+                        else{
+                                ProgressView()
+                                    .frame(minHeight:200)
+                                    .frame(maxHeight: 1000)
+                            
+                        }
+                        
+                        //                    .background(.red)
+                    }
+                    //                                .padding(.vertical, 200)
+                    //                                .frame(maxHeight: 1000)
+                    
+                }
+                .navigationBarHidden(true)
+            }
+            //        Text("HI")
+            //            .onAppear{
+            //                if (number != nil){
+            //                    history.Add(number: number!.phone)
+            //                }
+            //            }
+            .navigationBarHidden(true)
+        .navigationBarBackButtonHidden(true)
+        }
+        .navigationBarHidden(true)
+    .navigationBarBackButtonHidden(true)
+    
+        
+        
+        //        .overlay(
+        //            NavigationBar(title: "Searching2", hasScrolled: $hasScrolled, search: .constant(false), showSearch: false, showProfile: false, back: .search)
+        //                .navigationBarHidden(true)
+        //                .navigationBarBackButtonHidden(true)
+        //        )
+        //        .onAppear{
+        //            if ((history.selectedHistory == nil) && (selectedTab == .singleSearch)){
+        //                selectedTab = .search
+        //            }
+        //        }
+        
+    }
+    
+    
+}
+
+
+//struct SingleSearchView2_Previews: PreviewProvider {
+//
+//    static let debug: DebugData = DebugData()
+//
+//    static let historyData: HistoryDataView = debug.historyData
+//    static let contactsData: ContactsDataView = debug.contactsData
+//    static let model: ChatScreenModel = debug.model
+//    static let userData: UserDataView = debug.userData
+//
+//    static var previews: some View {
+////        Group {
+//            SingleSearchView2()
+//                .environmentObject(historyData)
+//                .environmentObject(contactsData)
+//                .environmentObject(model)
+//                .environmentObject(userData)
+//                .safeAreaInset(edge: .top, content: {
+//                                            Color.clear.frame(height: 75)
+//            })
+////                .previewDevice(PreviewDevice(rawValue: "iPhone SE (2nd generation)"))
+////            SingleSearchView2()
+////                .environmentObject(DebugData().historyData)
+////                .environmentObject(DebugData().contactsData)
+////                .environmentObject(DebugData().userData)
+////                .environmentObject(DebugData().model)
+////                .safeAreaInset(edge: .top, content: {
+////                    Color.clear.frame(height: 45)
+////                })
+////                .previewDevice(PreviewDevice(rawValue: "iPhone 13 Pro Max"))
+////        }
+//    }
+//}
+
+struct SingleSearchView2_Previews: PreviewProvider {
+    
+    static let debug: DebugData = DebugData()
+    
+    static let historyData: HistoryDataView = debug.historyData
+    static let contactsData: ContactsDataView = debug.contactsData
+    static let model: ChatScreenModel = debug.model
+    static let userData: UserDataView = debug.userData
+    
+    static var previews: some View {
+        SingleSearchView2(alert: .constant(MyAlert()))
+        //        SingleContactView2()
+            .environmentObject(historyData)
+            .environmentObject(contactsData)
+            .environmentObject(model)
+            .environmentObject(userData)
+    }
+}

@@ -23,7 +23,6 @@ struct ChatScreen: View, KeyboardReadable {
     @State var hasScrolled: Bool = false
     @State private var isKeyboardVisible = false
 
-    
     @State private var message = ""
     
     func GetChatTitle(b: [ReceivingChatMessage]) -> (String) {
@@ -159,16 +158,22 @@ struct ChatScreen: View, KeyboardReadable {
 //                    .offset(x: 0, y: isKeyboardVisible ? (big ? 55: 70) : 0)
                 }
                 .overlay(
-                    NavigationBar(title: "Chat", hasScrolled: $hasScrolled, search: .constant(false), showSearch: false, showProfile: false, back: .chats)
+                    NavigationBar(title: "Chat", search: .constant(false), showSearch: false, showProfile: false, hasBack: true)
                 )
             }
         }
-        .safeAreaInset(edge: .bottom) {
-            Color.clear.frame(height: isKeyboardVisible ? 0 : (big ? 55: 70))
-        }
+        .navigationBarHidden(true)
+        .navigationBarBackButtonHidden(true)
+        .safeAreaInset(edge: .top, content: {
+                                    Color.clear.frame(height: big ? 45: 75)
+                                })
+//        .safeAreaInset(edge: .bottom) {
+//            Color.clear.frame(height: isKeyboardVisible ? 0 : (big ? 55: 70))
+//        }
         .onTapGesture {
             self.endEditing()
         }
+
 //        .gesture(
 //           DragGesture().onChanged { value in
 ////              if value.translation.height > 0 {
@@ -207,7 +212,7 @@ struct ChatScreen: View, KeyboardReadable {
                 
                 DispatchQueue.main.async {
                     print("HERE2233")
-                    if (((model.openChat == nil) || (model.openChat == "")) && (selectedTab == .singleChat)){
+                    if (((model.openChat == nil) || (model.openChat == ""))){
                         selectedTab = .chats
                     }
                 }

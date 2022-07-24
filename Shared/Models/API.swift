@@ -435,6 +435,7 @@ struct AppTokenResponse: Decodable {
 struct SessionPayload: Decodable{
     var meta: NewUser?
     var jwt: JWT?
+    var chains: [String]?
 }
 
 struct NewUser: Decodable{

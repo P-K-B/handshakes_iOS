@@ -10,10 +10,10 @@ import SwiftUI
 struct LoginHi: View {
     
     @Binding var alert: MyAlert
-    @EnvironmentObject var userData: UserDataView
-    @EnvironmentObject var contacts: ContactsDataView
-    @EnvironmentObject private var model: ChatScreenModel
     @EnvironmentObject var historyData: HistoryDataView
+    @EnvironmentObject var contactsData: ContactsDataView
+    @EnvironmentObject var model: ChatScreenModel
+    @EnvironmentObject var userData: UserDataView
     @State private var isShowingDetailView = false
     
     @Environment(\.presentationMode) private var presentationMode: Binding<PresentationMode>
@@ -48,7 +48,11 @@ struct LoginHi: View {
                     .offset(x: 0, y: -50)
                     .frame(maxWidth: .infinity, maxHeight: .infinity)
                     VStack{
-                        NavigationLink(destination: LoginView(alert: $alert).environmentObject(userData).environmentObject(contacts).environmentObject(model).environmentObject(historyData), isActive: $isShowingDetailView) { EmptyView() }
+                        NavigationLink(destination: LoginView(alert: $alert)
+                            .environmentObject(historyData)
+                            .environmentObject(contactsData)
+                            .environmentObject(model)
+                            .environmentObject(userData), isActive: $isShowingDetailView) { EmptyView() }
                         
                         Button {
                             Task {
