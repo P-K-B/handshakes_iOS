@@ -36,13 +36,34 @@ struct SearchList: View, KeyboardReadable {
     
     @AppStorage("hideContacts") var hideContacts: Bool = false
 
+//    @AppStorage("hideContacts") var hideContacts: Bool = false
+
 
     
     var body: some View {
         //        lazyV
 //        VStack{
         NavigationView{
+            VStack{
             hardV
+//                VStack{
+//                    NavigationLink(destination:
+//                                    HideContacts()
+//    //                               SearchList(alert: $alert)
+//
+//                        .environmentObject(historyData)
+//                        .environmentObject(contactsData)
+//                        .environmentObject(model)
+//                        .environmentObject(userData)
+//                        .navigationBarHidden(true)
+//                        .navigationBarBackButtonHidden(true), isActive: $selector
+//                    ){
+//                        EmptyView()
+//                            .navigationBarHidden(true)
+//                            .navigationBarBackButtonHidden(true)
+//                    }
+//                }
+            }
             .navigationBarHidden(true)
             .navigationBarBackButtonHidden(true)
             .onTapGesture {
@@ -59,8 +80,13 @@ struct SearchList: View, KeyboardReadable {
 //                if (history.datta.count < 5){
 //                history.Add(number: "\(UUID())")
 //                }
-                print("History Data")
-                print(historyData.datta)
+//                print("History Data")
+//                print(historyData.datta)
+//                if (hideContacts == false){
+//
+//                    selector = true
+//
+//                }
             }
             .overlay{
                 TabBar()
@@ -84,7 +110,7 @@ struct SearchList: View, KeyboardReadable {
     
     var inputRow: some View{
         VStack{
-            Text("\(hideContacts ? "true" : "false")")
+//            Text("\(hideContacts ? "true" : "false")")
             Text(welcomeText)
                 .font(Font.custom("SFProDisplay-Regular", size: 20))
                 .padding()

@@ -40,8 +40,8 @@ struct ContentView: View {
     @AppStorage("fresh") var fresh: Bool = true
     @AppStorage("hideContacts") var hideContacts: Bool = false
     @AppStorage("showHideAlertLoacl") var showHideAlertLoacl: Bool = false
-//    @State var showHide: Bool = false
-//    @State var showHideAlert: Bool = false
+    //    @State var showHide: Bool = false
+    //    @State var showHideAlert: Bool = false
     //    @EnvironmentObject private var model: ChatScreenModel
     //    @EnvironmentObject var historyData: HistoryDataView
     
@@ -58,83 +58,102 @@ struct ContentView: View {
     
     var body: some View {
         
-//        NavigationView{
+        //        NavigationView{
+        //            VStack{
+        //                ZStack{
+        VStack {
+            switch selectedTab {
+            case .contacts:
+                ContactsView(alert: $alert, visible: $visible)
+                    .environmentObject(historyData)
+                    .environmentObject(contactsData)
+                    .environmentObject(model)
+                    .environmentObject(userData)
+                    .onAppear{
+                        print("Data")
+                        print(historyData.datta)
+                        print(contactsData.data)
+                        print(userData.data)
+                        //                                    print(contactsData.selectedContact)
+                    }
+                
+                
+                //                        case .singleContact:
+                //                            ContactsView(alert: $alert, visible: $visible)
+                //                                .environmentObject(contactsData)
+                //                                .environmentObject(historyData)
+                
+            case .search:
+                SearchList(alert: $alert)
+                    .environmentObject(historyData)
+                    .environmentObject(contactsData)
+                    .environmentObject(model)
+                    .environmentObject(userData)
+                
+                //                        case .singleSearch:
+                //                            SingleSearchView()
+                //                                .environmentObject(historyData)
+                //                                .environmentObject(contactsData)
+                //                                .environmentObject(model)
+                
+            case .chats:
+                AllChats(alert: $alert)
+                    .environmentObject(historyData)
+                    .environmentObject(contactsData)
+                    .environmentObject(model)
+                    .environmentObject(userData)
+                
+            case .hide:
+                HideContacts(root: true)
+                ////                               SearchList(alert: $alert)
+                
+                                    .environmentObject(historyData)
+                                    .environmentObject(contactsData)
+                                    .environmentObject(model)
+                                    .environmentObject(userData)
+                
+                //                        case .singleChat:
+                //
+                //                            ChatScreen(alert: $alert)
+                //                                .environmentObject(model)
+                //                                .environmentObject(contactsData)
+                //
+                //                        case .profile:
+                //                            Settings()
+                //                                .environmentObject(userData)
+                //                                .environmentObject(contactsData)
+                //                                .environmentObject(historyData)
+                //                                .environmentObject(model)
+            }
+            
+            //                    }
+            
+            
+            //                }
+            //            }
+            //            .navigationBarHidden(true)
+            //            .navigationBarBackButtonHidden(true)
 //            VStack{
-//                ZStack{
-                    ZStack {
-                        switch selectedTab {
-                        case .contacts:
-                            ContactsView(alert: $alert, visible: $visible)
-                                .environmentObject(historyData)
-                                .environmentObject(contactsData)
-                                .environmentObject(model)
-                                .environmentObject(userData)
-                                .onAppear{
-                                    print("Data")
-                                    print(historyData.datta)
-//                                    print(contactsData.selectedContact)
-                                }
-                                
-                            
-//                        case .singleContact:
-//                            ContactsView(alert: $alert, visible: $visible)
-//                                .environmentObject(contactsData)
-//                                .environmentObject(historyData)
-                            
-                        case .search:
-                            SearchList(alert: $alert)
-                                .environmentObject(historyData)
-                                .environmentObject(contactsData)
-                                .environmentObject(model)
-                                .environmentObject(userData)
-                            
-//                        case .singleSearch:
-//                            SingleSearchView()
-//                                .environmentObject(historyData)
-//                                .environmentObject(contactsData)
-//                                .environmentObject(model)
-                            
-                        case .chats:
-                            AllChats(alert: $alert)
-                                .environmentObject(historyData)
-                                .environmentObject(contactsData)
-                                .environmentObject(model)
-                                .environmentObject(userData)
-                            
-//                        case .singleChat:
+//                NavigationLink(destination:
+//                                HideContacts()
+////                               SearchList(alert: $alert)
 //
-//                            ChatScreen(alert: $alert)
-//                                .environmentObject(model)
-//                                .environmentObject(contactsData)
-//
-//                        case .profile:
-//                            Settings()
-//                                .environmentObject(userData)
-//                                .environmentObject(contactsData)
-//                                .environmentObject(historyData)
-//                                .environmentObject(model)
-                        }
-                        
-//                    }
-                    
-                        
+//                    .environmentObject(historyData)
+//                    .environmentObject(contactsData)
+//                    .environmentObject(model)
+//                    .environmentObject(userData)
+//                    .navigationBarHidden(true)
+//                    .navigationBarBackButtonHidden(true), isActive: $selector
+//                ){
+//                    EmptyView()
+//                        .navigationBarHidden(true)
+//                        .navigationBarBackButtonHidden(true)
 //                }
 //            }
-//            .navigationBarHidden(true)
-//            .navigationBarBackButtonHidden(true)
-                        
-                        NavigationLink(destination: HideContacts()
-            .environmentObject(historyData)
-            .environmentObject(contactsData)
-            .environmentObject(model)
-            .environmentObject(userData), isActive: $selector
-                        ){
-                            EmptyView()
-                        }
         }
-                    
-                    .navigationBarHidden(true)
-                    .navigationBarBackButtonHidden(true)
+        
+        .navigationBarHidden(true)
+        .navigationBarBackButtonHidden(true)
         .onAppear{
             selector = false
             contactsData.SetJwt( jwt: userData.data.jwt)
@@ -148,29 +167,15 @@ struct ContentView: View {
                 contactsData.Load(upload: true)
             }
             onAppear()
-//            print("hideContacts:")
-//            print(hideContacts)
+            //            print("hideContacts:")
+            //            print(hideContacts)
             if (hideContacts == false){
-                
-//                DispatchQueue.global(qos: .userInitiated).async {
-//                    print("Performing time consuming task in this background thread")
-//                    do{
-//                let group = DispatchGroup()
-//                group.enter()
-//
-//                //                        Wait for user data to be loaded
-//                DispatchQueue.global().async {
-//                    sleep(3)
-//                    group.leave()
-//                }
-//
-//                group.wait()
-                selector = true
-//                    }
-//                    DispatchQueue.main.async {
-//                        print("SignInUpCallAppToken. Time consuming task has completed. From here we are allowed to update user interface.")
-//                    }
-//                }
+
+                selectedTab = .hide
+               
+            }
+            if ((selectedTab == .hide) && (hideContacts == true)){
+                selectedTab = .search
             }
         }
         .onDisappear(perform: onDisappear)
@@ -210,7 +215,7 @@ struct ContentView: View {
 struct ContentView_Previews: PreviewProvider {
     
     static let debug: DebugData = DebugData()
-
+    
     static let historyData: HistoryDataView = debug.historyData
     static let contactsData: ContactsDataView = debug.contactsData
     static let model: ChatScreenModel = debug.model

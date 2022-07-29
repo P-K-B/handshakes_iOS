@@ -29,6 +29,7 @@ struct HideContacts: View {
     @EnvironmentObject var model: ChatScreenModel
     @EnvironmentObject var userData: UserDataView
     
+    @State var root: Bool
     
     @Environment(\.presentationMode) private var presentationMode: Binding<PresentationMode>
     
@@ -49,7 +50,12 @@ struct HideContacts: View {
                                         contactsData.Upload()
                                     }
                                     hideContacts = true
-                                    presentationMode.wrappedValue.dismiss()
+                                    if (root == true){
+                                        selectedTab = .search
+                                    }
+                                    else{
+                                        presentationMode.wrappedValue.dismiss()
+                                    }
 
                                 }
                             }){
@@ -84,7 +90,13 @@ struct HideContacts: View {
                                                 contactsData.Upload()
                                             }
                                             hideContacts = true
-                                            presentationMode.wrappedValue.dismiss()
+                                            if (root == true){
+                                                selectedTab = .search
+                                            }
+                                            else{
+                                                presentationMode.wrappedValue.dismiss()
+                                            }
+                                            
                                         }
                                     }
                                 }
@@ -129,6 +141,7 @@ struct HideContacts: View {
             .navigationBarBackButtonHidden(true)
             //
         }
+//        .background(.red)
         .navigationBarHidden(true)
         .navigationBarBackButtonHidden(true)
         .frame(maxHeight:.infinity)
@@ -141,11 +154,15 @@ struct HideContacts: View {
             self.hide = contactsData.data.hide
             //            self.showHideAlertLoacl = self.showHideAlert
             if (hideContacts == false){
-                withAnimation{
+                DispatchQueue.main.asyncAfter(deadline: .now() + .seconds(1)) {
                     self.showHideAlertLoacl = true
-                }
+                        }
+                
+                
             }
         }
+        
+        
 //        .onDisappear{
 //            if (hideContacts == false){
 //                contactsData.Upload()
@@ -281,8 +298,18 @@ struct HideContacts: View {
     }
 }
 
-//struct HideContacts_Previews: PreviewProvider {
-//    static var previews: some View {
-//        HideContacts()
-//    }
-//}
+struct HideContacts_Previews: PreviewProvider {
+    static let debug: DebugData = DebugData()
+    
+    static let historyData: HistoryDataView = debug.historyData
+    static let contactsData: ContactsDataView = debug.contactsData
+    static let model: ChatScreenModel = debug.model
+    static let userData: UserDataView = debug.userData
+    static var previews: some View {
+        HideContacts(root: false)
+            .environmentObject(historyData)
+            .environmentObject(contactsData)
+            .environmentObject(model)
+            .environmentObject(userData)
+    }
+}

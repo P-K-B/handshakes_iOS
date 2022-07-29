@@ -800,6 +800,7 @@ class ContactsDataService  {
                 allContacts.append(ContactWithInfo(phone: number.phone, uuid: contact.id, guid: number.guid, contact_info: String(data: try JSONEncoder().encode(contact.fullContact), encoding: .utf8) ?? ""))
             }
         }
+//        initial_upload добавить флаг
         let json = UploadContactsList(contacts: allContacts)
         let jsonData = try JSONEncoder().encode(json)
         //                print(jsonData)

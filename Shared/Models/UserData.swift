@@ -45,24 +45,26 @@ class UserDataView: ObservableObject {
     
     private var cansellables = Set<AnyCancellable>()
     
-    init(){
-        addDataSubscriber()
+    init(d: Bool){
+        addDataSubscriber(d: d)
     }
     
-    func addDataSubscriber(){
-        userDataService.$data
-            .receive(on: DispatchQueue.main)
-            .sink { (completion) in
-                switch completion{
-                case .finished:
-                    break
-                case .failure(let error):
-                    print (error.localizedDescription)
+    func addDataSubscriber(d: Bool){
+        if (d != true){
+            userDataService.$data
+                .receive(on: DispatchQueue.main)
+                .sink { (completion) in
+                    switch completion{
+                    case .finished:
+                        break
+                    case .failure(let error):
+                        print (error.localizedDescription)
+                    }
+                } receiveValue: { returnedData in
+                    self.data=returnedData
                 }
-            } receiveValue: { returnedData in
-                self.data=returnedData
-            }
-            .store(in: &cansellables)
+                .store(in: &cansellables)
+        }
     }
     
     func update(newData: UserUpdate){

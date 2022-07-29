@@ -8,99 +8,99 @@
 import SwiftUI
 
 
-struct SingleSearchView: View {
-    @EnvironmentObject var history: HistoryDataView
-    @EnvironmentObject var contacts: ContactsDataView
-    //    @State var hasScrolled: Bool = false
-    @AppStorage("big") var big: Bool = IsBig()
-    @AppStorage("selectedTab") var selectedTab: Tab = .search
-    //    @State var currentSearch: SearchHistory?
-    @EnvironmentObject private var model: ChatScreenModel
-    @EnvironmentObject var userData: UserDataView
-    
-    var body: some View {
-        //        GeometryElement(hasScrolled: $hasScrolled, big: big, hasBack: false)
-        NavigationView {
-            VStack() {
-                Text("Searching for: " + (history.datta.first(where: {$0.id == history.selectedHistory})?.number ?? ""))
-                    .font(Font.custom("SFProDisplay-Regular", size: 20))
-                    .padding()
-                    .frame(maxWidth: .infinity, alignment: .leading)
-                //                Text(history.datta.first(where: {$0.id == history.selectedHistory})?.number ?? "")
-                //                    .font(Font.custom("SFProDisplay-Regular", size: 20))
-                //                    .padding()
-                //                    .frame(maxWidth: .infinity, alignment: .leading)
-                Divider()
-                VStack{
-                    VStack{
-                        if (history.datta.first(where: {$0.id == history.selectedHistory})?.handhsakes != nil){
-                            
-                                if (history.datta.first(where: {$0.id == history.selectedHistory})?.handhsakes?.count == 0){
-                                    Text("No results")
-                                        .frame(minHeight:200)
-                                        .frame(maxHeight: 1000)
-                                        
-                                }
-                                else{
-                                    //                    ScrollView(){
-                                    //                        HStack{
-                                    //                            VStack{
-                                    
-                                    ForEach (((history.datta.first(where: {$0.id == history.selectedHistory})?.handhsakes!.sorted(by: {$0.path.count < $1.path.count})))!, id: \.self){ handhsake in
-                                        //                                Text("Path #\(index+1)")
-                                        //                                Text("\(handhsake.path.count)")
-                                        Grid_old(handshake: handhsake, alert: .constant(MyAlert()))
-                                            .environmentObject(history)
-                                            .environmentObject(contacts)
-                                            .environmentObject(model)
-                                            .environmentObject(userData)
-                                            .frame(minHeight:200)
-                                        //                                                                    .padding()
-                                            .background(.ultraThinMaterial, in: RoundedRectangle(cornerRadius: 20, style: .continuous))
-                                            .frame(maxHeight: 1000)
-                                        
-                                            
-                                            .onAppear{print(handhsake)}
-                                        
-                                    }
-                                }
-                                
-                                //                        }
-                                
-                            
-                        }
-                        else{
-                                ProgressView()
-                                    .frame(minHeight:200)
-                                    .frame(maxHeight: 1000)
-                            
-                        }
-                        
-                        //                    .background(.red)
-                    }
-                    //                                .padding(.vertical, 200)
-                    //                                .frame(maxHeight: 1000)
-                    
-                }
-                
-            }
-            
-            .overlay(
-                NavigationBar(title: "Searching", search: .constant(false), showSearch: false, showProfile: false, hasBack: true)
-        )
-        }
-        //        .onAppear{
-        //            if ((history.selectedHistory == nil) && (selectedTab == .singleSearch)){
-        //                selectedTab = .search
-        //            }
-        //        }
-    }
-    
-    
-    
-    // MARK: Private
-    
-}
+//struct SingleSearchView: View {
+//    @EnvironmentObject var history: HistoryDataView
+//    @EnvironmentObject var contacts: ContactsDataView
+//    //    @State var hasScrolled: Bool = false
+//    @AppStorage("big") var big: Bool = IsBig()
+//    @AppStorage("selectedTab") var selectedTab: Tab = .search
+//    //    @State var currentSearch: SearchHistory?
+//    @EnvironmentObject private var model: ChatScreenModel
+//    @EnvironmentObject var userData: UserDataView
+//
+//    var body: some View {
+//        //        GeometryElement(hasScrolled: $hasScrolled, big: big, hasBack: false)
+//        NavigationView {
+//            VStack() {
+//                Text("Searching for: " + (history.datta.first(where: {$0.id == history.selectedHistory})?.number ?? ""))
+//                    .font(Font.custom("SFProDisplay-Regular", size: 20))
+//                    .padding()
+//                    .frame(maxWidth: .infinity, alignment: .leading)
+//                //                Text(history.datta.first(where: {$0.id == history.selectedHistory})?.number ?? "")
+//                //                    .font(Font.custom("SFProDisplay-Regular", size: 20))
+//                //                    .padding()
+//                //                    .frame(maxWidth: .infinity, alignment: .leading)
+//                Divider()
+//                VStack{
+//                    VStack{
+//                        if (history.datta.first(where: {$0.id == history.selectedHistory})?.handhsakes != nil){
+//
+//                            if (history.datta.first(where: {$0.id == history.selectedHistory})?.handhsakes?.count == 0){
+//                                Text("No results")
+//                                    .frame(minHeight:200)
+//                                    .frame(maxHeight: 1000)
+//
+//                            }
+//                            else{
+//                                //                    ScrollView(){
+//                                //                        HStack{
+//                                //                            VStack{
+//
+//                                ForEach (((history.datta.first(where: {$0.id == history.selectedHistory})?.handhsakes!.sorted(by: {$0.path.count < $1.path.count})))!, id: \.self){ handhsake in
+//                                    //                                Text("Path #\(index+1)")
+//                                    //                                Text("\(handhsake.path.count)")
+//                                    Grid_old(handshake: handhsake, alert: .constant(MyAlert()))
+//                                        .environmentObject(history)
+//                                        .environmentObject(contacts)
+//                                        .environmentObject(model)
+//                                        .environmentObject(userData)
+//                                        .frame(minHeight:200)
+//                                    //                                                                    .padding()
+//                                        .background(.ultraThinMaterial, in: RoundedRectangle(cornerRadius: 20, style: .continuous))
+//                                        .frame(maxHeight: 1000)
+//
+//
+//                                        .onAppear{print(handhsake)}
+//
+//                                }
+//                            }
+//
+//                            //                        }
+//
+//
+//                        }
+//                        else{
+//                            ProgressView()
+//                                .frame(minHeight:200)
+//                                .frame(maxHeight: 1000)
+//
+//                        }
+//
+//                        //                    .background(.red)
+//                    }
+//                    //                                .padding(.vertical, 200)
+//                    //                                .frame(maxHeight: 1000)
+//
+//                }
+//
+//            }
+//
+//            .overlay(
+//                NavigationBar(title: "Searching", search: .constant(false), showSearch: false, showProfile: false, hasBack: true)
+//            )
+//        }
+//        //        .onAppear{
+//        //            if ((history.selectedHistory == nil) && (selectedTab == .singleSearch)){
+//        //                selectedTab = .search
+//        //            }
+//        //        }
+//    }
+//
+//
+//
+//    // MARK: Private
+//
+//}
 
 //struct SingleSearchView_Previews: PreviewProvider {
 //    static var previews: some View {
@@ -207,7 +207,7 @@ struct Grid_old: View{
     @Binding var alert: MyAlert
     
     
-
+    
     
     var body: some View{
         HStack{
@@ -217,65 +217,89 @@ struct Grid_old: View{
                 //            HStackSnap(alignment: .center(32)){
                 //                                Text(handshake.path_id)
                 let c: Int = handshake.path.count
-                ForEach (0..<c, id:\.self){i in
+                ForEach (0..<(c-1), id:\.self){i in
                     //                VStack{
                     let path = handshake.path[i]
+                    let a = contacts.data.contacts.filter({$0.telephone.contains(where: {$0.phone == path.number})})
+                    let aLast = contacts.data.contacts.filter({$0.telephone.contains(where: {$0.phone == handshake.path[c-1].number})})
+                    if (c == 2){
+                        OneMore3(i: i+1, c: c)
+                        ContactRow(contact: aLast[0], order: contacts.order )
+                    }
+                    
                     if (i > 0){
                         //                                                        Text(path.number == "-" ? "You" : path.number)
                         
                         if (path.number != ""){
                             
                             OneMore3(i: i, c: c)
+                            if (i == 1){
+                                ContactRow(contact: aLast[0], order: contacts.order )
+                            }
                             
-                            let a = contacts.data.contacts.filter({$0.telephone.contains(where: {$0.phone == path.number})})
                             if (a.count > 0){
-                                //                        ForEach (a){contact in
-                                //                                Button (action:{
-                                //                                    self.openContact = a[0]
-                                //                                    withAnimation{
-                                //                                        //                                        print(extra)
-                                //                                        oneContact = true
-                                //                                    }
-                                //                                }) {
                                 
-                                OneMore(a: a, i: i, m: c - 1, order: contacts.order)
-                                
-                                //                                }
-                                
-                                
-                                //                                .frame(height: 300)
-                                
-                                
-                                
-                                NavigationLink(destination:
-                                                ChatScreen(alert: $alert)
-                                    .environmentObject(history)
-                                    .environmentObject(contacts)
-                                    .environmentObject(model)
-                                    .environmentObject(userData)
-                                )
-                                {
-                                    HStack {
-                                        
-                                        //                                                                        Text(a[0].firstName)
-                                        Text("Chat with ")
+                                VStack(){
+                                    //                        ForEach (a){contact in
+                                    //                                Button (action:{
+                                    //                                    self.openContact = a[0]
+                                    //                                    withAnimation{
+                                    //                                        //                                        print(extra)
+                                    //                                        oneContact = true
+                                    //                                    }
+                                    //                                }) {
+                                    if (i == (c - 1)){
                                         ContactRow(contact: a[0], order: contacts.order )
                                     }
-                                    
+                                    else{
+                                        VStack{
+                                            OneMore(a: a, i: i, m: c - 1, order: contacts.order)
+                                            
+                                            //                                }
+                                            
+                                            
+                                            //                                .frame(height: 300)
+                                            
+                                            
+                                            
+                                            NavigationLink(destination:
+                                                            ChatScreen(alert: $alert)
+                                                .environmentObject(history)
+                                                .environmentObject(contacts)
+                                                .environmentObject(model)
+                                                .environmentObject(userData)
+                                            )
+                                            {
+                                                HStack {
+                                                    
+                                                    //                                                                        Text(a[0].firstName)
+                                                    //                                        Text("Chat with ")
+                                                    ContactRow(contact: a[0], order: contacts.order )
+                                                }
+                                                
+                                            }
+                                            
+                                            //                            .isDetailLink(false)
+                                            .navigationViewStyle(.stack)
+                                            .foregroundColor(Color.black)
+                                            
+                                            .simultaneousGesture(TapGesture().onEnded{
+                                                model.OpenChat(chat: handshake.path_id)
+                                                //                                        model.openChat = handshake.path_id
+                                                model.toGuid = path.guid
+                                                model.addChat(a: handshake.path_id, to: path.guid)
+                                                model.send(text: "", searchGuid: handshake.path_id, toGuid: path.guid, meta: Meta(number: history.datta.first(where: {$0.id == history.selectedHistory})?.number ?? "", asking_number: userData.data.number, res: path.number))
+                                                model.send(text: "Searching info about number \(path.number)", searchGuid: handshake.path_id, toGuid: path.guid, meta: nil)
+                                                
+                                            })
+                                        }
+                                        .frame(width: 300, height: 125, alignment: .center)
+                                        .background(.ultraThinMaterial, in: RoundedRectangle(cornerRadius: 34, style: .continuous))
+                                    }
                                 }
+                                .padding(.bottom, 10)
                                 
-                                //                            .isDetailLink(false)
-                                .navigationViewStyle(.stack)
-                                .foregroundColor(Color.black)
-                                .simultaneousGesture(TapGesture().onEnded{
-                                    model.OpenChat(chat: handshake.path_id)
-                                    //                                        model.openChat = handshake.path_id
-                                    model.toGuid = path.guid
-                                    model.addChat(a: handshake.path_id, to: path.guid)
-                                    model.send(text: "", searchGuid: handshake.path_id, toGuid: path.guid, meta: Meta(number: history.datta.first(where: {$0.id == history.selectedHistory})?.number ?? "", asking_number: userData.data.number, res: path.number))
-                                    model.send(text: "Searching info about number \(path.number)", searchGuid: handshake.path_id, toGuid: path.guid, meta: nil)
-                                    
-                                })
+                                //
                                 
                                 
                                 //                                Button (action:{
@@ -308,11 +332,12 @@ struct Grid_old: View{
                         }
                         else{
                             OneMore2(c: c, i: i)
+                            //                                .background(.red)
                         }
-                        if (i < c - 1){
-                            //                        Divider()
-                            Image(systemName: "arrow.down")
-                        }
+                        //                        if (i < c - 1){
+                        //                            //                        Divider()
+                        //                            Image(systemName: "arrow.down")
+                        //                        }
                     }
                     
                 }
@@ -368,7 +393,7 @@ struct OneMore3: View{
     
     var body: some View{
         if (i < 2){
-            Text(i == (c - 1) ? "You know this number as:" : "Person who may know this number:")
+            Text(i == (c - 1) ? "You know this number as:" : "Person who knows")
                 .font(Font.system(size: 18, weight: .regular, design: .default))
                 .foregroundColor(Color.theme.contactsHeadLetter)
                 .padding(5)
@@ -604,7 +629,7 @@ struct SingleSearchView2: View {
     @Environment(\.presentationMode) private var presentationMode: Binding<PresentationMode>
     @Binding var alert: MyAlert
     
-
+    
     @State var currentPage = 0
     @State var numberOfPages = 0
     //    @State var number: Number?
@@ -613,7 +638,7 @@ struct SingleSearchView2: View {
     var body: some View {
         //        GeometryElement(hasScrolled: $hasScrolled, big: big, hasBack: false)
         NavigationView {
-            VStack {
+            VStack(spacing: 0) {
                 
                 //            Head
                 VStack{
@@ -631,7 +656,7 @@ struct SingleSearchView2: View {
                                             .aspectRatio(contentMode: .fit)
                                             .frame(width: 15)
                                             .foregroundColor(Color.accentColor) //Apply color for arrow only
-                                        Text("Searching2")
+                                        Text("Searching")
                                             .animatableFont(size: hasScrolled ? 22 : 36, weight: .bold)
                                             .foregroundColor(.black)
                                     }
@@ -647,6 +672,7 @@ struct SingleSearchView2: View {
                     }
                     .ignoresSafeArea()
                 }
+                //                .background(.green)
                 
                 
                 
@@ -655,65 +681,108 @@ struct SingleSearchView2: View {
                     .font(Font.custom("SFProDisplay-Regular", size: 20))
                     .padding()
                     .frame(maxWidth: .infinity, alignment: .leading)
+                //                    .background(.pink)
                 //                            Text(history.datta.first(where: {$0.id == history.selectedHistory})?.number ?? "")
                 //                                .font(Font.custom("SFProDisplay-Regular", size: 20))
                 //                                .padding()
                 //                                .frame(maxWidth: .infinity, alignment: .leading)
                 Divider()
+                //                    .padding()
+                //                    .background(.blue)
                 VStack{
                     VStack{
                         if (history.datta.first(where: {$0.id == history.selectedHistory})?.handhsakes != nil){
-                                if (history.datta.first(where: {$0.id == history.selectedHistory})?.handhsakes?.count == 0){
-                                    Text("No results")
-                                        .frame(minHeight:200)
-                                        .frame(maxHeight: 1000)
-                                }
-                                else{
-                                    //                    ScrollView(){
-                                    //                        HStack{
-                                    //                            VStack{
-                                    let a = (history.datta.first(where: {$0.id == history.selectedHistory})?.handhsakes!.sorted(by: {$0.path.count < $1.path.count}))!
-//                                    self.numberOfPages = a.count
-
-                                    VStack {
-                                        //                                    Spacer()
-                                        PageControlView(currentPage: $currentPage, numberOfPages: a.count)
-                                    }
-                                    TabView(selection: $currentPage) {
-                                    ForEach (a.indices, id: \.self){ index in
-                                        let handhsake = a[index]
-                                        //                                Text("Path #\(index+1)")
-                                        //                                Text("\(handhsake.path.count)")
-                                        ScrollView{
-                                        Grid_old(handshake: handhsake, alert: $alert)
-                                            .environmentObject(history)
-                                            .environmentObject(contacts)
-                                            .environmentObject(model)
-                                            .environmentObject(userData)
-                                            .frame(minHeight:200)
-                                        //                                                                    .padding()
-                                            .background(.ultraThinMaterial, in: RoundedRectangle(cornerRadius: 20, style: .continuous))
-                                            .frame(maxHeight: 1000)
-                                        
-                                            .onAppear{print(handhsake)}
-                                            
-                                        
-                                    }
-                                        .tag(index)
-                                    }
-                                }
-                                    .tabViewStyle(.page(indexDisplayMode: .never))
-                                    .indexViewStyle(.page(backgroundDisplayMode: .always))
-                                }
-                                
-                                //                        }
-                                
-                           
-                        }
-                        else{
-                                ProgressView()
+                            if (history.datta.first(where: {$0.id == history.selectedHistory})?.handhsakes?.count == 0){
+                                Text("No results")
                                     .frame(minHeight:200)
                                     .frame(maxHeight: 1000)
+                            }
+                            else{
+                                //                    ScrollView(){
+                                //                        HStack{
+                                //                            VStack{
+                                let a = (history.datta.first(where: {$0.id == history.selectedHistory})?.handhsakes!.sorted(by: {$0.path.count < $1.path.count}))!
+                                //                                    self.numberOfPages = a.count
+                                
+                                VStack {
+                                    //                                    Spacer()
+                                    ZStack{
+                                        
+                                        TabView(selection: $currentPage) {
+                                            ForEach (a.indices, id: \.self){ index in
+                                                let handhsake = a[index]
+                                                //                                Text("Path #\(index+1)")
+                                                //                                Text("\(handhsake.path.count)")
+                                                ScrollView{
+                                                    Grid_old(handshake: handhsake, alert: $alert)
+                                                        .environmentObject(history)
+                                                        .environmentObject(contacts)
+                                                        .environmentObject(model)
+                                                        .environmentObject(userData)
+                                                        .frame(minHeight:200)
+                                                    //                                                .padding()
+                                                    //                                                                    .padding()
+                                                        .background(.ultraThinMaterial, in: RoundedRectangle(cornerRadius: 20, style: .continuous))
+                                                        .padding(.horizontal, 10)
+                                                    //                                                .frame(maxHeight: 1000)
+                                                    
+                                                        .onAppear{print(handhsake)}
+                                                    
+                                                        .padding(.top, 45)
+                                                    //                                                                                                    .offset(y: 45)
+                                                }
+                                                //                                                .padding(.top, 45)
+                                                //                                                .offset(y: 45)
+                                                .tag(index)
+                                                .safeAreaInset(edge: .bottom, content: {
+                                                                            Color.clear.frame(height: big ? 45: 75)
+                                                }
+                                                               )
+                                            }
+                                        }
+                                        .tabViewStyle(.page(indexDisplayMode: .never))
+                                        .indexViewStyle(.page(backgroundDisplayMode: .always))
+                                        //                                        .background(.red)
+                                        VStack{
+                                            PageControlView(currentPage: $currentPage, numberOfPages: a.count)
+                                                .padding(10)
+                                            Spacer()
+                                            HStack{
+                                                Image(systemName: "info.circle")
+                                                    .foregroundColor(ColorTheme().accent)
+                                                Text("Tap on a search card to start a chat")
+                                            }
+                                            .padding(30)
+                                            .frame(maxWidth: .infinity)
+//                                            .background(.green)
+                                            //                                                .background(.blue)
+                                            .background(.ultraThinMaterial)
+                                            .mask(
+                                                LinearGradient(gradient: Gradient(stops: [
+                                                    Gradient.Stop(color: Color(white: 0, opacity: 0),
+                                                                  location: 0),
+                                                    Gradient.Stop(color: Color(white: 0, opacity: 1),
+                                                                  location: 0.5),
+                                                ]), startPoint: .top, endPoint: .bottom)
+                                            )
+                                        }
+                                        .ignoresSafeArea()
+                                    }
+                                    //                                    .background(.red)
+                                    //                                        .padding(.vertical, 10)
+                                }
+                                
+                                //                                .background(.red)
+                            }
+                            
+                            //                        }
+                            
+                            
+                        }
+                        else{
+                            ProgressView()
+                                .frame(minHeight:200)
+                                .frame(maxHeight: 1000)
                             
                         }
                         
@@ -723,6 +792,7 @@ struct SingleSearchView2: View {
                     //                                .frame(maxHeight: 1000)
                     
                 }
+                //                .background(.blue)
                 .navigationBarHidden(true)
             }
             //        Text("HI")
@@ -732,11 +802,11 @@ struct SingleSearchView2: View {
             //                }
             //            }
             .navigationBarHidden(true)
-        .navigationBarBackButtonHidden(true)
+            .navigationBarBackButtonHidden(true)
         }
         .navigationBarHidden(true)
-    .navigationBarBackButtonHidden(true)
-    
+        .navigationBarBackButtonHidden(true)
+        
         
         
         //        .overlay(

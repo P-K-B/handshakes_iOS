@@ -253,7 +253,7 @@ struct SingleContactView2: View {
                             .aspectRatio(contentMode: .fit)
                             .frame(width: 15)
                             .foregroundColor(Color.accentColor) //Apply color for arrow only
-                        Text("Contacts2")
+                        Text("Contacts")
                             .animatableFont(size: 20, weight: .bold)
                             .foregroundColor(.black)
                     }

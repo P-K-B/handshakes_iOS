@@ -281,3 +281,19 @@ struct ChatItem: View {
 }
 
 
+
+struct AllChats_Previews: PreviewProvider {
+    static let debug: DebugData = DebugData()
+    
+    static let historyData: HistoryDataView = debug.historyData
+    static let contactsData: ContactsDataView = debug.contactsData
+    static let model: ChatScreenModel = debug.model
+    static let userData: UserDataView = debug.userData
+    static var previews: some View {
+        AllChats(alert: .constant(MyAlert()))
+            .environmentObject(historyData)
+            .environmentObject(contactsData)
+            .environmentObject(model)
+            .environmentObject(userData)
+    }
+}

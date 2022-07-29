@@ -19,9 +19,9 @@ struct Handshakes2App: App {
     //    @State var appData: AppData = AppData()
     @State var alert = MyAlert()
     @State var logged: Bool = false
-    @StateObject var userData: UserDataView = UserDataView()
+    @StateObject var userData: UserDataView = UserDataView(d: false)
     @StateObject var contactsData: ContactsDataView = ContactsDataView(d: false)
-    @StateObject private var model = ChatScreenModel()
+    @StateObject private var model = ChatScreenModel(d: false)
     @StateObject var historyData: HistoryDataView = HistoryDataView(d: false)
     
     //    @StateObject var UIState: UIStateModel = UIStateModel()
@@ -57,6 +57,8 @@ struct Handshakes2App: App {
                                                         .environmentObject(contactsData)
                                                         .environmentObject(model)
                                                         .environmentObject(userData)
+                                                        .navigationBarHidden(true)
+                                                        .navigationBarBackButtonHidden(true)
                                                 }
                                                 else{
                         
@@ -470,7 +472,9 @@ struct PageControlView: UIViewRepresentable {
     
     func makeUIView(context: Context) -> UIPageControl {
         let uiView = UIPageControl()
+        uiView.isUserInteractionEnabled = false
         uiView.backgroundStyle = .prominent
+        uiView.currentPageIndicatorTintColor = UIColor(named: "AccentColor")
         uiView.currentPage = currentPage
         uiView.numberOfPages = numberOfPages
         return uiView
