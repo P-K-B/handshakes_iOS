@@ -47,7 +47,7 @@ struct HideContacts: View {
                                 withAnimation(){
                                     //                            selectedTab = back ?? .search
                                     if (hideContacts == false){
-                                        contactsData.Upload()
+                                        contactsData.Upload(initial: true)
                                     }
                                     hideContacts = true
                                     if (root == true){
@@ -87,7 +87,7 @@ struct HideContacts: View {
                                         }
                                         else{
                                             if (hideContacts == false){
-                                                contactsData.Upload()
+                                                contactsData.Upload(initial: false)
                                             }
                                             hideContacts = true
                                             if (root == true){
@@ -225,7 +225,7 @@ struct HideContacts: View {
                                                     }
                                                     else{
                                                         if (hideContacts == false){
-                                                            contactsData.Upload()
+                                                            contactsData.Upload(initial: false)
                                                         }
                                                         presentationMode.wrappedValue.dismiss()
                                                     }

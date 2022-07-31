@@ -161,10 +161,10 @@ struct ContentView: View {
             model.SetJwt( jwt: userData.data.jwt)
             
             if (hideContacts == false){
-                contactsData.Load(upload: false)
+                contactsData.Load(upload: false, initial: false)
             }
             else{
-                contactsData.Load(upload: true)
+                contactsData.Load(upload: true, initial: false)
             }
             onAppear()
             //            print("hideContacts:")

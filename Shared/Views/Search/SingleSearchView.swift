@@ -234,7 +234,13 @@ struct Grid_old: View{
                             
                             OneMore3(i: i, c: c)
                             if (i == 1){
-                                ContactRow(contact: aLast[0], order: contacts.order )
+                                if (aLast.count > 0){
+                                    ContactRow(contact: aLast[0], order: contacts.order )
+                                }
+                                else{
+                                    Text(history.datta.first(where: {$0.id == history.selectedHistory})?.number ?? "")
+                                        .font(Font.system(size: 18, weight: .regular, design: .default))
+                                }
                             }
                             
                             if (a.count > 0){

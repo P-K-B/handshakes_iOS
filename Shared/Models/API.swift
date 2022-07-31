@@ -483,22 +483,23 @@ struct AllContacts: Codable{
 
 struct UploadContactsList: Codable{
     var contacts: [ContactWithInfo]
+    var initial_upload: Bool
 }
 
 struct ContactWithInfo: Codable{
     var phone: String
     var uuid: String
-    var guid: String
+//    var guid: String
     var contact_info: String
 }
 
 struct UploadContactsResponse: Decodable{
-    var payload: UploadContactsResponsePayload
+    var payload: UploadContactsResponsePayload?
     var status_code: Int
 }
 
 struct UploadContactsResponsePayload: Decodable{
-    var contacts: [String: ResponseContact]
+    var contacts: [String: ResponseContact]?
 }
 
 struct ResponseContact: Decodable{

@@ -34,7 +34,7 @@ struct Number: Hashable, Codable, Identifiable{
     let id: Int
     let title: String
     var phone: String
-    var guid: String
+    var uuid: String
 }
 
 struct FullContact: Hashable, Codable {

@@ -125,7 +125,7 @@ struct Settings: View {
                     //                    Spacer(minLength: 20)
                     
                     ScrollView{
-                        NumberRow(number: Number(id: 0, title: "Your number", phone: userData.data.number, guid: ""))
+                        NumberRow(number: Number(id: 0, title: "Your number", phone: userData.data.number, uuid: ""))
                             .listRowBackground(Color.clear)
                             .padding(.horizontal, 10)
                             .padding(.top, 10)
