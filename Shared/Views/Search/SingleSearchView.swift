@@ -259,7 +259,7 @@ struct Grid_old: View{
                                     }
                                     else{
                                         VStack{
-                                            OneMore(a: a, i: i, m: c - 1, order: contacts.order)
+                                            
                                             
                                             //                                }
                                             
@@ -276,10 +276,11 @@ struct Grid_old: View{
                                                 .environmentObject(userData)
                                             )
                                             {
-                                                HStack {
+                                                VStack {
                                                     
                                                     //                                                                        Text(a[0].firstName)
                                                     //                                        Text("Chat with ")
+                                                    OneMore(a: a, i: i, m: c - 1, order: contacts.order)
                                                     ContactRow(contact: a[0], order: contacts.order )
                                                 }
                                                 
@@ -337,7 +338,54 @@ struct Grid_old: View{
                             
                         }
                         else{
-                            OneMore2(c: c, i: i)
+                            VStack{
+//                                OneMore(a: a, i: i, m: c - 1, order: contacts.order)
+                                
+                                //                                }
+                                
+                                
+                                //                                .frame(height: 300)
+                                
+                                
+                                
+                                NavigationLink(destination:
+                                                ChatScreen(alert: $alert)
+                                    .environmentObject(history)
+                                    .environmentObject(contacts)
+                                    .environmentObject(model)
+                                    .environmentObject(userData)
+                                )
+                                {
+                                    HStack {
+                                        
+                                        //                                                                        Text(a[0].firstName)
+                                        //                                        Text("Chat with ")
+//                                        ContactRow(contact: a[0], order: contacts.order )
+                                        OneMore2(c: c, i: i)
+                                    }
+                                    
+                                }
+                                
+                                //                            .isDetailLink(false)
+                                .navigationViewStyle(.stack)
+                                .foregroundColor(Color.black)
+                                
+                                .simultaneousGesture(TapGesture().onEnded{
+                                    model.OpenChat(chat: handshake.path_id)
+                                    //                                        model.openChat = handshake.path_id
+                                    model.toGuid = path.guid
+                                    model.addChat(a: handshake.path_id, to: path.guid)
+                                    model.send(text: "", searchGuid: handshake.path_id, toGuid: path.guid, meta: Meta(number: history.datta.first(where: {$0.id == history.selectedHistory})?.number ?? "", asking_number: userData.data.number, res: history.datta.first(where: {$0.id == history.selectedHistory})?.number ?? ""))
+                                    model.send(text: "Searching info about number \(history.datta.first(where: {$0.id == history.selectedHistory})?.number ?? "")", searchGuid: handshake.path_id, toGuid: path.guid, meta: nil)
+                                    
+                                })
+                            }
+                            .frame(width: 300, height: 125, alignment: .center)
+                            .background(.ultraThinMaterial, in: RoundedRectangle(cornerRadius: 34, style: .continuous))
+
+                            
+                                                                .padding(.bottom, 10)
+
                             //                                .background(.red)
                         }
                         //                        if (i < c - 1){
