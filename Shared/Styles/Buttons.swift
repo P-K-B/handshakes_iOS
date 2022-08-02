@@ -19,7 +19,8 @@ struct ButtonStyleLogin: ViewModifier {
             .background(color)
             .foregroundColor(.white)
             .cornerRadius(100)
-            .font(Font.custom("SFProDisplay-Regular", size: fontSize))
+//            .font(Font.custom("SFProDisplay-Regular", size: fontSize))
+            .font(.body)
     }
 }
 

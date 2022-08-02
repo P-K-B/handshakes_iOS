@@ -67,6 +67,9 @@ struct Handshakes2App: App {
                                                         .environmentObject(contactsData)
                                                         .environmentObject(model)
                                                         .environmentObject(userData)
+//                                                        .navigationTitle("HI")
+                                                        .navigationBarHidden(true)
+                                                        .navigationBarBackButtonHidden(true)
                         
                         
                                                 }

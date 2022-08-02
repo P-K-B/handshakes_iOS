@@ -60,7 +60,7 @@ struct LoginView: View {
                     Image("Logo")
                         .resizable()
                         .rotationEffect(.degrees(180))
-                        .frame(width: UIScreen.screenHeight/2.9, height: UIScreen.screenHeight/2.9)
+                        .frame(width: UIScreen.screenHeight/2.2, height: UIScreen.screenHeight/2.2)
                         .offset(x: UIScreen.screenWidth/3, y: -UIScreen.screenHeight/8)
                     Spacer()
                 }
@@ -80,6 +80,7 @@ struct LoginView: View {
                     HStack{
                         VStack(alignment: .leading){
                             Text("Log in to").font(.largeTitle).fontWeight(.bold)
+                                .padding(.top, 20)
                             Text("Handshakes").font(.largeTitle).fontWeight(.bold)
                         }
                         //                        .font(.largeTitle).fontWeight(.bold)
@@ -411,9 +412,34 @@ struct LoginView: View {
 }
 
 
+
 struct LoginView_Previews: PreviewProvider {
+    static let debug: DebugData = DebugData()
+    
+    static let historyData: HistoryDataView = debug.historyData
+    static let contactsData: ContactsDataView = debug.contactsData
+    static let model: ChatScreenModel = debug.model
+    static let userData: UserDataView = debug.userData
     static var previews: some View {
-        LoginView(alert: .constant(MyAlert()))
-            .environmentObject(DebugData().userData)
+        Group{
+        NavigationView{
+            LoginView(alert: .constant(MyAlert()))
+            .environmentObject(historyData)
+            .environmentObject(contactsData)
+            .environmentObject(model)
+            .environmentObject(userData)
+            
+        }
+        .previewDevice(PreviewDevice(rawValue: "iPhone SE (2nd generation)"))
+            NavigationView{
+            LoginView(alert: .constant(MyAlert()))
+                .environmentObject(historyData)
+                .environmentObject(contactsData)
+                .environmentObject(model)
+                .environmentObject(userData)
+            
+        }
+            .previewDevice(PreviewDevice(rawValue: "iPhone 13 Pro Max"))
+        }
     }
 }

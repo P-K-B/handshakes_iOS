@@ -154,9 +154,9 @@ struct HideContacts: View {
             self.hide = contactsData.data.hide
             //            self.showHideAlertLoacl = self.showHideAlert
             if (hideContacts == false){
-                DispatchQueue.main.asyncAfter(deadline: .now() + .seconds(1)) {
-                    self.showHideAlertLoacl = true
-                        }
+//                DispatchQueue.main.asyncAfter(deadline: .now() + .seconds(2)) {
+//                    showHideAlertLoacl = true
+//                        }
                 
                 
             }

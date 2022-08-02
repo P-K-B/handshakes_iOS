@@ -19,7 +19,7 @@ struct LoginHi: View {
     @Environment(\.presentationMode) private var presentationMode: Binding<PresentationMode>
     
     var body: some View {
-        NavigationView{
+//        NavigationView{
             ZStack{
                 //            .background(.red)
                 VStack{
@@ -67,10 +67,15 @@ struct LoginHi: View {
                         
                     }
                     .frame(maxWidth: .infinity, maxHeight: .infinity)
+                    .navigationBarHidden(true)
+                    .navigationBarBackButtonHidden(true)
                     
                 }
+                .navigationBarHidden(true)
+                .navigationBarBackButtonHidden(true)
             }
             .navigationBarHidden(true)
+            .navigationBarBackButtonHidden(true)
             .background(ZStack{
                 Circle()
                     .fill(Color.theme.myYellow)
@@ -88,13 +93,37 @@ struct LoginHi: View {
                     .offset(x: UIScreen.screenWidth/2-UIScreen.screenWidth/20, y: UIScreen.screenHeight/2-UIScreen.screenWidth/3)
             }
             .frame(maxWidth: .infinity, maxHeight: .infinity))
-        }
+            .navigationBarHidden(true)
+            .navigationBarBackButtonHidden(true)
+//        }
+//        .navigationBarHidden(true)
+//        .navigationBarBackButtonHidden(true)
     }
 }
 
 struct LoginHi_Previews: PreviewProvider {
+    static let debug: DebugData = DebugData()
+    
+    static let historyData: HistoryDataView = debug.historyData
+    static let contactsData: ContactsDataView = debug.contactsData
+    static let model: ChatScreenModel = debug.model
+    static let userData: UserDataView = debug.userData
     static var previews: some View {
+        NavigationView{
+        Group{
         LoginHi(alert: .constant(MyAlert()))
-            .environmentObject(DebugData().userData)
+            .environmentObject(historyData)
+            .environmentObject(contactsData)
+            .environmentObject(model)
+            .environmentObject(userData)
+            .previewDevice(PreviewDevice(rawValue: "iPhone SE (2nd generation)"))
+            LoginHi(alert: .constant(MyAlert()))
+                .environmentObject(historyData)
+                .environmentObject(contactsData)
+                .environmentObject(model)
+                .environmentObject(userData)
+            .previewDevice(PreviewDevice(rawValue: "iPhone 13 Pro Max"))
+        }
+        }
     }
 }
