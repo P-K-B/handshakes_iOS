@@ -31,6 +31,9 @@ struct HideContacts: View {
     
     @State var root: Bool
     
+    @State var prev: Bool = false
+
+    
     @Environment(\.presentationMode) private var presentationMode: Binding<PresentationMode>
     
     
@@ -239,60 +242,103 @@ struct HideContacts: View {
     }
     
     var ContactsSearchList: some View{
-        LazyVStack{
-            Text("\(contactsData.data.contacts.count)")
-            //            Text("\(contacts.data.showedHide ? "true" : "false")")
-            //
-            //            if (contacts.data.contacts != nil){
-            ForEach(contactsData.data.contacts
-                .filter { searchText.isEmpty || $0.longSearch.localizedStandardContains(searchText)}
-                    
-            )
-            { contact in
+        
+        VStack{
+        
+            if ((!contactsData.checkAccess()) && (!self.prev)){
                 VStack{
-                    HStack {
-                        Button(action: {
-                            if (hide.contains(contact.id)){
-                                hide.remove(at: hide.firstIndex(where: {$0 == contact.id}) ?? 0)
-                                //                                contacts.removeHide(id: contact.id)
-                            }
-                            else{
-                                if (hide.count < 5){
-                                    hide.append(contact.id)
-                                    //                                    contacts.addHide(id: contact.id)
-                                }
-                                else{
-                                    alert = MyAlert(error: true, title: "", text: "Maximum number of hidden contacts achieved", button: "Ok", oneButton: true)
-                                    //                                                alert = MyAlert(error: true, title: "", text: "Please enter a valid phone number", button: "Ok", oneButton: true)
-                                }
-                            }
-                        }, label: {
-                            HStack{
-                                ContactRow(contact: contact, order: contactsData.order)
-                                Spacer()
-                                Image(systemName: hide.contains(contact.id) ? "checkmark.square" : "square")
-                                    .foregroundColor(hide.contains(contact.id) ? Color.theme.accent : Color.secondary)
-                                //                                    .onTapGesture {
-                                //
-                                //                                    }
-                                    .font(Font.custom("SFProDisplay-Regular", size: 20))
+                Button(action:{
+                    if (!contactsData.checkAccess()){
+                        alert = MyAlert(error: true, title: "Contacts access required.", text: "Go to Settings?", button: "Settings", button2: "Cancel", oneButton: false)
+                    }
+                    else{
+                        //                        contacts = ContactsData()
+                    }
+                }){
+                    Text ("Fetch contacts")
+                }
+                }
+//                .frame(width: geometry.size.width)      // Make the scroll view full-width
+//                            .frame(minHeight: geometry.size.height)
+            }
+            else{
+            //                            debugTime
+//                            GeometryElement(hasScrolled: $hasScrolled, big: big, hasBack: false)
+//                            Text("\(contacts.data.contacts.count)")
+//                            Text("\(contacts.data.letters.count)")
+            
+            if (contactsData.data.loaded){
+                if (!contactsData.data.updated){
+                    Text ("Updating")
+                        .onDisappear{
+                            print("2")
+                        }
+                }
+                LazyVStack{
+                    Text("\(contactsData.data.contacts.count)")
+                    //            Text("\(contacts.data.showedHide ? "true" : "false")")
+                    //
+                    //            if (contacts.data.contacts != nil){
+                    ForEach(contactsData.data.contacts
+                        .filter { searchText.isEmpty || $0.longSearch.localizedStandardContains(searchText)}
+                            
+                    )
+                    { contact in
+                        VStack{
+                            HStack {
+                                Button(action: {
+                                    if (hide.contains(contact.id)){
+                                        hide.remove(at: hide.firstIndex(where: {$0 == contact.id}) ?? 0)
+                                        //                                contacts.removeHide(id: contact.id)
+                                    }
+                                    else{
+                                        if (hide.count < 5){
+                                            hide.append(contact.id)
+                                            //                                    contacts.addHide(id: contact.id)
+                                        }
+                                        else{
+                                            alert = MyAlert(error: true, title: "", text: "Maximum number of hidden contacts achieved", button: "Ok", oneButton: true)
+                                            //                                                alert = MyAlert(error: true, title: "", text: "Please enter a valid phone number", button: "Ok", oneButton: true)
+                                        }
+                                    }
+                                }, label: {
+                                    HStack{
+                                        ContactRow(contact: contact, order: contactsData.order)
+                                        Spacer()
+                                        Image(systemName: hide.contains(contact.id) ? "checkmark.square" : "square")
+                                            .foregroundColor(hide.contains(contact.id) ? Color.theme.accent : Color.secondary)
+                                        //                                    .onTapGesture {
+                                        //
+                                        //                                    }
+                                            .font(Font.custom("SFProDisplay-Regular", size: 20))
+                                        
+                                    }
+                                })
+                                .foregroundColor(.black)
+                                .padding(.leading, 13)
+                                
+                                
                                 
                             }
-                        })
-                        .foregroundColor(.black)
-                        .padding(.leading, 13)
-                        
-                        
-                        
+                            Divider()
+                            
+                        }
+                        .padding(.horizontal, 10)
+                        .padding(.vertical, 3)
+                        .id(contact.index)
                     }
-                    Divider()
-                    
                 }
-                .padding(.horizontal, 10)
-                .padding(.vertical, 3)
-                .id(contact.index)
+
+            }
+            else{
+                Text("Loading")
             }
         }
+        }
+        
+        
+        
+        
         //        }
         
     }

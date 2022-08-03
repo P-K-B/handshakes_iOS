@@ -69,13 +69,13 @@ struct ContentView: View {
                     .environmentObject(contactsData)
                     .environmentObject(model)
                     .environmentObject(userData)
-                    .onAppear{
-                        print("Data")
-                        print(historyData.datta)
-                        print(contactsData.data)
-                        print(userData.data)
-                        //                                    print(contactsData.selectedContact)
-                    }
+//                    .onAppear{
+//                        print("Data")
+//                        print(historyData.datta)
+//                        print(contactsData.data)
+//                        print(userData.data)
+//                        //                                    print(contactsData.selectedContact)
+//                    }
                 
                 
                 //                        case .singleContact:

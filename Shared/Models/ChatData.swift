@@ -84,8 +84,8 @@ final class ChatScreenModel: ObservableObject {
         chatsDataService.disconnect()
     }
     
-    func addChat(a: String, to: String){
-        chatsDataService.addChat(a: a, to: to)
+    func addChat(a: String){
+        chatsDataService.addChat(a: a)
     }
     
     deinit { // 9
@@ -208,7 +208,7 @@ final class ChatScreenService  {
         webSocketTask?.cancel(with: .normalClosure, reason: nil) // 8
     }
     
-    func addChat(a: String, to: String){
+    func addChat(a: String){
         if (self.chats.allChats[a] == nil){
             self.chats.allChats[a] = []
         }
@@ -258,16 +258,16 @@ final class ChatScreenService  {
                         newChatMessage.meta = meta
                     }
                     if (newChatMessage.marker == "message_has_been_read"){
-                        let a = self.chats.allChats[newChatMessage.search_chain]?.firstIndex(where: {$0.message_id == newChatMessage.message_id}) ?? nil
+                        let a = self.chats.allChats[newChatMessage.search_chain+to]?.firstIndex(where: {$0.message_id == newChatMessage.message_id}) ?? nil
                         if (a != nil){
-                            print(self.chats.allChats[newChatMessage.search_chain]?[a ?? 0])
-                            self.chats.allChats[newChatMessage.search_chain]?[a ?? 0].read = true
+                            print(self.chats.allChats[newChatMessage.search_chain+to]?[a ?? 0])
+                            self.chats.allChats[newChatMessage.search_chain+to]?[a ?? 0].read = true
                             self.save()
                         }
                     }
                     else{
-                        self.addChat(a: newChatMessage.search_chain, to: to)
-                        self.chats.allChats[newChatMessage.search_chain]?.append(newChatMessage)
+                        self.addChat(a: newChatMessage.search_chain+to)
+                        self.chats.allChats[newChatMessage.search_chain+to]?.append(newChatMessage)
                         self.save()
                         print(self.chats)
                     }
@@ -335,6 +335,7 @@ struct Meta: Decodable, Encodable, Hashable{
     let number: String
     let asking_number: String
     let res: String
+    let chain: String
     //    let is_asking: Bool
 }
 

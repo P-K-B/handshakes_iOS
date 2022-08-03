@@ -32,6 +32,8 @@ struct HistoryRow: View {
             }
         }
         .font(Font.custom("SFProDisplay-Regular", size: 20))
+//        .opacity(0.70)
+        .foregroundColor(Color("GrayGary"))
         .padding(.horizontal, 15)
         .padding(.vertical, 5)
     }

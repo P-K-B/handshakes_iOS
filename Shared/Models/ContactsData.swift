@@ -290,7 +290,7 @@ class ContactsDataService  {
                                 do{
                                     try self.UploadContacts(contacts: self.data.contacts.filter({unhide.contains($0.id)}), initial: false)
                                     { (reses2) in
-                                        print(reses2)
+//                                        print(reses2)
                                         //                                    self.data.time4 = Date()
                                         //                            res1 = reses2.payload
 //                                        var newNewGuid: [String:[String]] = [:]
@@ -806,11 +806,11 @@ class ContactsDataService  {
         let json = UploadContactsList(contacts: allContacts, initial_upload: initial)
         let jsonData = try JSONEncoder().encode(json)
         //                print(jsonData)
-        print(String(data: try! JSONEncoder().encode(json), encoding: String.Encoding.utf8)?.replacingOccurrences(of: "\\\"", with: "\"")  )
+//        print(String(data: try! JSONEncoder().encode(json), encoding: String.Encoding.utf8)?.replacingOccurrences(of: "\\\"", with: "\"")  )
         urlRequest.httpBody = jsonData
         contactsUploadSunscription = URLSession.shared.dataTaskPublisher(for: urlRequest).subscribe(on: DispatchQueue.global(qos: .default))
             .tryMap { (output) -> Data in
-                print(output.response)
+//                print(output.response)
                 guard let response = output.response as? HTTPURLResponse,
                       response.statusCode >= 200 && response.statusCode < 300 else{
                     throw URLError(.badServerResponse)
@@ -869,7 +869,7 @@ class ContactsDataService  {
         //        print(urlRequest)
         contactsDeleteSunscription = URLSession.shared.dataTaskPublisher(for: urlRequest).subscribe(on: DispatchQueue.global(qos: .default))
             .tryMap { (output) -> Data in
-                print(output.response)
+//                print(output.response)
                 guard let response = output.response as? HTTPURLResponse,
                       response.statusCode >= 200 && response.statusCode < 300 else{
                     throw URLError(.badServerResponse)
@@ -912,7 +912,7 @@ class ContactsDataService  {
         var allContacts: [String] = []
         for contact in contacts {
             for number in contact.telephone{
-                allContacts.append(number.phone)
+                allContacts.append(number.uuid)
             }
         }
         json = AllContacts(contacts: allContacts)
@@ -928,7 +928,7 @@ class ContactsDataService  {
         //        print(urlRequest)
         contactsDeleteSunscription = URLSession.shared.dataTaskPublisher(for: urlRequest).subscribe(on: DispatchQueue.global(qos: .default))
             .tryMap { (output) -> Data in
-                print(output.response)
+//                print(output.response)
                 guard let response = output.response as? HTTPURLResponse,
                       response.statusCode >= 200 && response.statusCode < 300 else{
                     throw URLError(.badServerResponse)
@@ -1042,13 +1042,13 @@ class ContactsDataService  {
             //            update = contactsFromAppGuid.filter({update_id.contains($0.id)})
             
             print("New contacts")
-            print(new)
+//            print(new)
             print("Deleted contacts")
-            print(deleted)
+//            print(deleted)
             print("Updated contacts")
-            print(update)
+//            print(update)
             print("Updated_deleted contacts")
-            print(update_deleted)
+//            print(update_deleted)
             
             self.new = new
             self.deleted = deleted
@@ -1164,7 +1164,7 @@ class ContactsDataService  {
                                 do{
                                     try self.UploadContacts(contacts: new, initial: initial)
                                     { (reses2) in
-                                        print(reses2)
+//                                        print(reses2)
                                         //                                    self.data.time4 = Date()
 //                                        res1 = reses2.payload
                                         
@@ -1296,7 +1296,7 @@ class ContactsDataService  {
                 do{
                     try self.UploadContacts(contacts: new, initial: initial)
                     { (reses2) in
-                        print(reses2)
+//                        print(reses2)
                         //                                    self.data.time4 = Date()
 //                        res1 = reses2.payload
                         

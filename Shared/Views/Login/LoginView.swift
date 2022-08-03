@@ -60,7 +60,7 @@ struct LoginView: View {
                     Image("Logo")
                         .resizable()
                         .rotationEffect(.degrees(180))
-                        .frame(width: UIScreen.screenHeight/2.2, height: UIScreen.screenHeight/2.2)
+                        .frame(width: UIScreen.screenHeight/2.5, height: UIScreen.screenHeight/2.5)
                         .offset(x: UIScreen.screenWidth/3, y: -UIScreen.screenHeight/8)
                     Spacer()
                 }
@@ -440,6 +440,24 @@ struct LoginView_Previews: PreviewProvider {
             
         }
             .previewDevice(PreviewDevice(rawValue: "iPhone 13 Pro Max"))
+            NavigationView{
+            LoginView(alert: .constant(MyAlert()))
+                .environmentObject(historyData)
+                .environmentObject(contactsData)
+                .environmentObject(model)
+                .environmentObject(userData)
+            
+        }
+            .previewDevice(PreviewDevice(rawValue: "iPhone 13"))
+            NavigationView{
+            LoginView(alert: .constant(MyAlert()))
+                .environmentObject(historyData)
+                .environmentObject(contactsData)
+                .environmentObject(model)
+                .environmentObject(userData)
+            
+        }
+            .previewDevice(PreviewDevice(rawValue: "iPhone 13 mini"))
         }
     }
 }

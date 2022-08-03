@@ -223,7 +223,7 @@ struct ChatScreen: View, KeyboardReadable {
     private func onCommit() {
         print("here!!")
         if !message.isEmpty {
-            model.send(text: message, searchGuid: model.openChat!, toGuid: model.chats.allChats[model.openChat!]![0].is_sender ?? false ?  model.chats.allChats[model.openChat!]![0].to : model.chats.allChats[model.openChat!]![0].from, meta: nil)
+            model.send(text: message, searchGuid: model.chats.allChats[model.openChat!]!.first(where: {$0.meta != nil})?.meta?.chain ?? "", toGuid: model.chats.allChats[model.openChat!]![0].is_sender ?? false ?  model.chats.allChats[model.openChat!]![0].to : model.chats.allChats[model.openChat!]![0].from, meta: nil)
             //            model.send(text: "112233", searchGuid: "A9F02EF1E19B11ECA0FE0242AC120003", toGuid: "A9730C39E19B11ECA0FE0242AC120003")
             message = ""
         }

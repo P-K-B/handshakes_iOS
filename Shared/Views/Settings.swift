@@ -22,8 +22,8 @@ struct Settings: View {
     
     var body: some View {
         NavigationView{
-            VStack{
-                VStack{
+            VStack(spacing: 0){
+                VStack(spacing: 0){
                     //                                Head
                     //                    VStack{
                     //                        ZStack {

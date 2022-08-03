@@ -178,7 +178,7 @@ struct SearchList: View, KeyboardReadable {
             ZStack{
                 Color.theme.background
                     .ignoresSafeArea()
-                VStack{
+                VStack(spacing: 0){
                     inputRow
                     Divider()
                     GeometryReader { geometry in
@@ -191,6 +191,7 @@ struct SearchList: View, KeyboardReadable {
                                 //                                ForEach(contacts.data.contacts){ contact in
                                 //                                    HStack() {
                             HistoryRows
+                                .padding(.top, 10)
                             //                                    }
                             //                                }
                         }
@@ -253,9 +254,9 @@ struct SearchList: View, KeyboardReadable {
                                     HistoryRow(history: search)
                                     Spacer()
                                     Image(systemName: "chevron.right")
-                                        .resizable()
-                                        .aspectRatio(contentMode: .fit)
-                                        .frame(width: 7)
+//                                        .resizable()
+//                                        .aspectRatio(contentMode: .fit)
+//                                        .frame(width: 7)
                                         .foregroundColor(Color.accentColor) //Apply color for arrow only
                                         .padding(.trailing, 5)
                                 }

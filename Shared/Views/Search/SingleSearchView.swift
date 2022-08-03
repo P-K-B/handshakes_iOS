@@ -291,12 +291,12 @@ struct Grid_old: View{
                                             .foregroundColor(Color.black)
                                             
                                             .simultaneousGesture(TapGesture().onEnded{
-                                                model.OpenChat(chat: handshake.path_id)
+                                                model.OpenChat(chat: handshake.path_id+path.guid)
                                                 //                                        model.openChat = handshake.path_id
                                                 model.toGuid = path.guid
-                                                model.addChat(a: handshake.path_id, to: path.guid)
-                                                model.send(text: "", searchGuid: handshake.path_id, toGuid: path.guid, meta: Meta(number: history.datta.first(where: {$0.id == history.selectedHistory})?.number ?? "", asking_number: userData.data.number, res: path.number))
-                                                model.send(text: "Searching info about number \(path.number)", searchGuid: handshake.path_id, toGuid: path.guid, meta: nil)
+                                                model.addChat(a: handshake.path_id+path.guid)
+                                                model.send(text: "", searchGuid: handshake.path_id, toGuid: path.guid, meta: Meta(number: history.datta.first(where: {$0.id == history.selectedHistory})?.number ?? "", asking_number: userData.data.number, res: path.number, chain: handshake.path_id))
+                                                model.send(text: "Searching info about number \(history.datta.first(where: {$0.id == history.selectedHistory})?.number ?? "")", searchGuid: handshake.path_id, toGuid: path.guid, meta: nil)
                                                 
                                             })
                                         }
@@ -339,7 +339,7 @@ struct Grid_old: View{
                         }
                         else{
                             VStack{
-//                                OneMore(a: a, i: i, m: c - 1, order: contacts.order)
+                                //                                OneMore(a: a, i: i, m: c - 1, order: contacts.order)
                                 
                                 //                                }
                                 
@@ -360,7 +360,7 @@ struct Grid_old: View{
                                         
                                         //                                                                        Text(a[0].firstName)
                                         //                                        Text("Chat with ")
-//                                        ContactRow(contact: a[0], order: contacts.order )
+                                        //                                        ContactRow(contact: a[0], order: contacts.order )
                                         OneMore2(c: c, i: i)
                                     }
                                     
@@ -371,21 +371,21 @@ struct Grid_old: View{
                                 .foregroundColor(Color.black)
                                 
                                 .simultaneousGesture(TapGesture().onEnded{
-                                    model.OpenChat(chat: handshake.path_id)
+                                    model.OpenChat(chat: handshake.path_id+path.guid)
                                     //                                        model.openChat = handshake.path_id
                                     model.toGuid = path.guid
-                                    model.addChat(a: handshake.path_id, to: path.guid)
-                                    model.send(text: "", searchGuid: handshake.path_id, toGuid: path.guid, meta: Meta(number: history.datta.first(where: {$0.id == history.selectedHistory})?.number ?? "", asking_number: userData.data.number, res: history.datta.first(where: {$0.id == history.selectedHistory})?.number ?? ""))
+                                    model.addChat(a: handshake.path_id+path.guid)
+                                    model.send(text: "", searchGuid: handshake.path_id, toGuid: path.guid, meta: Meta(number: history.datta.first(where: {$0.id == history.selectedHistory})?.number ?? "", asking_number: userData.data.number, res: path.number, chain: handshake.path_id))
                                     model.send(text: "Searching info about number \(history.datta.first(where: {$0.id == history.selectedHistory})?.number ?? "")", searchGuid: handshake.path_id, toGuid: path.guid, meta: nil)
                                     
                                 })
                             }
                             .frame(width: 300, height: 125, alignment: .center)
                             .background(.ultraThinMaterial, in: RoundedRectangle(cornerRadius: 34, style: .continuous))
-
                             
-                                                                .padding(.bottom, 10)
-
+                            
+                            .padding(.bottom, 10)
+                            
                             //                                .background(.red)
                         }
                         //                        if (i < c - 1){
@@ -768,6 +768,8 @@ struct SingleSearchView2: View {
                                                 //                                Text("Path #\(index+1)")
                                                 //                                Text("\(handhsake.path.count)")
                                                 ScrollView{
+                                                    PageControlView(currentPage: $currentPage, numberOfPages: a.count)
+                                                        .padding(10)
                                                     Grid_old(handshake: handhsake, alert: $alert)
                                                         .environmentObject(history)
                                                         .environmentObject(contacts)
@@ -782,24 +784,35 @@ struct SingleSearchView2: View {
                                                     
                                                         .onAppear{print(handhsake)}
                                                     
-                                                        .padding(.top, 45)
+//                                                        .padding(.top, 45)
                                                     //                                                                                                    .offset(y: 45)
                                                 }
                                                 //                                                .padding(.top, 45)
                                                 //                                                .offset(y: 45)
                                                 .tag(index)
                                                 .safeAreaInset(edge: .bottom, content: {
-                                                                            Color.clear.frame(height: big ? 45: 75)
+                                                    Color.clear.frame(height: big ? 45: 75)
                                                 }
-                                                               )
+                                                )
                                             }
                                         }
                                         .tabViewStyle(.page(indexDisplayMode: .never))
                                         .indexViewStyle(.page(backgroundDisplayMode: .always))
                                         //                                        .background(.red)
                                         VStack{
-                                            PageControlView(currentPage: $currentPage, numberOfPages: a.count)
-                                                .padding(10)
+//                                            PageControlView(currentPage: $currentPage, numberOfPages: a.count)
+//                                                .padding(10)
+//                                                .padding(.bottom, 15)
+//                                                .background(.ultraThinMaterial)
+////                                                .background(.red)
+//                                                .mask(
+//                                                    LinearGradient(gradient: Gradient(stops: [
+//                                                        Gradient.Stop(color: Color(white: 0, opacity: 1),
+//                                                                      location: 0.65),
+//                                                        Gradient.Stop(color: Color(white: 0, opacity: 0),
+//                                                                      location: 1),
+//                                                    ]), startPoint: .top, endPoint: .bottom)
+//                                                )
                                             Spacer()
                                             HStack{
                                                 Image(systemName: "info.circle")
@@ -808,7 +821,7 @@ struct SingleSearchView2: View {
                                             }
                                             .padding(30)
                                             .frame(maxWidth: .infinity)
-//                                            .background(.green)
+                                            //                                            .background(.green)
                                             //                                                .background(.blue)
                                             .background(.ultraThinMaterial)
                                             .mask(
