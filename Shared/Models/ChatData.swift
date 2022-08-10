@@ -96,8 +96,8 @@ final class ChatScreenModel: ObservableObject {
         chatsDataService.send(text: text, searchGuid: searchGuid, toGuid: toGuid, meta: meta, read: nil, id: -1)
     }
     
-    func readMessage(searchGuid: String, id: Int){
-        chatsDataService.readMessage(searchGuid: searchGuid, id: id)
+    func readMessage(searchGuid: String, id: Int, chatGuid: String, to: String){
+        chatsDataService.readMessage(searchGuid: searchGuid, id: id, chatGuid: chatGuid, to: to)
     }
     
     func reset(){
@@ -154,10 +154,10 @@ final class ChatScreenService  {
     
     //    func Load(){}
     
-    func  readMessage(searchGuid: String, id: Int){
-        if (self.chats.allChats[searchGuid]?.first(where: {$0.message_id == id})?.read == false){
-            self.send(text: "", searchGuid: searchGuid, toGuid: "", meta: nil, read: true, id: id)
-            self.chats.allChats[searchGuid]?[(self.chats.allChats[searchGuid]?.firstIndex(where: {$0.message_id == id}))!].read = true
+    func  readMessage(searchGuid: String, id: Int, chatGuid: String, to: String){
+        if (self.chats.allChats[chatGuid]?.first(where: {$0.message_id == id})?.read == false){
+            self.send(text: "", searchGuid: searchGuid, toGuid: to, meta: nil, read: true, id: id)
+            self.chats.allChats[chatGuid]?[(self.chats.allChats[chatGuid]?.firstIndex(where: {$0.message_id == id}))!].read = true
             self.save()
             //            let a = self.chats.allChats[searchGuid]?.firstIndex(where: {$0.message_id == id}) ?? nil
             //            if (a != nil){
@@ -199,9 +199,10 @@ final class ChatScreenService  {
         let baseUrl="wss://hand.freekiller.net"
 #endif
         let url = URL(string: baseUrl + "/ws?token=\(jwt)")! // 3
+//        print(url)
         webSocketTask = URLSession.shared.webSocketTask(with: url) // 4
         webSocketTask?.receive(completionHandler: onReceive) // 5
-        webSocketTask?.resume() // 6
+        webSocketTask?.resume() // 6 
     }
     
     func disconnect() { // 7
@@ -256,12 +257,13 @@ final class ChatScreenService  {
                             return
                         }
                         newChatMessage.meta = meta
+                        newChatMessage.read = true
                     }
                     if (newChatMessage.marker == "message_has_been_read"){
-                        let a = self.chats.allChats[newChatMessage.search_chain+to]?.firstIndex(where: {$0.message_id == newChatMessage.message_id}) ?? nil
+                        let a = self.chats.allChats[newChatMessage.search_chain+newChatMessage.to]?.firstIndex(where: {$0.message_id == newChatMessage.message_id}) ?? nil
                         if (a != nil){
-                            print(self.chats.allChats[newChatMessage.search_chain+to]?[a ?? 0])
-                            self.chats.allChats[newChatMessage.search_chain+to]?[a ?? 0].read = true
+                            print(self.chats.allChats[newChatMessage.search_chain+newChatMessage.to]?[a ?? 0])
+                            self.chats.allChats[newChatMessage.search_chain+newChatMessage.to]?[a ?? 0].read = true
                             self.save()
                         }
                     }
@@ -295,7 +297,7 @@ final class ChatScreenService  {
         }
         if (read != nil){
             if (read == true){
-                message = SubmittedChatMessage(marker: "message_has_been_read", search_chain: searchGuid, body: "", to: "", message_id: id ?? 0)
+                message = SubmittedChatMessage(marker: "message_has_been_read", search_chain: searchGuid, body: "", to: toGuid, message_id: id ?? 0)
             }
         }
         guard let json = try? JSONEncoder().encode(message), // 2

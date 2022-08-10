@@ -104,8 +104,8 @@ struct AnimatableFontModifier: AnimatableModifier {
     
     func body(content: Content) -> some View {
         content
-//            .font(.system(size: size, weight: weight, design: design))
-//            .font(Font.custom("SFProDisplay-Bold", size: size))
+        //            .font(.system(size: size, weight: weight, design: design))
+        //            .font(Font.custom("SFProDisplay-Bold", size: size))
             .font(Font.system(size: size, weight: .bold, design: .default))
     }
 }
@@ -151,16 +151,61 @@ extension View {
 }
 
 extension View {
-     public func addBorder<S>(_ content: S, width: CGFloat = 1, cornerRadius: CGFloat) -> some View where S : ShapeStyle {
-         let roundedRect = RoundedRectangle(cornerRadius: cornerRadius)
-         return clipShape(roundedRect)
-              .overlay(roundedRect.strokeBorder(content, lineWidth: width))
-     }
- }
+    public func addBorder<S>(_ content: S, width: CGFloat = 1, cornerRadius: CGFloat) -> some View where S : ShapeStyle {
+        let roundedRect = RoundedRectangle(cornerRadius: cornerRadius)
+        return clipShape(roundedRect)
+            .overlay(roundedRect.strokeBorder(content, lineWidth: width))
+    }
+}
 
 
 extension UIScreen{
-   static let screenWidth = UIScreen.main.bounds.size.width
-   static let screenHeight = UIScreen.main.bounds.size.height
-   static let screenSize = UIScreen.main.bounds.size
+    static let screenWidth = UIScreen.main.bounds.size.width
+    static let screenHeight = UIScreen.main.bounds.size.height
+    static let screenSize = UIScreen.main.bounds.size
+}
+
+
+//extension UINavigationController: UIGestureRecognizerDelegate {
+//    override open func viewDidLoad() {
+//        super.viewDidLoad()
+//        interactivePopGestureRecognizer?.delegate = self
+//    }
+//    public func gestureRecognizerShouldBegin(_ gestureRecognizer: UIGestureRecognizer) -> Bool {
+//        return viewControllers.count > 1
+//    }
+//}
+
+struct MyBackGesture: ViewModifier {
+    
+    @Environment(\.presentationMode) private var presentationMode: Binding<PresentationMode>
+    
+    func body(content: Content) -> some View {
+        content
+            .highPriorityGesture(DragGesture(minimumDistance: 25, coordinateSpace: .local)
+                .onEnded { value in
+                    print(value)
+                    if (value.startLocation.x < 50){
+                        if abs(value.translation.height) < abs(value.translation.width) {
+                            if abs(value.translation.width) > 40.0 {
+                                if value.translation.width < 0 {
+                                    //                                        self.swipeRightToLeft()
+                                                                            
+                                } else if value.translation.width > 0 {
+                                    //                                        self.swipeLeftToRight()
+                                    presentationMode.wrappedValue.dismiss()
+print("Back")
+                                }
+                            }
+                        }
+                    }
+                }
+            )
+    }
+}
+
+extension View {
+    func myBackGesture() -> some View {
+        modifier(MyBackGesture())
+    }
 }

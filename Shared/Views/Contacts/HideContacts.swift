@@ -144,6 +144,7 @@ struct HideContacts: View {
             .navigationBarBackButtonHidden(true)
             //
         }
+        .myBackGesture()
 //        .background(.red)
         .navigationBarHidden(true)
         .navigationBarBackButtonHidden(true)

@@ -14,76 +14,85 @@ import Lottie
 @main
 struct Handshakes2App: App {
     
-    //    let persistenceController = PersistenceController.shared
-    
-    //    @State var appData: AppData = AppData()
     @State var alert = MyAlert()
-    @State var logged: Bool = false
     @StateObject var userData: UserDataView = UserDataView(d: false)
     @StateObject var contactsData: ContactsDataView = ContactsDataView(d: false)
     @StateObject private var model = ChatScreenModel(d: false)
     @StateObject var historyData: HistoryDataView = HistoryDataView(d: false)
-    
-    //    @StateObject var UIState: UIStateModel = UIStateModel()
-    
+        
     let phoneNumberKit = PhoneNumberKit()
     @State private var phoneField: PhoneNumberTextFieldView?
-    //        @State private var phoneNumber = String()
-    //        @State private var validNumber: Bool = false
-    //        @State private var validationError = false
-    //    @State private var errorDesc = Text("")
-    //        @StateObject var contacts: ContactsData = ContactsData()
     
     @AppStorage("jwt") var jwt: String = ""
-    //    @AppStorage("fresh") var fresh: Bool = true
+    @AppStorage("reopen") var reopen: Bool = false
+
+    @State var content: Bool = false
+    @State var login: Bool = false
     
-    @State var isAnimating = false
-    //    @Environment(\.colorScheme) var colorScheme
-    //        var foreverAnimation: Animation {
-    //            Animation.linear(duration: 1.0)
-    //                .repeatForever(autoreverses: false)
-    //        }
+    @State var lot = LottieView()
+    @State var lotText: String = "Loading..."
     
-    
+    @Environment(\.scenePhase) var scenePhase
     
     var body: some Scene {
         WindowGroup {
             VStack{
                 NavigationView{
-                    if (userData.data.loaded){
-                                                if (userData.data.loggedIn){
-                                                    ContentView(alert: $alert)
-                                                        .environmentObject(historyData)
-                                                        .environmentObject(contactsData)
-                                                        .environmentObject(model)
-                                                        .environmentObject(userData)
-                                                        .navigationBarHidden(true)
-                                                        .navigationBarBackButtonHidden(true)
-                                                }
-                                                else{
-                        
-                                                    LoginHi(alert: $alert)
-                                                        .environmentObject(historyData)
-                                                        .environmentObject(contactsData)
-                                                        .environmentObject(model)
-                                                        .environmentObject(userData)
-//                                                        .navigationTitle("HI")
-                                                        .navigationBarHidden(true)
-                                                        .navigationBarBackButtonHidden(true)
-                        
-                        
-                                                }
-                        
-//                        V1()
-                        //                            .environmentObject(UIState)
-                    }
-                    else{
+                    VStack{
+//                        if (userData.data.loaded){
+//                                                    if (userData.data.loggedIn){
+//                                                        ContentView(alert: $alert)
+//                                                                                    .environmentObject(historyData)
+//                                                                                    .environmentObject(contactsData)
+//                                                                                    .environmentObject(model)
+//                                                                                    .environmentObject(userData)
+//                                                    }
+//                                                        else{
+//                                                            LoginHi(alert: $alert)
+//                                                                                        .environmentObject(historyData)
+//                                                                                        .environmentObject(contactsData)
+//                                                                                        .environmentObject(model)
+//                                                                                        .environmentObject(userData)
+//                                                        }
+//                                                    }
+//                        else{
+                                                        
                         appLoading
                             .transition(.scale)
+//                        }
+                        NavigationLink(destination: ContentView(alert: $alert)
+                            .environmentObject(historyData)
+                            .environmentObject(contactsData)
+                            .environmentObject(model)
+                            .environmentObject(userData)
+                            .transition(.asymmetric(insertion: .move(edge: .bottom), removal: .move(edge: .top)))
+                                       , isActive: $content){
+                                EmptyView()
+                            }
+                        NavigationLink(destination: LoginHi(alert: $alert)
+                            .environmentObject(historyData)
+                            .environmentObject(contactsData)
+                            .environmentObject(model)
+                            .environmentObject(userData), isActive: $login){
+                                EmptyView()
+                            }
                     }
+                    .navigationBarHidden(true)
                 }
+                .navigationViewStyle(StackNavigationViewStyle())
             }
+//            .onChange(of: scenePhase) { newPhase in
+//                if newPhase == .active {
+//                    print("Active")
+//                    onAppear()
+//                } else if newPhase == .inactive {
+//                    print("Inactive")
+//                } else if newPhase == .background {
+//                    print("Background")
+//                }
+//            }
             .onAppear{
+                reopen = true
                 //                Login
                 DispatchQueue.global(qos: .userInitiated).async {
                     print("Performing time consuming task in this background thread")
@@ -95,12 +104,14 @@ struct Handshakes2App: App {
                         DispatchQueue.global().async {
                             while userData.data.loaded != true {
                             }
+                            
                             group.leave()
                         }
                         
                         group.wait()
                         userData.update(newData: UserUpdate(field: .loaded, bool: false))
-                        //                                                                        sleep(3)
+                        
+//                        sleep(3)
                         //                        Check that user has a valid phone
                         try self.phoneNumberKit.parse(userData.data.number)
                         do{
@@ -114,11 +125,20 @@ struct Handshakes2App: App {
                                     jwt = reses.payload?.jwt?.jwt ?? ""
                                     userData.update(newData: UserUpdate(field: .id, string: String(reses.payload?.jwt?.id ?? -1)))
                                     userData.save()
+                                    lot.test(){res in
+                                        content = true
+                                        userData.update(newData: UserUpdate(field: .loaded, bool: true))
+                                    }
                                 }
-                                if (reses.status_code == -1){
+                                else if (reses.status_code == -1){
                                     alert = MyAlert(error: true, title: "", text: "Error connectiong to server", button: "Ok", oneButton: true)
                                 }
-                                userData.update(newData: UserUpdate(field: .loaded, bool: true))
+                                else{
+                                    //                                    login = true
+                                    lot.test(){res in
+                                        login = true
+                                        userData.update(newData: UserUpdate(field: .loaded, bool: true))
+                                    }                                }
                             }
                         }
                         catch{
@@ -176,13 +196,15 @@ struct Handshakes2App: App {
         
     }
     
-    
+    private func onAppear() {
+        model.connect()
+    }
     
     var appLoading: some View{
         
         VStack{
-            LottieView()
-            Text ("Loading...")
+            lot
+            Text (lotText)
         }
     }
 }
@@ -191,14 +213,14 @@ struct LottieView: UIViewRepresentable {
     
     @Environment(\.colorScheme) var colorScheme
     
+    let view = UIView(frame: .zero)
+    let animationView = AnimationView()
+    
     func makeUIView(context: UIViewRepresentableContext<LottieView>) -> UIView {
-        
-        let view = UIView(frame: .zero)
-        let animationView = AnimationView()
         
         let img = (self.colorScheme == .dark ? "handshakes_logo_dark" : "handshakes_loading")
         
-        print("Color scheme: ", self.colorScheme, " and img = ", img)
+        //        print("Color scheme: ", self.colorScheme, " and img = ", img)
         let animation = Animation.named(img)
         animationView.animation = animation
         animationView.contentMode = .scaleAspectFit
@@ -217,124 +239,60 @@ struct LottieView: UIViewRepresentable {
     
     func updateUIView(_ uiView: UIView, context: UIViewRepresentableContext<LottieView>) {
     }
+    
+    func test(completion: @escaping (Bool) -> ()){
+        animationView.play(
+            fromProgress: animationView.currentProgress,
+            toProgress: 1,
+            loopMode: .playOnce,
+            completion: { [self] completed in
+                print("Done animation")
+                
+                DispatchQueue.main.asyncAfter(deadline: .now() + 0.01) {
+                    completion(true)
+                }
+            }
+        )
+    }
 }
 
 struct V1: View {
     
     @State private var isShowingNextView: Bool = false
     //    @StateObject var c1: C1 = C1(d: false)
-    @StateObject var historyData: HistoryDataView = HistoryDataView(d: false)
-    @Environment(\.colorScheme) var colorScheme
+    //    @StateObject var historyData: HistoryDataView = HistoryDataView(d: false)
+    //    @Environment(\.colorScheme) var colorScheme
     
     @State var currentPage = 0
     @State var numberOfPages = 6
     
     var body: some View{
-        VStack{
-            VStack {
-                //                                    Spacer()
-                PageControlView(currentPage: $currentPage, numberOfPages: numberOfPages)
-            }
-            TabView(selection: $currentPage) {
-                ScrollView{
-                    Text("Item 1")
-                        .foregroundColor(.white)
-                        .font(.largeTitle)
-                        .frame(width: 200, height: 1000)
-                        .background(.red)
-                }.tag(0)
-                ScrollView{
-                    Text("Item 2")
-                        .foregroundColor(.white)
-                        .font(.largeTitle)
-                        .frame(width: 200, height: 200)
-                        .background(.blue)
-                }.tag(1)
-                Text("First").tag(2)
-                Text("Second").tag(3)
-                Text("Third").tag(4)
-                Text("Fourth").tag(5)
-            }
-            //        .frame(width: 200, height: 200)
-            //                .tabViewStyle(.page)
-            //                .indexViewStyle(.page(backgroundDisplayMode: .always))
-            .tabViewStyle(.page(indexDisplayMode: .never))
-            .indexViewStyle(.page(backgroundDisplayMode: .always))
-        }
-        
-        //        GeometryReader { geometry in
-        //
-        //            ScrollViewReader { proxy in
-        //
-        //                ScrollView(.horizontal) {
-        //                    VStack{
-        //
-        //                        HStack(spacing: 20) {
-        //                            GeometryElement(x: $xScroll, y: $yScroll)
-        //                            //                ForEach(0..<10) {
-        //                            //                    VStack{
-        //                            //                    ScrollView{
-        //                            Text("Item 1")
-        //                                .foregroundColor(.white)
-        //                                .font(.largeTitle)
-        //                                .frame(width: cardWidth, height: 300)
-        //                                .background(.red)
-        ////                                .offset(x: -xScroll)
-        //                            //                    }
-        //                            //                ScrollView{
-        //                                            Text("Item 2")
-        //                                                .foregroundColor(.white)
-        //                                                .font(.largeTitle)
-        //                                                .frame(width: cardWidth, height: 200)
-        //                                                .background(.blue)
-        ////                                                .offset(x: -xScroll*2)
-        //                            //                }
-        //                            //                ScrollView{
-        //                            //                Text("Item 3")
-        //                            //                    .foregroundColor(.white)
-        //                            //                    .font(.largeTitle)
-        //                            //                    .frame(width: 200, height: 800)
-        //                            //                    .background(.red)
-        //                            //                    }
-        //                            //                    }
-        //                        }
-        //                    }
-        //                    .background(.green)
-        //                    .frame(width: geometry.size.width)      // Make the scroll view full-width
-        //                    .frame(minHeight: geometry.size.height)
-        ////                    .offset(x:)
-        //                }
-        //                .background(.pink)
-        //            }
-        //
-        //        }
-        //            .modifier(ScrollingHStackModifier(items: 3, itemWidth: 200, itemSpacing: 30))
-        //        }
-        
-        
-        
         //        NavigationView{
-        //            VStack{
-        //                Text("V1")
-        //                Text(colorScheme == .dark ? "In dark mode" : "In light mode")
-        //
-        //
-        //                NavigationLink(destination: V2(back: $isShowingNextView, root: $isShowingNextView).environmentObject(historyData), isActive: $isShowingNextView) { EmptyView() }
-        //
-        //                //            Button(action: {
-        //                //
-        //                //            }, label: {
-        //                //                Text("back")
-        //                //            })
-        //
-        //                Button(action: {
-        //                    isShowingNextView = true
-        //                }, label: {
-        //                    Text("next")
-        //                })
-        //            }
+        VStack{
+            Text("V1")
+            
+            NavigationLink(destination: V2(back: $isShowingNextView, root: $isShowingNextView)) { Text("V2") }
+                .simultaneousGesture(TapGesture().onEnded{
+                    //                                    print("Hello world!")
+                    //                        historyData.Add(number: "123")
+                })
+            
+            //                Button(action: {
+            //                    back = false
+            //                }, label: {
+            //                    Text("back")
+            //                })
+            
+            Button(action: {
+                //                    historyData.Add(number: "123")
+                isShowingNextView = true
+            }, label: {
+                Text("next")
+            })
+        }
+        .navigationTitle("V1")
         //        }
-        //
+        //        .environmentObject(historyData)
         //        .navigationBarHidden(true)
         //        .navigationBarBackButtonHidden(true)
     }
@@ -346,34 +304,38 @@ struct V2: View {
     @Binding var back: Bool
     @Binding var root: Bool
     @State private var isShowingNextView: Bool = false
-    @EnvironmentObject var historyData: HistoryDataView
+    //    @EnvironmentObject var historyData: HistoryDataView
+    @Environment(\.presentationMode) private var presentationMode: Binding<PresentationMode>
+    
     
     var body: some View{
-        NavigationView{
-            VStack{
-                Text("V2")
-                
-                NavigationLink(destination: V3(back: $isShowingNextView, root: $root)) { Text("V2") }
-                    .simultaneousGesture(TapGesture().onEnded{
-                        //                                    print("Hello world!")
-                        historyData.Add(number: "123")
-                    })
-                
-                Button(action: {
-                    back = false
-                }, label: {
-                    Text("back")
+        //        NavigationView{
+        VStack{
+            Text("V2")
+            
+            NavigationLink(destination: V3(back: $isShowingNextView, root: $root)) { Text("V3") }
+                .simultaneousGesture(TapGesture().onEnded{
+                    //                                    print("Hello world!")
+                    //                        historyData.Add(number: "123")
                 })
-                
-                Button(action: {
-                    historyData.Add(number: "123")
-                    isShowingNextView = true
-                }, label: {
-                    Text("next")
-                })
-            }
+            
+            Button(action: {
+                //                    back = false
+                presentationMode.wrappedValue.dismiss()
+            }, label: {
+                Text("back")
+            })
+            ButtonBack()
+            Button(action: {
+                //                    historyData.Add(number: "123")
+                isShowingNextView = true
+            }, label: {
+                Text("next")
+            })
         }
-        .environmentObject(historyData)
+        //            .navigationTitle("V2")
+        //        }
+        //        .environmentObject(historyData)
         .navigationBarHidden(true)
         .navigationBarBackButtonHidden(true)
     }
@@ -385,42 +347,53 @@ struct V3: View {
     @Binding var back: Bool
     @Binding var root: Bool
     @State private var isShowingNextView: Bool = false
-    @EnvironmentObject var historyData: HistoryDataView
+    @Environment(\.presentationMode) private var presentationMode: Binding<PresentationMode>
     
     var body: some View{
-        NavigationView{
-            VStack{
-                Text("V3")
-                //                Text(historyData)
-                
-                //                NavigationLink(destination: V2(back: $isShowingNextView), isActive: $isShowingNextView) { EmptyView() }
-                
-                Button(action: {
-                    back = false
-                }, label: {
-                    Text("back")
-                })
-                
-                Button(action: {
-                    root = false
-                }, label: {
-                    Text("root")
-                })
-                Button(action: {
-                    historyData.Add(number: "123")
-                }, label: {
-                    Text("update")
-                })
-                
-                //                Button(action: {
-                //                    isShowingNextView = true
-                //                }, label: {
-                //                    Text("next")
-                //                })
-            }
+        //        NavigationView{
+        VStack{
+            Text("V3")
+            //                Text(historyData)
+            
+            //                NavigationLink(destination: V2(back: $isShowingNextView), isActive: $isShowingNextView) { EmptyView() }
+            
+            Button(action: {
+                //                    back = false
+                presentationMode.wrappedValue.dismiss()
+            }, label: {
+                Text("back")
+            })
+            ButtonBack()
+            Button(action: {
+                root = false
+            }, label: {
+                Text("root")
+            })
+            
+            //                Button(action: {
+            //                    isShowingNextView = true
+            //                }, label: {
+            //                    Text("next")
+            //                })
         }
-        .navigationBarHidden(true)
-        .navigationBarBackButtonHidden(true)
+        .navigationTitle("V3")
+        //        }
+        //        .navigationBarHidden(true)
+        //        .navigationBarBackButtonHidden(true)
+    }
+    
+}
+
+struct ButtonBack: View {
+    
+    @Environment(\.presentationMode) private var presentationMode: Binding<PresentationMode>
+    
+    var body: some View{
+        Button(action: {
+            presentationMode.wrappedValue.dismiss()
+        }, label: {
+            Text("back button")
+        })
     }
     
 }

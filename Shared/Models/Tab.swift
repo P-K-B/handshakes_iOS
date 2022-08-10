@@ -20,8 +20,8 @@ var tabItems = [
 //    TabItem(text: "Explore", icon: "magnifyingglass", tab: .explore, color: .blue),
 //    TabItem(text: "Notifications", icon: "bell", tab: .notifications, color: .accentColor),
 //    TabItem(text: "Library", icon: "rectangle.stack", tab: .library, color: .accentColor)
-    TabItem(text: "Contacts", icon: "person", tab: .contacts, color: Color.theme.accent),
-    TabItem(text: "Search", icon: "magnifyingglass", tab: .search, color: Color.theme.accent),
+    TabItem(text: "Contacts", icon: "person", tab: .contacts, color: .red),
+    TabItem(text: "Search", icon: "magnifyingglass", tab: .search, color: .blue),
     TabItem(text: "Chats", icon: "message", tab: .chats, color: Color.theme.accent)
 ]
 

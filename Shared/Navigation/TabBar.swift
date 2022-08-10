@@ -10,8 +10,9 @@ import SwiftUI
 struct TabBar: View {
     @AppStorage("selectedTab") var selectedTab: Tab = .search
     @State var big: Bool = true
-    @State var color: Color = .accentColor
+    @AppStorage("TabColor") var color: Color = Color.theme.accent
     @State var tabItemWidth: CGFloat = 0
+    @EnvironmentObject var model: ChatScreenModel
     
     var body: some View {
             HStack {
@@ -44,18 +45,36 @@ struct TabBar: View {
                 }
             } label: {
                 VStack(spacing: 0) {
+                    let u = model.chats.allChats.filter({$0.value.contains(where: {(($0.read != true) && ($0.is_sender != true))})})
+                    if ((item.tab == .chats) && (u.count > 0)){
+                        ZStack{
+                            Image(systemName: item.icon)
+                                .symbolVariant(.fill)
+                                .font(.body.bold())
+                                .frame(width: 44, height: 29)
+                                .blendMode(selectedTab == item.tab ? .overlay : .normal)
+                            Circle()
+                                                            .fill(Color.theme.accent)
+                                                            .frame(width: 10, height: 10, alignment: .center)
+                                                            .offset(x: 8, y: -8)
+                        }
+                    }
+                    else{
                     Image(systemName: item.icon)
                         .symbolVariant(.fill)
                         .font(.body.bold())
                         .frame(width: 44, height: 29)
-                    Text(item.text)
-                        .font(.caption2)
-                        .lineLimit(1)
+                        .blendMode(selectedTab == item.tab ? .overlay : .normal)
+                    }
+                        Text(item.text)
+                            .font(.caption2)
+                            .lineLimit(1)
+                            .blendMode(selectedTab == item.tab ? .overlay : .normal)
                 }
                 .frame(maxWidth: .infinity)
             }
             .foregroundStyle(selectedTab == item.tab ? .primary : .secondary)
-            .blendMode(selectedTab == item.tab ? .overlay : .normal)
+//            .blendMode(selectedTab == item.tab ? .overlay : .normal)
             .overlay(
                 GeometryReader { proxy in
                     //                            Text("\(proxy.size.width)")
@@ -114,8 +133,43 @@ struct TabBar: View {
 
 struct TabBar_Previews: PreviewProvider {
     static var previews: some View {
-        TabBar(big: true)
-        TabBar(big: false)
+        TabBar()
+        TabBar()
             .previewDevice("Iphone 8 Plus")
     }
+}
+
+
+extension Color: RawRepresentable {
+
+    public init?(rawValue: String) {
+        
+        guard let data = Data(base64Encoded: rawValue) else{
+            self = .black
+            return
+        }
+        
+        do{
+            let color = try NSKeyedUnarchiver.unarchiveTopLevelObjectWithData(data) as? UIColor ?? .black
+            self = Color(color)
+        }catch{
+            self = .black
+        }
+        
+    }
+
+    public var rawValue: String {
+        
+        do{
+            let data = try NSKeyedArchiver.archivedData(withRootObject: UIColor(self), requiringSecureCoding: false) as Data
+            return data.base64EncodedString()
+            
+        }catch{
+            
+            return ""
+            
+        }
+        
+    }
+
 }
