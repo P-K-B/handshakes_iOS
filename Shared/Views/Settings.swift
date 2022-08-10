@@ -160,6 +160,7 @@ struct Settings: View {
                 }
             }
             .navigationBarHidden(true)
+            .myBackGesture()
     }
     
     func ResetButton(){
