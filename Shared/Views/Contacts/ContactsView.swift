@@ -34,12 +34,12 @@ struct ContactsView: View {
     
     @State var selector: String? = nil
     @State var searchSelector: Bool = false
-    @State var searchSelectedContact: FetchedContact?
+    @State var searchSelectedContact: FetchedContact? = nil
     @State var selected: Bool = false
     
     
     var body: some View {
-
+        
         VStack{
             ZStack{
                 hardV
@@ -53,12 +53,12 @@ struct ContactsView: View {
                     )
             }
         }
-            .safeAreaInset(edge: .top, content: {
-                Color.clear.frame(height: big ? 45: 75)
-            })
-            .safeAreaInset(edge: .bottom) {
-                Color.clear.frame(height: big ? 55: 70)
-            }
+        .safeAreaInset(edge: .top, content: {
+            Color.clear.frame(height: big ? 45: 75)
+        })
+        .safeAreaInset(edge: .bottom) {
+            Color.clear.frame(height: big ? 55: 70)
+        }
         
     }
     
@@ -93,15 +93,17 @@ struct ContactsView: View {
                                                     print("2")
                                                 }
                                         }
-                                        NavigationLink(destination:
-                                                        SingleContactView2(selectedContact: searchSelectedContact ?? contactsData.data.contacts[0], alert: $alert)
-                                            .environmentObject(historyData)
-                                            .environmentObject(contactsData)
-                                            .environmentObject(model)
-                                            .environmentObject(userData),
-                                                       isActive: $searchSelector
-                                        ) {
-                                            EmptyView()
+                                        if (searchSelectedContact != nil){
+                                            NavigationLink(destination:
+                                                            SingleContactView2(selectedContact: searchSelectedContact!, alert: $alert)
+                                                .environmentObject(historyData)
+                                                .environmentObject(contactsData)
+                                                .environmentObject(model)
+                                                .environmentObject(userData),
+                                                           isActive: $searchSelector
+                                            ) {
+                                                EmptyView()
+                                            }
                                         }
                                         LazyVStack{
                                             ContactsList
@@ -135,9 +137,9 @@ struct ContactsView: View {
                     if (selected){
                         searchSelector = true
                     }
-//                    print(selectedContact)
-//                    selector = selectedContact
-//                    print(selector)
+                    //                    print(selectedContact)
+                    //                    selector = selectedContact
+                    //                    print(selector)
                 }
         }
     }
@@ -163,7 +165,7 @@ struct ContactsView: View {
                                     ) {
                                         EmptyView()
                                     }
-//                                    .navigationViewStyle(.stack)
+                                    //                                    .navigationViewStyle(.stack)
                                     .foregroundColor(Color.black)
                                     Button(action: {
                                         
