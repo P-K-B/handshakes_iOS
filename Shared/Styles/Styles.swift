@@ -185,7 +185,7 @@ struct MyBackGesture: ViewModifier {
             .highPriorityGesture(DragGesture(minimumDistance: 25, coordinateSpace: .local)
                 .onEnded { value in
                     print(value)
-                    if (value.startLocation.x < 50){
+                    if (value.startLocation.x < UIScreen.screenWidth/3){
                         if abs(value.translation.height) < abs(value.translation.width) {
                             if abs(value.translation.width) > 40.0 {
                                 if value.translation.width < 0 {
