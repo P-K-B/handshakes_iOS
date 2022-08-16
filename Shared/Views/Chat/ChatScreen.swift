@@ -51,7 +51,7 @@ struct ChatScreen: View, KeyboardReadable {
                 VStack{
                     
                         VStack {
-                            aprRow
+//                            aprRow
                             if (model.openChat != nil){
                                 let b = model.chats.allChats[model.openChat!]
                                 let a = b?.first(where: {$0.marker == "new_chat_meta"})?.is_sender == true ?
@@ -66,7 +66,7 @@ struct ChatScreen: View, KeyboardReadable {
                                     
                                         
                                     ScrollViewReader { proxy in
-                                        LazyVStack(spacing: 3) {
+                                        LazyVStack(spacing: 0) {
                                             ForEach(b?.filter({($0.marker != "new_chat_meta") && ($0.marker != "destination_user_not_found")}) ?? [], id: \.self) { message in
 
                                                 ChatMessageRow(message: message, isUser: message.is_sender ?? false, partner: a.count > 0 ? a[0].firstName : "Unknown person")
@@ -82,20 +82,25 @@ struct ChatScreen: View, KeyboardReadable {
                                         .onChange(of: b?.count) { _ in // 3
                                             scrollToLastMessage(proxy: proxy)
                                             print ("112233")
-                                            print(b)
-                                            print(model.openChat)
+//                                            print(b)
+//                                            print(model.openChat)
                                             let c = model.chats.allChats[model.openChat!]?.first(where: {$0.marker == "destination_user_not_found"})
                                             if (c != nil){
-                                                alert = MyAlert(error: true, title: "Message error", text: "Destination user is not yet registrated", button: "Close", oneButton: true, deleteChat: true)
+//                                                alert = MyAlert(error: true, title: "Message error", text: "Destination user is not yet registrated", button: "Close", oneButton: true, deleteChat: true)
+                                                alert = MyAlert(active: true, alert: Alert(title: Text("Message error"), message: Text("Destination user is not yet registrated"), dismissButton: .default(Text("Ok"))))
+
                                                 model.DeleteChat(chat: model.openChat!)
                                                 selectedTab = .chats
                                             }
+                                            
                                         }
                                         .onAppear{
                                             scrollToLastMessage(proxy: proxy)
                                             let c = model.chats.allChats[model.openChat!]?.first(where: {$0.marker == "destination_user_not_found"})
                                             if (c != nil){
-                                                alert = MyAlert(error: true, title: "Message error", text: "Destination user is not yet registrated", button: "Close", oneButton: true, deleteChat: true)
+//                                                alert = MyAlert(error: true, title: "Message error", text: "Destination user is not yet registrated", button: "Close", oneButton: true, deleteChat: true)
+                                                alert = MyAlert(active: true, alert: Alert(title: Text("Message error"), message: Text("Destination user is not yet registrated"), dismissButton: .default(Text("Ok"))))
+
                                                 model.DeleteChat(chat: model.openChat!)
                                                 selectedTab = .chats
                                             }
@@ -129,7 +134,7 @@ struct ChatScreen: View, KeyboardReadable {
                     .padding(.bottom, 5)
                 }
                 .overlay(
-                    NavigationBar(title: "Chat", search: .constant(false), showSearch: false, showProfile: false, hasBack: true)
+                    NavigationBar(title: "Chat", search: .constant(false), showSearch: false, showProfile: false, hasBack: true, alert: $alert)
                 )
             }
         }
@@ -188,281 +193,281 @@ struct ChatScreen: View, KeyboardReadable {
     var aprRow: some View{
         
         VStack(spacing: 40){
-///// V0
-//            HStack(alignment: .top, spacing: 0){
-//                VStack{
-//                    Image(systemName: "person.crop.circle")
-//                        .resizable()
-//                        .aspectRatio(contentMode: .fit)
-//                        .frame(width: 20, height: 20, alignment: .center)
-////                        .foregroundColor(.green)
-//                    Text("You")
-//                        .multilineTextAlignment(.center)
-//                        .font(.caption)
-//                }
-//                .frame(width: UIScreen.screenWidth*1/8)
-//                VStack{
-//                    Image(systemName: "checkmark.circle")
-//                        .resizable()
-//                        .aspectRatio(contentMode: .fit)
-//                        .frame(width: 20, height: 20, alignment: .center)
+/// V0
+            HStack(alignment: .top, spacing: 0){
+                VStack{
+                    Image(systemName: "person.crop.circle")
+                        .resizable()
+                        .aspectRatio(contentMode: .fit)
+                        .frame(width: 20, height: 20, alignment: .center)
 //                        .foregroundColor(.green)
+                    Text("You")
+                        .multilineTextAlignment(.center)
+                        .font(.caption)
+                }
+                .frame(width: UIScreen.screenWidth*1/8)
+                VStack{
+                    Image(systemName: "checkmark.circle")
+                        .resizable()
+                        .aspectRatio(contentMode: .fit)
+                        .frame(width: 20, height: 20, alignment: .center)
+                        .foregroundColor(.green)
+                    Text("Kirill Burchenko")
+                        .multilineTextAlignment(.center)
+                        .font(.caption)
+                }
+                .frame(width: UIScreen.screenWidth*2/8)
+                VStack{
+                    Image(systemName: "checkmark.circle")
+                        .resizable()
+                        .aspectRatio(contentMode: .fit)
+                        .frame(width: 20, height: 20, alignment: .center)
+                        .foregroundColor(.green)
 //                    Text("Kirill Burchenko")
 //                        .multilineTextAlignment(.center)
 //                        .font(.caption)
-//                }
-//                .frame(width: UIScreen.screenWidth*2/8)
-//                VStack{
-//                    Image(systemName: "checkmark.circle")
-//                        .resizable()
-//                        .aspectRatio(contentMode: .fit)
-//                        .frame(width: 20, height: 20, alignment: .center)
-//                        .foregroundColor(.green)
-////                    Text("Kirill Burchenko")
-////                        .multilineTextAlignment(.center)
-////                        .font(.caption)
-//                }
-//                .frame(width: UIScreen.screenWidth*1/8)
-//                VStack{
-//                    Image(systemName: "xmark.circle")
-//                        .resizable()
-//                        .aspectRatio(contentMode: .fit)
-//                        .frame(width: 20, height: 20, alignment: .center)
-//                        .foregroundColor(.red)
-////                    Text("Kirill Burchenko")
-////                        .multilineTextAlignment(.center)
-////                        .font(.caption)
-//                }
-//                .frame(width: UIScreen.screenWidth*1/8)
-//                VStack{
-//                    Image(systemName: "questionmark.circle")
-//                        .resizable()
-//                        .aspectRatio(contentMode: .fit)
-//                        .frame(width: 20, height: 20, alignment: .center)
-////                    Text("Kirill Burchenko")
-////                        .multilineTextAlignment(.center)
-////                        .font(.caption)
-//                }
-//                .frame(width: UIScreen.screenWidth*1/8)
-//                VStack{
-//                    Image(systemName: "message.circle")
-//                        .resizable()
-//                        .aspectRatio(contentMode: .fit)
-//                        .frame(width: 20, height: 20, alignment: .center)
-//                        .foregroundColor(.green)
-//                    Text("Chat approved")
-//                        .multilineTextAlignment(.center)
-//                        .font(.caption)
-//                }
-//                .frame(width: UIScreen.screenWidth*2/8)
-//            }
-//            Divider()
-/////            V1
-//            HStack(alignment: .top, spacing: 0){
-//                VStack{
-//                    Image(systemName: "person.crop.circle")
-//                        .resizable()
-//                        .aspectRatio(contentMode: .fit)
-//                        .frame(width: 20, height: 20, alignment: .center)
-////                        .foregroundColor(.green)
-//                    Text("You")
-//                        .multilineTextAlignment(.center)
-//                        .font(.caption)
-//                }
-//                .frame(width: UIScreen.screenWidth*1/8)
-//                VStack{
-//                    Image(systemName: "checkmark.circle")
-//                        .resizable()
-//                        .aspectRatio(contentMode: .fit)
-//                        .frame(width: 20, height: 20, alignment: .center)
-//                        .foregroundColor(.green)
+                }
+                .frame(width: UIScreen.screenWidth*1/8)
+                VStack{
+                    Image(systemName: "xmark.circle")
+                        .resizable()
+                        .aspectRatio(contentMode: .fit)
+                        .frame(width: 20, height: 20, alignment: .center)
+                        .foregroundColor(.red)
 //                    Text("Kirill Burchenko")
 //                        .multilineTextAlignment(.center)
 //                        .font(.caption)
-//                }
-//                .frame(width: UIScreen.screenWidth*2/8)
-//                VStack{
-//                    Image(systemName: "checkmark.circle")
-//                        .resizable()
-//                        .aspectRatio(contentMode: .fit)
-//                        .frame(width: 20, height: 20, alignment: .center)
-//                        .foregroundColor(.green)
-////                    Text("Kirill Burchenko")
-////                        .multilineTextAlignment(.center)
-////                        .font(.caption)
-//                }
-//                .frame(width: UIScreen.screenWidth*1/8)
-//                VStack{
-//                    Image(systemName: "xmark.circle")
-//                        .resizable()
-//                        .aspectRatio(contentMode: .fit)
-//                        .frame(width: 20, height: 20, alignment: .center)
-//                        .foregroundColor(.red)
-////                    Text("Kirill Burchenko")
-////                        .multilineTextAlignment(.center)
-////                        .font(.caption)
-//                }
-//                .frame(width: UIScreen.screenWidth*1/8)
-//                VStack{
-//                    Image(systemName: "questionmark.circle")
-//                        .resizable()
-//                        .aspectRatio(contentMode: .fit)
-//                        .frame(width: 20, height: 20, alignment: .center)
-////                    Text("Kirill Burchenko")
-////                        .multilineTextAlignment(.center)
-////                        .font(.caption)
-//                }
-//                .frame(width: UIScreen.screenWidth*1/8)
-//                VStack{
-//                    Image(systemName: "message.circle")
-//                        .resizable()
-//                        .aspectRatio(contentMode: .fit)
-//                        .frame(width: 20, height: 20, alignment: .center)
-//                        .foregroundColor(.red)
-//                    Text("Chat approved")
+                }
+                .frame(width: UIScreen.screenWidth*1/8)
+                VStack{
+                    Image(systemName: "questionmark.circle")
+                        .resizable()
+                        .aspectRatio(contentMode: .fit)
+                        .frame(width: 20, height: 20, alignment: .center)
+//                    Text("Kirill Burchenko")
 //                        .multilineTextAlignment(.center)
 //                        .font(.caption)
-//                }
-//                .frame(width: UIScreen.screenWidth*2/8)
-//            }
-//            Divider()
-/////            V2
-//            HStack(alignment: .top, spacing: 0){
-//                VStack{
-//                    Image(systemName: "questionmark.circle")
-//                        .resizable()
-//                        .aspectRatio(contentMode: .fit)
-//                        .frame(width: 20, height: 20, alignment: .center)
-////                    Text("Kirill Burchenko")
-////                        .multilineTextAlignment(.center)
-////                        .font(.caption)
-//                }
-//                .frame(width: UIScreen.screenWidth*1/9)
-//                VStack{
-//                    Image(systemName: "checkmark.circle")
-//                        .resizable()
-//                        .aspectRatio(contentMode: .fit)
-//                        .frame(width: 20, height: 20, alignment: .center)
+                }
+                .frame(width: UIScreen.screenWidth*1/8)
+                VStack{
+                    Image(systemName: "message.circle")
+                        .resizable()
+                        .aspectRatio(contentMode: .fit)
+                        .frame(width: 20, height: 20, alignment: .center)
+                        .foregroundColor(.green)
+                    Text("Chat approved")
+                        .multilineTextAlignment(.center)
+                        .font(.caption)
+                }
+                .frame(width: UIScreen.screenWidth*2/8)
+            }
+            Divider()
+///            V1
+            HStack(alignment: .top, spacing: 0){
+                VStack{
+                    Image(systemName: "person.crop.circle")
+                        .resizable()
+                        .aspectRatio(contentMode: .fit)
+                        .frame(width: 20, height: 20, alignment: .center)
 //                        .foregroundColor(.green)
+                    Text("You")
+                        .multilineTextAlignment(.center)
+                        .font(.caption)
+                }
+                .frame(width: UIScreen.screenWidth*1/8)
+                VStack{
+                    Image(systemName: "checkmark.circle")
+                        .resizable()
+                        .aspectRatio(contentMode: .fit)
+                        .frame(width: 20, height: 20, alignment: .center)
+                        .foregroundColor(.green)
+                    Text("Kirill Burchenko")
+                        .multilineTextAlignment(.center)
+                        .font(.caption)
+                }
+                .frame(width: UIScreen.screenWidth*2/8)
+                VStack{
+                    Image(systemName: "checkmark.circle")
+                        .resizable()
+                        .aspectRatio(contentMode: .fit)
+                        .frame(width: 20, height: 20, alignment: .center)
+                        .foregroundColor(.green)
+//                    Text("Kirill Burchenko")
+//                        .multilineTextAlignment(.center)
+//                        .font(.caption)
+                }
+                .frame(width: UIScreen.screenWidth*1/8)
+                VStack{
+                    Image(systemName: "xmark.circle")
+                        .resizable()
+                        .aspectRatio(contentMode: .fit)
+                        .frame(width: 20, height: 20, alignment: .center)
+                        .foregroundColor(.red)
+//                    Text("Kirill Burchenko")
+//                        .multilineTextAlignment(.center)
+//                        .font(.caption)
+                }
+                .frame(width: UIScreen.screenWidth*1/8)
+                VStack{
+                    Image(systemName: "questionmark.circle")
+                        .resizable()
+                        .aspectRatio(contentMode: .fit)
+                        .frame(width: 20, height: 20, alignment: .center)
+//                    Text("Kirill Burchenko")
+//                        .multilineTextAlignment(.center)
+//                        .font(.caption)
+                }
+                .frame(width: UIScreen.screenWidth*1/8)
+                VStack{
+                    Image(systemName: "message.circle")
+                        .resizable()
+                        .aspectRatio(contentMode: .fit)
+                        .frame(width: 20, height: 20, alignment: .center)
+                        .foregroundColor(.red)
+                    Text("Chat approved")
+                        .multilineTextAlignment(.center)
+                        .font(.caption)
+                }
+                .frame(width: UIScreen.screenWidth*2/8)
+            }
+            Divider()
+///            V2
+            HStack(alignment: .top, spacing: 0){
+                VStack{
+                    Image(systemName: "questionmark.circle")
+                        .resizable()
+                        .aspectRatio(contentMode: .fit)
+                        .frame(width: 20, height: 20, alignment: .center)
+//                    Text("Kirill Burchenko")
+//                        .multilineTextAlignment(.center)
+//                        .font(.caption)
+                }
+                .frame(width: UIScreen.screenWidth*1/9)
+                VStack{
+                    Image(systemName: "checkmark.circle")
+                        .resizable()
+                        .aspectRatio(contentMode: .fit)
+                        .frame(width: 20, height: 20, alignment: .center)
+                        .foregroundColor(.green)
+                    Text("Maxim Fisher")
+                        .multilineTextAlignment(.center)
+                        .font(.caption)
+                }
+                .frame(width: UIScreen.screenWidth*2/9)
+                VStack{
+                    Image(systemName: "person.crop.circle")
+                        .resizable()
+                        .aspectRatio(contentMode: .fit)
+                        .frame(width: 20, height: 20, alignment: .center)
+//                        .foregroundColor(.green)
+                    Text("You")
+                        .multilineTextAlignment(.center)
+                        .font(.caption)
+                }
+                .frame(width: UIScreen.screenWidth*1/9)
+                VStack{
+                    Image(systemName: "checkmark.circle")
+                        .resizable()
+                        .aspectRatio(contentMode: .fit)
+                        .frame(width: 20, height: 20, alignment: .center)
+                        .foregroundColor(.green)
+                    Text("Kirill Burchenko")
+                        .multilineTextAlignment(.center)
+                        .font(.caption)
+                }
+                .frame(width: UIScreen.screenWidth*2/9)
+                VStack{
+                    Image(systemName: "xmark.circle")
+                        .resizable()
+                        .aspectRatio(contentMode: .fit)
+                        .frame(width: 20, height: 20, alignment: .center)
+                        .foregroundColor(.red)
+//                    Text("Kirill Burchenko")
+//                        .multilineTextAlignment(.center)
+//                        .font(.caption)
+                }
+                .frame(width: UIScreen.screenWidth*1/9)
+                VStack{
+                    Image(systemName: "message.circle")
+                        .resizable()
+                        .aspectRatio(contentMode: .fit)
+                        .frame(width: 20, height: 20, alignment: .center)
+//                        .foregroundColor(.green)
+                    Text("Chat approved")
+                        .multilineTextAlignment(.center)
+                        .font(.caption)
+                }
+                .frame(width: UIScreen.screenWidth*2/9)
+            }
+            Divider()
+///            V3
+            HStack(alignment: .top, spacing: 0){
+                VStack{
+                    Image(systemName: "questionmark.circle")
+                        .resizable()
+                        .aspectRatio(contentMode: .fit)
+                        .frame(width: 20, height: 20, alignment: .center)
+//                    Text("Kirill Burchenko")
+//                        .multilineTextAlignment(.center)
+//                        .font(.caption)
+                }
+                .frame(width: UIScreen.screenWidth*1/8)
+                VStack{
+                    Image(systemName: "checkmark.circle")
+                        .resizable()
+                        .aspectRatio(contentMode: .fit)
+                        .frame(width: 20, height: 20, alignment: .center)
+                        .foregroundColor(.green)
 //                    Text("Maxim Fisher")
 //                        .multilineTextAlignment(.center)
 //                        .font(.caption)
-//                }
-//                .frame(width: UIScreen.screenWidth*2/9)
-//                VStack{
-//                    Image(systemName: "person.crop.circle")
-//                        .resizable()
-//                        .aspectRatio(contentMode: .fit)
-//                        .frame(width: 20, height: 20, alignment: .center)
-////                        .foregroundColor(.green)
-//                    Text("You")
-//                        .multilineTextAlignment(.center)
-//                        .font(.caption)
-//                }
-//                .frame(width: UIScreen.screenWidth*1/9)
-//                VStack{
-//                    Image(systemName: "checkmark.circle")
-//                        .resizable()
-//                        .aspectRatio(contentMode: .fit)
-//                        .frame(width: 20, height: 20, alignment: .center)
-//                        .foregroundColor(.green)
+                }
+                .frame(width: UIScreen.screenWidth*1/8)
+                VStack{
+                    Image(systemName: "xmark.circle")
+                        .resizable()
+                        .aspectRatio(contentMode: .fit)
+                        .frame(width: 20, height: 20, alignment: .center)
+                        .foregroundColor(.red)
 //                    Text("Kirill Burchenko")
 //                        .multilineTextAlignment(.center)
 //                        .font(.caption)
-//                }
-//                .frame(width: UIScreen.screenWidth*2/9)
-//                VStack{
-//                    Image(systemName: "xmark.circle")
-//                        .resizable()
-//                        .aspectRatio(contentMode: .fit)
-//                        .frame(width: 20, height: 20, alignment: .center)
-//                        .foregroundColor(.red)
-////                    Text("Kirill Burchenko")
-////                        .multilineTextAlignment(.center)
-////                        .font(.caption)
-//                }
-//                .frame(width: UIScreen.screenWidth*1/9)
-//                VStack{
-//                    Image(systemName: "message.circle")
-//                        .resizable()
-//                        .aspectRatio(contentMode: .fit)
-//                        .frame(width: 20, height: 20, alignment: .center)
-////                        .foregroundColor(.green)
-//                    Text("Chat approved")
-//                        .multilineTextAlignment(.center)
-//                        .font(.caption)
-//                }
-//                .frame(width: UIScreen.screenWidth*2/9)
-//            }
-//            Divider()
-/////            V3
-//            HStack(alignment: .top, spacing: 0){
-//                VStack{
-//                    Image(systemName: "questionmark.circle")
-//                        .resizable()
-//                        .aspectRatio(contentMode: .fit)
-//                        .frame(width: 20, height: 20, alignment: .center)
-////                    Text("Kirill Burchenko")
-////                        .multilineTextAlignment(.center)
-////                        .font(.caption)
-//                }
-//                .frame(width: UIScreen.screenWidth*1/8)
-//                VStack{
-//                    Image(systemName: "checkmark.circle")
-//                        .resizable()
-//                        .aspectRatio(contentMode: .fit)
-//                        .frame(width: 20, height: 20, alignment: .center)
+                }
+                .frame(width: UIScreen.screenWidth*1/8)
+                VStack{
+                    Image(systemName: "checkmark.circle")
+                        .resizable()
+                        .aspectRatio(contentMode: .fit)
+                        .frame(width: 20, height: 20, alignment: .center)
+                        .foregroundColor(.green)
+                    Text("Maxim Fisher")
+                        .multilineTextAlignment(.center)
+                        .font(.caption)
+                }
+                .frame(width: UIScreen.screenWidth*2/8)
+                VStack{
+                    Image(systemName: "person.crop.circle")
+                        .resizable()
+                        .aspectRatio(contentMode: .fit)
+                        .frame(width: 20, height: 20, alignment: .center)
 //                        .foregroundColor(.green)
-////                    Text("Maxim Fisher")
-////                        .multilineTextAlignment(.center)
-////                        .font(.caption)
-//                }
-//                .frame(width: UIScreen.screenWidth*1/8)
-//                VStack{
-//                    Image(systemName: "xmark.circle")
-//                        .resizable()
-//                        .aspectRatio(contentMode: .fit)
-//                        .frame(width: 20, height: 20, alignment: .center)
-//                        .foregroundColor(.red)
-////                    Text("Kirill Burchenko")
-////                        .multilineTextAlignment(.center)
-////                        .font(.caption)
-//                }
-//                .frame(width: UIScreen.screenWidth*1/8)
-//                VStack{
-//                    Image(systemName: "checkmark.circle")
-//                        .resizable()
-//                        .aspectRatio(contentMode: .fit)
-//                        .frame(width: 20, height: 20, alignment: .center)
+                    Text("You")
+                        .multilineTextAlignment(.center)
+                        .font(.caption)
+                }
+                .frame(width: UIScreen.screenWidth*1/8)
+                VStack{
+                    Image(systemName: "message.circle")
+                        .resizable()
+                        .aspectRatio(contentMode: .fit)
+                        .frame(width: 20, height: 20, alignment: .center)
 //                        .foregroundColor(.green)
-//                    Text("Maxim Fisher")
-//                        .multilineTextAlignment(.center)
-//                        .font(.caption)
-//                }
-//                .frame(width: UIScreen.screenWidth*2/8)
-//                VStack{
-//                    Image(systemName: "person.crop.circle")
-//                        .resizable()
-//                        .aspectRatio(contentMode: .fit)
-//                        .frame(width: 20, height: 20, alignment: .center)
-////                        .foregroundColor(.green)
-//                    Text("You")
-//                        .multilineTextAlignment(.center)
-//                        .font(.caption)
-//                }
-//                .frame(width: UIScreen.screenWidth*1/8)
-//                VStack{
-//                    Image(systemName: "message.circle")
-//                        .resizable()
-//                        .aspectRatio(contentMode: .fit)
-//                        .frame(width: 20, height: 20, alignment: .center)
-////                        .foregroundColor(.green)
-//                    Text("Chat approved")
-//                        .multilineTextAlignment(.center)
-//                        .font(.caption)
-//                }
-//                .frame(width: UIScreen.screenWidth*2/8)
-//            }
+                    Text("Chat approved")
+                        .multilineTextAlignment(.center)
+                        .font(.caption)
+                }
+                .frame(width: UIScreen.screenWidth*2/8)
+            }
         }
     }
     

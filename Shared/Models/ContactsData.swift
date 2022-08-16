@@ -620,7 +620,7 @@ class ContactsDataService  {
                 var lsn=""
                 var nn:[Number] = []
                 for number in contact.phoneNumbers{
-                    var numberOk = number.value.stringValue
+                    let numberOk = number.value.stringValue
                     //                    if (numberOk.prefix(1) == "8"){
                     //                        numberOk = "+7" + numberOk.dropFirst()
                     //                    }
@@ -1134,8 +1134,8 @@ class ContactsDataService  {
     func ManageContacts(new: [FetchedContact], deleted: [FetchedContact], contactsFromPhone: [FetchedContact], contactsFromApp: [FetchedContact], filterindexPhone: [String:String], update: [FetchedContact], letters: [String], update_deleted: [String], contactsFromPhoneAll: [FetchedContact], initial: Bool){
         //        var uploadResult: UploadContactsResponsePayload = UploadContactsResponsePayload(contacts: [:])
         //        var _: [FetchedContact] = []
-        var res1: UploadContactsResponsePayload = UploadContactsResponsePayload(contacts: [:])
-        var res2: UploadContactsResponsePayload = UploadContactsResponsePayload(contacts: [:])
+        let res1: UploadContactsResponsePayload = UploadContactsResponsePayload(contacts: [:])
+        let res2: UploadContactsResponsePayload = UploadContactsResponsePayload(contacts: [:])
         //        Delete
         if (!deleted.isEmpty){
             DispatchQueue.global(qos: .userInitiated).async {

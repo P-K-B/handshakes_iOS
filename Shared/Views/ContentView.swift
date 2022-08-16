@@ -29,8 +29,6 @@ struct ContentView: View {
     @EnvironmentObject var model: ChatScreenModel
     @EnvironmentObject var userData: UserDataView
     
-    @State var bar = TabBar()
-    
     @Environment(\.scenePhase) var scenePhase
     
     var body: some View {
@@ -73,7 +71,7 @@ struct ContentView: View {
 //                    }
                 
             case .hide:
-                HideContacts(root: true)
+                HideContacts(alert: $alert, root: true)
                     .environmentObject(historyData)
                     .environmentObject(contactsData)
                     .environmentObject(model)
@@ -81,9 +79,11 @@ struct ContentView: View {
             }
         }
         .overlay{
-            bar
+            if (selectedTab != .hide){
+            TabBar()
                 .zIndex(1)
                 .transition(.move(edge: .bottom))
+            }
         }
         .onAppear{
             //            selector = false
@@ -98,12 +98,10 @@ struct ContentView: View {
                 else{
                     contactsData.Load(upload: true, initial: false)
                 }
+//                hideContacts = false
                 if (hideContacts == false){
                     
                     selectedTab = .hide
-                    DispatchQueue.main.asyncAfter(deadline: .now() + .seconds(2)) {
-                        showHideAlertLoacl = true
-                    }
                     
                 }
                 if ((selectedTab == .hide) && (hideContacts == true)){
@@ -130,18 +128,6 @@ struct ContentView: View {
                         }
                     }
         .onDisappear(perform: onDisappear)
-        .alert(isPresented: $showHideAlertLoacl) {
-            
-            return Alert (
-                title: Text("Hide contacts"),
-                message: Text("This app need to upload your contacts to be able to build search chanis. You can hide some contacts if you'd like.\nYou can always change this list in the setting"),
-                dismissButton: .default(Text("Ok"),
-                                        action: {
-                                            //                        hideContacts = true
-                                        })
-            )
-            
-        }
         .navigationBarHidden(true)
     }
     

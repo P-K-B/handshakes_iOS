@@ -70,7 +70,7 @@ struct AllChats: View{
                     }
                     
                     .overlay(
-                        NavigationBar(title: "Messages", search: .constant(false), showSearch: false, showProfile: true, hasBack: false)
+                        NavigationBar(title: "Messages", search: .constant(false), showSearch: false, showProfile: true, hasBack: false, alert: $alert)
                             .environmentObject(historyData)
                             .environmentObject(contactsData)
                             .environmentObject(model)
@@ -138,24 +138,27 @@ struct ChatItem: View {
                 HStack{
                     Text(s.0)
 //                        .font(Font.system(size: 22, weight: .semibold, design: .default))
-                        .myFont(font: MyFonts().SubTitle, color: .black)
+                        .myFont(font: MyFonts().Title2, type: .display, color: Color.black, weight: .bold)
+//                        .myFont(font: MyFonts().SubTitle, color: .black)
                         .multilineTextAlignment(.leading)
                         .lineLimit(2)
                     Spacer()
                     if (lastMessage != nil) {
                         let a = dateFormatter.string(from: Date(timeIntervalSince1970: Double(lastMessage?.sent_on ?? 0)))
                         Text(a)
-                            .font(Font.system(size: 16, weight: .regular, design: .default))
+//                            .font(Font.system(size: 16, weight: .regular, design: .default))
+                            .myFont(font: MyFonts().Subhead, type: .display, color: Color.black, weight: .regular)
                             .multilineTextAlignment(.leading)
                     }
                 }
                 HStack{
                     Image(systemName: "number.circle")
                         .resizable()
-                        .frame(width: 20, height: 20, alignment: .center)
+                        .frame(width: 18, height: 18, alignment: .center)
                         .foregroundColor(Color.theme.accent)
                     Text(s.1)
-                        .font(Font.system(size: 18, weight: .regular, design: .default))
+//                        .font(Font.system(size: 18, weight: .regular, design: .default))
+                        .myFont(font: MyFonts().Subhead, type: .display, color: Color.black, weight: .regular)
                         .multilineTextAlignment(.leading)
                         .lineLimit(2)
                     Spacer()
@@ -169,7 +172,8 @@ struct ChatItem: View {
                             .frame(maxHeight: 50)
                             .multilineTextAlignment(.leading)
                             .lineLimit(2)
-                            .font(Font.system(size: 18, weight: .regular, design: .default))
+//                            .font(Font.system(size: 18, weight: .regular, design: .default))
+                            .myFont(font: MyFonts().Body, type: .display, color: Color.black, weight: .regular)
                     }
                     Spacer()
                     let unread = chat?.filter({$0.read != true})

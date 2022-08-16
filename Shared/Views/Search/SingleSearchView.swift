@@ -302,6 +302,8 @@ struct SingleSearchView2: View {
     @Environment(\.presentationMode) private var presentationMode: Binding<PresentationMode>
     @Binding var alert: MyAlert
     
+    @Namespace var namespace
+    
     
     @State var currentPage = 0
     @State var numberOfPages = 0
@@ -359,6 +361,69 @@ struct SingleSearchView2: View {
                             
                             let a = (history.datta.first(where: {$0.id == history.selectedHistory})?.handhsakes!.sorted(by: {$0.path.count < $1.path.count}))!
                             VStack {
+//                                ZStack{
+//
+//                                                                        TabView(selection: $currentPage) {
+//                                                                            ForEach (a.indices, id: \.self){ index in
+//                                                                                let handhsake = a[index]
+//                                                                                //                                Text("Path #\(index+1)")
+//                                                                                //                                Text("\(handhsake.path.count)")
+//                                                                                ScrollView{
+//                                                                                    Grid_old(handshake: handhsake, alert: $alert)
+//                                                                                        .environmentObject(history)
+//                                                                                        .environmentObject(contacts)
+//                                                                                        .environmentObject(model)
+//                                                                                        .environmentObject(userData)
+//                                                                                        .frame(minHeight:200)
+//                                                                                    //                                                .padding()
+//                                                                                    //                                                                    .padding()
+//                                                                                        .background(.ultraThinMaterial, in: RoundedRectangle(cornerRadius: 20, style: .continuous))
+//                                                                                        .padding(.horizontal, 10)
+//                                                                                    //                                                .frame(maxHeight: 1000)
+//
+//                                                                                        .onAppear{print(handhsake)}
+//
+//                                                                                        .padding(.top, 45)
+//                                                                                    //                                                                                                    .offset(y: 45)
+//                                                                                }
+//                                                                                //                                                .padding(.top, 45)
+//                                                                                //                                                .offset(y: 45)
+//                                                                                .tag(index)
+//                                                                                .safeAreaInset(edge: .bottom, content: {
+//                                                                                                            Color.clear.frame(height: big ? 45: 75)
+//                                                                                }
+//                                                                                               )
+//                                                                            }
+//                                                                        }
+//                                                                        .tabViewStyle(.page(indexDisplayMode: .never))
+//                                                                        .indexViewStyle(.page(backgroundDisplayMode: .always))
+//                                                                        //                                        .background(.red)
+//                                                                        VStack{
+//                                                                            PageControlView(currentPage: $currentPage, numberOfPages: a.count)
+//                                                                                .padding(10)
+//                                                                            Spacer()
+//                                                                            HStack{
+//                                                                                Image(systemName: "info.circle")
+//                                                                                    .foregroundColor(ColorTheme().accent)
+//                                                                                Text("Tap on a search card to start a chat")
+//                                                                            }
+//                                                                            .padding(30)
+//                                                                            .frame(maxWidth: .infinity)
+//                                //                                            .background(.green)
+//                                                                            //                                                .background(.blue)
+//                                                                            .background(.ultraThinMaterial)
+//                                                                            .mask(
+//                                                                                LinearGradient(gradient: Gradient(stops: [
+//                                                                                    Gradient.Stop(color: Color(white: 0, opacity: 0),
+//                                                                                                  location: 0),
+//                                                                                    Gradient.Stop(color: Color(white: 0, opacity: 1),
+//                                                                                                  location: 0.5),
+//                                                                                ]), startPoint: .top, endPoint: .bottom)
+//                                                                            )
+//                                                                        }
+//                                                                        .ignoresSafeArea()
+//                                                                    }
+                                                                   
                                 ZStack{
                                     TabView(selection: $currentPage) {
                                         ForEach (a.indices, id: \.self){ index in
@@ -366,6 +431,7 @@ struct SingleSearchView2: View {
                                             ScrollView{
                                                 PageControlView(currentPage: $currentPage, numberOfPages: a.count)
                                                     .padding(10)
+//                                                    .matchedGeometryEffect(id: "Dots", in: namespace)
                                                 Grid_old(handshake: handhsake, alert: $alert)
                                                     .environmentObject(history)
                                                     .environmentObject(contacts)

@@ -123,8 +123,8 @@ class HistoryDataView: ObservableObject {
         historyDataService.SelectHistory(history: history)
     }
     
-    func Add(number: String) -> UUID {
-        return historyDataService.Add(number: number)
+    func Add(number: String) {
+        historyDataService.Add(number: number)
     }
     
     func Delete(){
@@ -172,7 +172,7 @@ class HistoryDataService {
         self.save()
     }
     
-    func Add(number: String) -> UUID{
+    func Add(number: String){
         data.insert(SearchHistory(number: number), at: 0)
         self.selectedHistory = self.data[0].id
         save()
@@ -204,7 +204,6 @@ class HistoryDataService {
             }
         }
         
-        return self.selectedHistory!
     }
     
     func SetJwt(jwt: String){

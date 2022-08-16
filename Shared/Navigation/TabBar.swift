@@ -15,25 +15,25 @@ struct TabBar: View {
     @EnvironmentObject var model: ChatScreenModel
     
     var body: some View {
-            HStack {
-                buttons
-            }
-            .padding(.horizontal, 8)
-            .padding(.top, 14)
-            .frame(height: big ? 88 : 70, alignment: .top)
-            .background(.ultraThinMaterial, in: RoundedRectangle(cornerRadius: big ? 34 : 0, style: .continuous))
-            .cornerRadius(big ? 0 : 34, corners: [.topLeft, .topRight])
-            .background(
-                background
-            )
-            .overlay(
-                overlay
-            )
-            .frame(maxHeight: .infinity, alignment: .bottom)
-            .ignoresSafeArea()
-            .onAppear{
-                big = (wphone() > 3) ? true : false
-            }
+        HStack {
+            buttons
+        }
+        .padding(.horizontal, 8)
+        .padding(.top, 14)
+        .frame(height: big ? 88 : 70, alignment: .top)
+        .background(.ultraThinMaterial, in: RoundedRectangle(cornerRadius: big ? 34 : 0, style: .continuous))
+        .cornerRadius(big ? 0 : 34, corners: [.topLeft, .topRight])
+        .background(
+            background
+        )
+        .overlay(
+            overlay
+        )
+        .frame(maxHeight: .infinity, alignment: .bottom)
+        .ignoresSafeArea()
+        .onAppear{
+            big = (wphone() > 3) ? true : false
+        }
     }
     
     var buttons: some View {
@@ -54,27 +54,28 @@ struct TabBar: View {
                                 .frame(width: 44, height: 29)
                                 .blendMode(selectedTab == item.tab ? .overlay : .normal)
                             Circle()
-                                                            .fill(Color.theme.accent)
-                                                            .frame(width: 10, height: 10, alignment: .center)
-                                                            .offset(x: 8, y: -8)
+                                .fill(Color.theme.accent)
+                                .frame(width: 10, height: 10, alignment: .center)
+                                .offset(x: 8, y: -8)
                         }
                     }
                     else{
-                    Image(systemName: item.icon)
-                        .symbolVariant(.fill)
-                        .font(.body.bold())
-                        .frame(width: 44, height: 29)
-                        .blendMode(selectedTab == item.tab ? .overlay : .normal)
-                    }
-                        Text(item.text)
-                            .font(.caption2)
-                            .lineLimit(1)
+                        Image(systemName: item.icon)
+                            .symbolVariant(.fill)
+                            .font(.body.bold())
+                            .frame(width: 44, height: 29)
                             .blendMode(selectedTab == item.tab ? .overlay : .normal)
+                    }
+                    Text(item.text)
+                        .font(.caption2)
+                    //                            .myFont(font: MyFonts().Caption2, type: .display, color: Color.black, weight: .regular)
+                        .lineLimit(1)
+                        .blendMode(selectedTab == item.tab ? .overlay : .normal)
                 }
                 .frame(maxWidth: .infinity)
             }
             .foregroundStyle(selectedTab == item.tab ? .primary : .secondary)
-//            .blendMode(selectedTab == item.tab ? .overlay : .normal)
+            //            .blendMode(selectedTab == item.tab ? .overlay : .normal)
             .overlay(
                 GeometryReader { proxy in
                     //                            Text("\(proxy.size.width)")
@@ -91,16 +92,8 @@ struct TabBar: View {
         HStack {
             if selectedTab == .search { Spacer() }
             if ((selectedTab == .chats) ) { Spacer() }
-//            if selectedTab == .notifications {
-//                Spacer()
-//                Spacer()
-//            }
             Circle().fill(color).frame(width: tabItemWidth)
             if selectedTab == .search { Spacer() }
-//            if selectedTab == .explore {
-//                Spacer()
-//                Spacer()
-//            }
             if ((selectedTab == .contacts) ) { Spacer() }
         }
         .padding(.horizontal, 8)
@@ -110,10 +103,6 @@ struct TabBar: View {
         HStack {
             if selectedTab == .search { Spacer() }
             if ((selectedTab == .chats) ) { Spacer() }
-//            if selectedTab == .notifications {
-//                Spacer()
-//                Spacer()
-//            }
             Rectangle()
                 .fill(color)
                 .frame(width: 28, height: 5)
@@ -121,10 +110,6 @@ struct TabBar: View {
                 .frame(width: tabItemWidth)
                 .frame(maxHeight: .infinity, alignment: .top)
             if selectedTab == .search { Spacer() }
-//            if selectedTab == .explore {
-//                Spacer()
-//                Spacer()
-//            }
             if ((selectedTab == .contacts)) { Spacer() }
         }
         .padding(.horizontal, 8)
@@ -137,39 +122,4 @@ struct TabBar_Previews: PreviewProvider {
         TabBar()
             .previewDevice("Iphone 8 Plus")
     }
-}
-
-
-extension Color: RawRepresentable {
-
-    public init?(rawValue: String) {
-        
-        guard let data = Data(base64Encoded: rawValue) else{
-            self = .black
-            return
-        }
-        
-        do{
-            let color = try NSKeyedUnarchiver.unarchiveTopLevelObjectWithData(data) as? UIColor ?? .black
-            self = Color(color)
-        }catch{
-            self = .black
-        }
-        
-    }
-
-    public var rawValue: String {
-        
-        do{
-            let data = try NSKeyedArchiver.archivedData(withRootObject: UIColor(self), requiringSecureCoding: false) as Data
-            return data.base64EncodedString()
-            
-        }catch{
-            
-            return ""
-            
-        }
-        
-    }
-
 }

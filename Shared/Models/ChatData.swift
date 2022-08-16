@@ -262,7 +262,7 @@ final class ChatScreenService  {
                     if (newChatMessage.marker == "message_has_been_read"){
                         let a = self.chats.allChats[newChatMessage.search_chain+newChatMessage.to]?.firstIndex(where: {$0.message_id == newChatMessage.message_id}) ?? nil
                         if (a != nil){
-                            print(self.chats.allChats[newChatMessage.search_chain+newChatMessage.to]?[a ?? 0])
+//                            print(self.chats.allChats[newChatMessage.search_chain+newChatMessage.to]?[a ?? 0])
                             self.chats.allChats[newChatMessage.search_chain+newChatMessage.to]?[a ?? 0].read = true
                             self.save()
                         }

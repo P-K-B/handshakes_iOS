@@ -79,7 +79,9 @@ struct SearchList: View, KeyboardReadable {
     var inputRow: some View{
         VStack{
             Text(welcomeText)
-                .font(Font.custom("SFProDisplay-Regular", size: 20))
+//                .font(Font.custom("SFProDisplay-Regular", size: 20))
+                .myFont(font: MyFonts().Title3, type: .display, color: Color.black, weight: .regular)
+            
                 .padding()
                 .frame(maxWidth: .infinity, alignment: .leading)
             numberField
@@ -113,7 +115,8 @@ struct SearchList: View, KeyboardReadable {
                     selector = true
                 }
                 catch {
-                    alert = MyAlert(error: true, title: "", text: "Please enter a valid phone number", button: "Ok", oneButton: true)
+//                    alert = MyAlert(error: true, title: "", text: "Please enter a valid phone number", button: "Ok", oneButton: true)
+                    alert = MyAlert(active: true, alert: Alert(title: Text("Error"), message: Text("Please enter a valid phone number"), dismissButton: .default(Text("Ok"))))
                 }
             }
             }
@@ -125,11 +128,13 @@ struct SearchList: View, KeyboardReadable {
                 .background(Color.accentColor)
                 .foregroundColor(.white)
                 .cornerRadius(100)
+                .myFont(font: MyFonts().Callout, type: .display, color: Color.black, weight: .regular)
+
         }
         .padding()
         }
         .onAppear{
-            self.phoneField = PhoneNumberTextFieldView(phoneNumber: $phoneNumber, isEdeted: $validNumber, maxDigits: 16)
+            self.phoneField = PhoneNumberTextFieldView(phoneNumber: $phoneNumber, isEdeted: $validNumber, maxDigits: 16, fontName: "SFProDisplay-Regular", fontSize: MyFonts().Title3.size)
         }
     }
     
@@ -147,7 +152,7 @@ struct SearchList: View, KeyboardReadable {
                             if (historyData.datta.count > 0){
                                 if (historyData.updated){
                                     HistoryRows
-                                        .padding(.top, 10)
+//                                        .padding(.top, 10)
                                 }
                                 else{
                                     Text("Loading")
@@ -168,7 +173,7 @@ struct SearchList: View, KeyboardReadable {
                     }
                 }
                 .overlay(
-                    NavigationBar(title: "Search", search: .constant(false), showSearch: false, showProfile: true, hasBack: false)
+                    NavigationBar(title: "Search", search: .constant(false), showSearch: false, showProfile: true, hasBack: false, alert: $alert)
                         .environmentObject(historyData)
                         .environmentObject(contactsData)
                         .environmentObject(model)
@@ -180,11 +185,11 @@ struct SearchList: View, KeyboardReadable {
     }
     
     var HistoryRows: some View{
-        LazyVStack(){
+        LazyVStack(spacing: 0){
             
             ForEach(historyData.datta) { search in
                 ZStack{
-                    HStack {
+                    VStack (spacing: 0){
                         NavigationLink(destination: SingleSearchView2(alert: $alert)
                             .environmentObject(historyData)
                             .environmentObject(contactsData)
@@ -204,14 +209,21 @@ struct SearchList: View, KeyboardReadable {
                             historyData.selectedHistory = search.id
                             rowSelector = search.id
                         }){
-                            HistoryRow(history: search)
-                            Spacer()
-                            Image(systemName: "chevron.right")
-                                .foregroundColor(Color.accentColor) //Apply color for arrow only
-                                .padding(.trailing, 5)
+                            HStack{
+                                HistoryRow(history: search)
+                                Spacer()
+                                Image(systemName: "chevron.right")
+                                    .foregroundColor(Color.accentColor) //Apply color for arrow only
+                                    .padding(.trailing, 10)
+                            }
+                            .padding(.leading, 13)
+                            .padding(.vertical, 10)
                         }
+                        Divider()
                     }
-                    .padding(.horizontal, 15)
+
+                    .padding(.horizontal, 10)
+//                    .padding(.horizontal, 15)
                     
                 }
             }

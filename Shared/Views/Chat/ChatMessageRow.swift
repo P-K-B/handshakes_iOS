@@ -33,40 +33,78 @@ struct ChatMessageRow: View {
                     Spacer()
                 }
                 VStack(spacing: 0){
+//                    GeometryReader { geometry in
+//                        Text(b?.first(where: {$0.message_id == message.message_id})?.body ?? "")
+//                            .frame(minWidth: 94, alignment: .leading)
+//                            .myFont(font: MyFonts().Body, type: .display, color: Color.black, weight: .regular)
+////                            .background(GeometryReader {
+////                                Color.clear.preference(key: MessageWidthPreferenceKey.self,
+////                                                       value: $0.frame(in: .local).size.width)
+////                            })
+//                            .frame(width: geometry.size.width, height: <#T##CGFloat?#>, alignment: <#T##Alignment#>)
+//                    }
+//                                            Text("\(messageWidth)")
                     VStack(alignment: .leading, spacing: 6) {
-                        //                    VStack{
-                        //                HStack {
-                        //
-                        //                    Text(b?.first(where: {$0.message_id == message.message_id})?.is_sender ?? false ? "You" : partner)
-                        //                        .fontWeight(.bold)
-                        //                        .font(.system(size: 12))
-                        //                }
-                        
-                        Text(b?.first(where: {$0.message_id == message.message_id})?.body ?? "")
-                            .frame(minWidth: 94, alignment: .leading)
-                            .background(GeometryReader {
-                                Color.clear.preference(key: MessageWidthPreferenceKey.self,
-                                                       value: $0.frame(in: .local).size.width)
-                            })
-                        //                Text(message.body)
-                        //                HStack{
-                        //                    Spacer()
                         let a = dateFormatter.string(from: Date(timeIntervalSince1970: Double(message.sent_on ?? 0)))
                         HStack{
+                            Text(b?.first(where: {$0.message_id == message.message_id})?.body ?? "")
+                                .frame(minWidth: 94, alignment: .leading)
+                                .myFont(font: MyFonts().Body, type: .display, color: isUser ? Color.white : Color.black, weight: .regular)
+                                .background(GeometryReader {
+                                    Color.clear.preference(key: MessageWidthPreferenceKey.self,
+                                                           value: $0.frame(in: .local).size.width)
+                                })
+                        if (messageWidth <= 240){
+                            HStack{
                             Text(a)
-                                .font(Font.system(size: 12, weight: .regular, design: .default))
-                                .frame(minWidth: 94, alignment: .trailing)
+//                                .font(Font.system(size: 12, weight: .regular, design: .default))
+                                .myFont(font: MyFonts().Footnote, type: .display, color: isUser ? Color.white : Color.black, weight: .regular)
+                                if ((b?.first(where: {$0.message_id == message.message_id})?.is_sender ?? false) == true){
+                                    if (b?.first(where: {$0.message_id == message.message_id})?.read != nil){
+                                        if (b?.first(where: {$0.message_id == message.message_id})?.read == true){
+                                            Text("Read")
+        //                                        .font(Font.system(size: 12, weight: .regular, design: .default))
+                                                .myFont(font: MyFonts().Footnote, type: .display, color: isUser ? Color.white : Color.black, weight: .regular)
+                                        }
+                                    }
+                                }
+                            }
+                                .offset(y: 10)
                         }
+                        }
+                        if (messageWidth > 240){
+                            HStack(alignment: .bottom){
+//                                VStack(){
+//                                    Spacer()
+                            Text(a)
+//                                .font(Font.system(size: 12, weight: .regular, design: .default))
+                                .myFont(font: MyFonts().Footnote, type: .display, color: isUser ? Color.white : Color.black, weight: .regular)
+                                if ((b?.first(where: {$0.message_id == message.message_id})?.is_sender ?? false) == true){
+                                    if (b?.first(where: {$0.message_id == message.message_id})?.read != nil){
+                                        if (b?.first(where: {$0.message_id == message.message_id})?.read == true){
+                                            Text("Read")
+        //                                        .font(Font.system(size: 12, weight: .regular, design: .default))
+                                                .myFont(font: MyFonts().Footnote, type: .display, color: isUser ? Color.white : Color.black, weight: .regular)
+                                        }
+                                    }
+                                }
+//                                    .frame(minWidth: 94, alignment: .bottom)
+//                                    .background(.green)
+//                                }
+                        }
+//                            .background(.red)
                         .frame(minWidth: messageWidth, alignment: .trailing)
-                        //                }
+                    
+//                            .frame(height:100)
                         
                         .onAppear{
                             print(messageWidth)
                         }
-                        //                    }
-                        
+                        }
                     }
-                    .padding(5)
+                    .padding(.horizontal, 10)
+                    .padding(.top, 5)
+                    .padding(.bottom, messageWidth > 240 ? 5 : 15)
                     .onPreferenceChange(MessageWidthPreferenceKey.self) { pref in
                         self.messageWidth = pref
                     }
@@ -76,25 +114,18 @@ struct ChatMessageRow: View {
                     .background(isUser ? Color.blue : Color.theme.contactsHeadLetter.opacity(0.30))
                     //            .padding(10)
                     .cornerRadius(10)
-                    HStack{
-                        if ((b?.first(where: {$0.message_id == message.message_id})?.is_sender ?? false) == true){
-                            if (b?.first(where: {$0.message_id == message.message_id})?.read != nil){
-                                if (b?.first(where: {$0.message_id == message.message_id})?.read == true){
-                                    //                            Image(systemName: "checkmark.circle")
-                                    //                                .foregroundColor(.gray)
-                                    //                                .frame(width: 10, height: 10, alignment: .center)
-                                    Text("Read")
-                                        .font(Font.system(size: 12, weight: .regular, design: .default))
-                                }
-                                //                        else{
-                                //                            Image(systemName: "checkmark.circle.fill")
-                                //                                .foregroundColor(.green)
-                                //                                .frame(width: 10, height: 10, alignment: .center)
-                                //                        }
-                            }
-                        }
-                    }
-                    .frame(minWidth: messageWidth, alignment: .trailing)
+//                    HStack{
+//                        if ((b?.first(where: {$0.message_id == message.message_id})?.is_sender ?? false) == true){
+//                            if (b?.first(where: {$0.message_id == message.message_id})?.read != nil){
+//                                if (b?.first(where: {$0.message_id == message.message_id})?.read == true){
+//                                    Text("Read")
+////                                        .font(Font.system(size: 12, weight: .regular, design: .default))
+//                                        .myFont(font: MyFonts().Footnote, type: .display, color: Color.black, weight: .regular)
+//                                }
+//                            }
+//                        }
+//                    }
+//                    .frame(minWidth: messageWidth, alignment: .trailing)
                 }
                 .padding(10)
                 
@@ -103,9 +134,6 @@ struct ChatMessageRow: View {
                 }
             }
         }
-        //        .onAppear{
-        //
-        //        }
     }
     
     struct MessageWidthPreferenceKey : PreferenceKey {
@@ -113,5 +141,21 @@ struct ChatMessageRow: View {
         static func reduce(value: inout Value, nextValue: () -> Value) {
             value = value + nextValue()
         }
+    }
+}
+
+struct ChatMessageRow_Previews: PreviewProvider {
+    static let debug: DebugData = DebugData()
+    
+    static let historyData: HistoryDataView = debug.historyData
+    static let contactsData: ContactsDataView = debug.contactsData
+    static let model: ChatScreenModel = debug.model
+    static let userData: UserDataView = debug.userData
+    static var previews: some View {
+        ChatMessageRow(message: model.chats.allChats["9A8897C50C3811EDBD9E0242AC120002"]![1], isUser: true, partner: "")
+            .environmentObject(historyData)
+            .environmentObject(contactsData)
+            .environmentObject(model)
+            .environmentObject(userData)
     }
 }

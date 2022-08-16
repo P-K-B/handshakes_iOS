@@ -10,6 +10,7 @@ import SwiftUI
 
 struct SearchContacts: View {
     
+    @Binding var alert: MyAlert
     @State var searchText: String = ""
     @Binding var close: Bool
     @Binding var selectedContact: String?
@@ -33,7 +34,7 @@ struct SearchContacts: View {
             VStack{
                 ZStack {
                     
-                    VStack (alignment: .leading){
+                    VStack (alignment: .leading, spacing: 0){
                         
                         Text("Search")
                             .animatableFont(size: hasScrolled ? 22 : 36, weight: .bold)
@@ -51,10 +52,47 @@ struct SearchContacts: View {
                     
                     SearchBarMy(searchText: $searchText)
                     ScrollView() {
-                        LazyVStack (pinnedViews: .sectionHeaders){
-                            Text("\(contactsData.data.contacts.count)")
-                            ContactsSearchList
+
+                        if (!contactsData.checkAccess()){
+                            VStack(spacing: 0){
+                                Button(action:{
+                                    if (!contactsData.checkAccess()){
+                                        alert = MyAlert(active: true, alert: Alert(title: Text("Contacts access required"), message: Text("Go to Settings?"), primaryButton: .default(Text("Settings")) {
+                                            UIApplication.shared.open(URL(string: UIApplication.openSettingsURLString)!)
+                                        },
+                                        secondaryButton: .cancel()))
+                                    }
+                                    else{
+                                    }
+                                }){
+                                    Text ("Fetch contacts")
+                                        .myFont(font: MyFonts().Body, type: .display, color: Color.black, weight: .regular)
+                                }
+                            }
+//                            .frame(width: geometry.size.width)      // Make the scroll view full-width
+//                            .frame(minHeight: geometry.size.height)
                         }
+                        else{
+                            
+                            if (contactsData.data.loaded){
+                                if (!contactsData.data.updated){
+                                    Text ("Updating")
+                                        .myFont(font: MyFonts().Body, type: .display, color: Color.black, weight: .regular)
+                                }
+                                LazyVStack(spacing: 0){
+//                                    ContactsList
+                                    ContactsSearchList
+                                    
+                                }
+                            }
+                            else{
+                                Text("Loading")
+                                    .myFont(font: MyFonts().Body, type: .display, color: Color.black, weight: .regular)
+                            }
+                        }
+                        
+//                            ContactsSearchList
+//                        }
                     }
                     //                    .padding(.top, 5)
                 }
@@ -72,39 +110,14 @@ struct SearchContacts: View {
     }
     
     var ContactsSearchList: some View{
-        LazyVStack{
-            
-            
+        LazyVStack(spacing: 0){
             ForEach(contactsData.data.contacts
                 .filter { searchText.isEmpty || $0.longSearch.localizedStandardContains(searchText)}
-                    
             )
             { contact in
-                VStack{
+                VStack(spacing: 0){
                     
                     HStack {
-                        
-                        
-                        //                            NavigationLink(destination:
-                        //                                            SingleContactView2(selectedContact: contact)
-                        ////                                                   SingleContactView2()
-                        //                                .environmentObject(historyData)
-                        //                                .environmentObject(contactsData)
-                        //                                .environmentObject(model)
-                        //                                .environmentObject(userData)
-                        //                            ) {  HStack{
-                        //                                ContactRow(contact: contact, order: contactsData.order)
-                        //                                Spacer()
-                        ////
-                        //                            }
-                        //                            }
-                        //                            .navigationViewStyle(.stack)
-                        //                            .foregroundColor(Color.black)
-                        //                            .simultaneousGesture(TapGesture().onEnded{
-                        ////                                    print("Hello world!")
-                        //                                close=false
-                        //                            })
-                        
                         
                         Button(action: {
                             withAnimation(){
@@ -112,9 +125,6 @@ struct SearchContacts: View {
                                 searchSelectedContact = contact
                                 selected = true
                                 close = false
-                                
-                                //                                    contacts.selectedContact = contact
-                                //                                    selectedTab = .singleContact
                             }
                         }, label: {
                             HStack{
@@ -125,6 +135,7 @@ struct SearchContacts: View {
                         })
                         .foregroundColor(.black)
                         .padding(.leading, 13)
+                        .padding(.vertical, 10)
                         
                         
                         
@@ -134,7 +145,7 @@ struct SearchContacts: View {
                     
                 }
                 .padding(.horizontal, 10)
-                .padding(.vertical, 3)
+//                .padding(.vertical, 3)
                 .id(contact.index)
             }
         }

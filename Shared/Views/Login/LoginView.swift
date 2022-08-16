@@ -23,10 +23,9 @@ struct LoginView: View {
     @EnvironmentObject var userData: UserDataView
     
     @AppStorage("big") var big: Bool = IsBig()
-//    @AppStorage("fresh") var fresh: Bool = true
     @AppStorage("hideContacts") var hideContacts: Bool = false
     @AppStorage("selectedTab") var selectedTab: Tab = .search
-
+    
     
     @Environment(\.presentationMode) private var presentationMode: Binding<PresentationMode>
     
@@ -40,6 +39,10 @@ struct LoginView: View {
     @State private var errorDesc = Text("")
     @State var hint: String = "Enter your phone number"
     @State private var loading: Bool = false
+    /// Flag to open ContentView
+    @AppStorage("ContentMode") var contentMode: Bool = false
+    /// Flaf to open LoginHi view
+    @AppStorage("LoginMode") var loginMode: Bool = false
     
     //    user input
     @State private var code: String = ""
@@ -65,41 +68,29 @@ struct LoginView: View {
                     Spacer()
                 }
                 .ignoresSafeArea()
-                //                        .background(.blue)
-                
-                
             }
-            //            .background(.red)
             VStack{
-//                if (validNumber == false && big == false){
-//                    Spacer()
-//                }
-                //            Spacer()
                 VStack(){
-                    //                Spacer()
                     HStack{
                         VStack(alignment: .leading){
-                            Text("Log in to").font(.largeTitle).fontWeight(.bold)
+                            Text("Log in to")
+//                                .font(.largeTitle).fontWeight(.bold)
+                                .myFont(font: MyFonts().LargeTitle, type: .display, color: Color.black, weight: .bold)
                                 .padding(.top, 20)
-                            Text("Handshakes").font(.largeTitle).fontWeight(.bold)
+                            Text("Handshakes")
+//                                .font(.largeTitle).fontWeight(.bold)
+                                .myFont(font: MyFonts().LargeTitle, type: .display, color: Color.black, weight: .bold)
                         }
-                        //                        .font(.largeTitle).fontWeight(.bold)
                         .padding()
-                        //                        .multilineTextAlignment(.leading)
                         Spacer()
                     }
-                    //                Spacer()
-                    //                .padding(.top, 100)
                 }
-                //            if (!validNumber && big){
                 Spacer()
-                //            }
                 VStack {
-                    //                Text(String(validationError))
-                    //                Text("\(errorDesc)")
+                    
                     Text(hint)
-                    //                    .font(Font.custom("SFProDisplay-Regular", size: 20))
-                        .font(.title3).fontWeight(.semibold)
+//                        .font(.title3).fontWeight(.semibold)
+                        .myFont(font: MyFonts().Title3, type: .display, color: Color.black, weight: .semibold)
                         .padding()
                     //                    Phone number
                     VStack {
@@ -125,11 +116,7 @@ struct LoginView: View {
                                     //                            Code validation
                                     confirmButton
                                 }
-                                //                            .padding()
-//                                .padding(.vertical, big ? 10 : 3)
                                 .padding(.horizontal, 10)
-                                
-
                             }
                         }
                     }
@@ -137,19 +124,14 @@ struct LoginView: View {
                 }
                 Spacer()
                 Spacer()
-                
-                //            .background(.ultraThinMaterial, in: RoundedRectangle(cornerRadius: 34, style: .continuous))
-                //            .padding()
                     .onAppear {
-                        self.phoneField = PhoneNumberTextFieldView(phoneNumber: $phoneNumber, isEdeted: $validNumber, maxDigits: 16)
+                        self.phoneField = PhoneNumberTextFieldView(phoneNumber: $phoneNumber, isEdeted: $validNumber, maxDigits: 16, fontName: "SFProDisplay-Regular", fontSize: MyFonts().Title3.size)
                         validationError = true
                     }
-                
             }
             .safeAreaInset(edge: .bottom) {
                 Color.clear.frame(height: 50)
             }
-//            .offset(y: kGuardian.slide).animation(.easeInOut(duration: 1.0))
         }
         .contentShape(Rectangle())
         .onTapGesture {
@@ -162,12 +144,6 @@ struct LoginView: View {
         
     }
     
-    
-    
-    
-    
-    
-    
     var numberField: some View{
         self.phoneField
             .frame(minWidth: 0, maxWidth: .infinity, minHeight: 60, maxHeight: 60)
@@ -176,7 +152,6 @@ struct LoginView: View {
             .background(.ultraThinMaterial, in: RoundedRectangle(cornerRadius: 20, style: .continuous))
             .padding(.vertical, big ? 10 : 3)
             .padding(.horizontal, 10)
-        //            .font(.largeTitle)
     }
     var codeField: some View{
         SuperTextField(
@@ -184,8 +159,8 @@ struct LoginView: View {
             all: .constant(Alignment (horizontal: .leading, vertical: .center)),
             text: $code
         )
-        .font(Font.custom("SFProDisplay-Regular", size: 20))
-        //        .font(.body)
+//        .font(Font.custom("SFProDisplay-Regular", size: 20))
+        .myFont(font: MyFonts().Title3, type: .display, color: Color.black, weight: .regular)
         .frame(minWidth: 0, maxWidth: .infinity, minHeight: 60, maxHeight: 60)
         .keyboardType(.phonePad).padding(.horizontal, 15)
         .background(.ultraThinMaterial, in: RoundedRectangle(cornerRadius: 20, style: .continuous))
@@ -200,20 +175,20 @@ struct LoginView: View {
                 .onTapGesture {
                     userAgreement.toggle()
                 }
-                .font(Font.custom("SFProDisplay-Regular", size: 20))
+//                .font(Font.custom("SFProDisplay-Regular", size: 20))
+                .myFont(font: MyFonts().Body, type: .display, color: ColorTheme().accent, weight: .regular)
             Button(action:{
                 showAgreementFile = true
             },
                    label: {
                 Text("User Agreement")
-                    .font(Font.custom("SFProDisplay-Regular", size: 20))
+//                    .font(Font.custom("SFProDisplay-Regular", size: 20))
                     .underline()
+                    .myFont(font: MyFonts().Body, type: .display, color: ColorTheme().accent, weight: .regular)
                     .foregroundColor(Color.theme.accent)
             }
             )
             .foregroundColor(Color.theme.accent)
-            //                        Toggle("User Agreement", isOn: $userAgreement)
-            //                            .toggleStyle(.checkbox)
         }
         .padding()
     }
@@ -226,11 +201,13 @@ struct LoginView: View {
         } label: {
             if (!loading){
                 Text("Sign in")
-                    .buttonStyleLogin(fontSize: 20, color: Color.accentColor)
+                    .buttonStyleLogin(fontSize: 20, color: ColorTheme().accent)
+                    .myFont(font: MyFonts().Callout, type: .display, color: Color.black, weight: .regular)
             }
             else{
                 ProgressView()
-                    .buttonStyleLogin(fontSize: 20, color: Color.accentColor)
+                    .buttonStyleLogin(fontSize: 20, color: ColorTheme().accent)
+                    .myFont(font: MyFonts().Callout, type: .display, color: Color.black, weight: .regular)
             }
             
         }
@@ -242,7 +219,8 @@ struct LoginView: View {
     func SignInButton(){
         do{
             if ((userData.data.isNewUser) && (userAgreement == false)){
-                alert = MyAlert(error: true, title: "", text: "Please read and agree with \"User Agreement\"", button: "Ok", oneButton: true)
+                //                alert = MyAlert(error: true, title: "", text: "Please read and agree with \"User Agreement\"", button: "Ok", oneButton: true)
+                alert = MyAlert(active: true, alert: Alert(title: Text("Error"), message: Text("Please read and agree with \"User Agreement\""), dismissButton: .default(Text("Ok"))))
                 self.loading = false
             }
             //                                    Send code
@@ -255,7 +233,6 @@ struct LoginView: View {
             }
             do{
                 let number = phoneNumberKit.format(validatedPhoneNumber, toType: .international)
-                //                userData.data.number = number
                 userData.update(newData: UserUpdate(field: .number, string: number))
                 loading = true
                 try userData.SignInUpCall(agreement: userAgreement
@@ -264,7 +241,6 @@ struct LoginView: View {
                     withAnimation(){
                         if (reses.status_code == 0){
                             if ((reses.payload?.meta?.is_new_user) != nil){
-                                //                                userData.data.isNewUser = true
                                 userData.update(newData: UserUpdate(field: .isNewUser, bool: true))
                                 hint="Accept \"User Agreement\""
                                 userData.save()
@@ -272,11 +248,12 @@ struct LoginView: View {
                             else{
                                 validNumber = true
                                 hint="Enter code from SMS"
-                                
                             }
                         }
                         else {
-                            alert = MyAlert(error: true, title: "", text: reses.status_text ?? "Error while fetching data", button: "Ok", oneButton: true)
+                            //                            alert = MyAlert(error: true, title: "", text: reses.status_text ?? "Error while fetching data", button: "Ok", oneButton: true)
+                            alert = MyAlert(active: true, alert: Alert(title: Text("Error"), message: Text("Error while fetching data"), dismissButton: .default(Text("Ok"))))
+
                         }
                         code=""
                         loading = false
@@ -284,12 +261,16 @@ struct LoginView: View {
                 }
             }
             catch{
-                alert = MyAlert(error: true, title: "", text: "Error while fetching data", button: "Ok", oneButton: true)
+                //                alert = MyAlert(error: true, title: "", text: "Error while fetching data", button: "Ok", oneButton: true)
+                alert = MyAlert(active: true, alert: Alert(title: Text("Error"), message: Text("Error while fetching data"), dismissButton: .default(Text("Ok"))))
+
                 loading = false
             }
         }
         catch {
-            alert = MyAlert(error: true, title: "", text: "Please enter a valid phone number", button: "Ok", oneButton: true)
+            //            alert = MyAlert(error: true, title: "", text: "Please enter a valid phone number", button: "Ok", oneButton: true)
+            alert = MyAlert(active: true, alert: Alert(title: Text("Error"), message: Text("Please enter a valid phone number"), dismissButton: .default(Text("Ok").foregroundColor(ColorTheme().accent))))
+
             loading = false
         }
     }
@@ -302,27 +283,28 @@ struct LoginView: View {
         } label: {
             Text("Resend")
                 .buttonStyleLogin(fontSize: 20, color: Color.secondary)
+                .myFont(font: MyFonts().Callout, type: .display, color: Color.black, weight: .regular)
         }
     }
     
     func ResendButton(){
         do{
-            //                                print("Code is: \(self.code)")
-            //                                self.loading = true
-            //            let validatedPhoneNumber = try self.phoneNumberKit.parse(self.phoneNumber)
-            //            let number = self.phoneNumberKit.format(validatedPhoneNumber, toType: .international)
             try userData.VerifySingUpCallResend(){ (reses) in
                 print(reses)
                 if (reses.status_code == 0){
                 }
                 else{
-                    alert = MyAlert(error: true, title: "", text: reses.status_text ?? "Error while fetching data", button: "Ok", oneButton: true)
+                    //                    alert = MyAlert(error: true, title: "", text: reses.status_text ?? "Error while fetching data", button: "Ok", oneButton: true)
+                    alert = MyAlert(active: true, alert: Alert(title: Text("Error"), message: Text(reses.status_text ?? "Error while fetching data"), dismissButton: .default(Text("Ok"))))
+
                 }
                 self.loading = false
             }
         }
         catch {
-            alert = MyAlert(error: true, title: "", text: "Error while fetching data", button: "Ok", oneButton: true)
+            //            alert = MyAlert(error: true, title: "", text: "Error while fetching data", button: "Ok", oneButton: true)
+            alert = MyAlert(active: true, alert: Alert(title: Text("Error"), message: Text("Please enter a valid phone number"), dismissButton: .default(Text("Ok"))))
+
         }
     }
     
@@ -334,11 +316,13 @@ struct LoginView: View {
         } label: {
             if (!loading){
                 Text("Confirm")
-                    .buttonStyleLogin(fontSize: 20, color: Color.accentColor)
+                    .buttonStyleLogin(fontSize: 20, color: ColorTheme().accent)
+                    .myFont(font: MyFonts().Callout, type: .display, color: Color.black, weight: .regular)
             }
             else{
                 ProgressView()
-                    .buttonStyleLogin(fontSize: 20, color: Color.accentColor)
+                    .buttonStyleLogin(fontSize: 20, color: ColorTheme().accent)
+                    .myFont(font: MyFonts().Callout, type: .display, color: Color.black, weight: .regular)
             }
         }
     }
@@ -346,42 +330,41 @@ struct LoginView: View {
     func ConfirmButton(){
         self.loading = true
         do{
-            print("Code is: \(self.code)")
-            //            let validatedPhoneNumber = try self.phoneNumberKit.parse(self.phoneNumber)
-            //            let number = self.phoneNumberKit.format(validatedPhoneNumber, toType: .international)
+            //            print("Code is: \(self.code)")
             try userData.VerifySingUpCall(code: self.code){ (reses) in
                 print(reses)
                 if (reses.status_code == 0){
-                    //                    userData.data.jwt=reses.payload?.jwt.jwt ?? ""
                     userData.update(newData: UserUpdate(field: .jwt, string: reses.payload?.jwt.jwt ?? ""))
                     userData.update(newData: UserUpdate(field: .id, string: String(reses.payload?.jwt.id ?? -1)))
-                    //                    fresh = true
                     contactsData.Delete()
                     model.reset()
                     historyData.reset()
                     self.hideContacts = false
                     withAnimation(){
-                        //                        userData.data.loggedIn = true
                         userData.update(newData: UserUpdate(field: .loggedIn, bool: true))
                         userData.save()
                         selectedTab = .search
+                        loginMode = false
+                        contentMode = true
+//                        loginMode = false
                     }
                 }
                 else{
-                    alert = MyAlert(error: true, title: "", text: reses.status_text ?? "Error while fetching data", button: "Ok", oneButton: true)
+                    //                    alert = MyAlert(error: true, title: "", text: reses.status_text ?? "Error while fetching data", button: "Ok", oneButton: true)
+                    alert = MyAlert(active: true, alert: Alert(title: Text("Error"), message: Text(reses.status_text ?? "Error while fetching data"), dismissButton: .default(Text("Ok"))))
+
                 }
                 loading = false
             }
         }
         catch {
-            alert = MyAlert(error: true, title: "", text: "Error while fetching data", button: "Ok", oneButton: true)
+            //            alert = MyAlert(error: true, title: "", text: "Error while fetching data", button: "Ok", oneButton: true)
+            alert = MyAlert(active: true, alert: Alert(title: Text("Error"), message: Text("Please enter a valid phone number"), dismissButton: .default(Text("Ok"))))
+
             self.loading = false
         }
         print(self.userData.data)
     }
-    
-    
-    
     
     var PDFView:some View{
         VStack{
@@ -397,18 +380,6 @@ struct LoginView: View {
             PDFKitView(url: documentURL)
         }
     }
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    //    private func endEditing() {
-    //        UIApplication.shared.endEditing()
-    //    }
 }
 
 
@@ -422,41 +393,41 @@ struct LoginView_Previews: PreviewProvider {
     static let userData: UserDataView = debug.userData
     static var previews: some View {
         Group{
-        NavigationView{
-            LoginView(alert: .constant(MyAlert()))
-            .environmentObject(historyData)
-            .environmentObject(contactsData)
-            .environmentObject(model)
-            .environmentObject(userData)
-            
-        }
-        .previewDevice(PreviewDevice(rawValue: "iPhone SE (2nd generation)"))
             NavigationView{
-            LoginView(alert: .constant(MyAlert()))
-                .environmentObject(historyData)
-                .environmentObject(contactsData)
-                .environmentObject(model)
-                .environmentObject(userData)
-            
-        }
+                LoginView(alert: .constant(MyAlert()))
+                    .environmentObject(historyData)
+                    .environmentObject(contactsData)
+                    .environmentObject(model)
+                    .environmentObject(userData)
+                
+            }
+            .previewDevice(PreviewDevice(rawValue: "iPhone SE (2nd generation)"))
+            NavigationView{
+                LoginView(alert: .constant(MyAlert()))
+                    .environmentObject(historyData)
+                    .environmentObject(contactsData)
+                    .environmentObject(model)
+                    .environmentObject(userData)
+                
+            }
             .previewDevice(PreviewDevice(rawValue: "iPhone 13 Pro Max"))
             NavigationView{
-            LoginView(alert: .constant(MyAlert()))
-                .environmentObject(historyData)
-                .environmentObject(contactsData)
-                .environmentObject(model)
-                .environmentObject(userData)
-            
-        }
+                LoginView(alert: .constant(MyAlert()))
+                    .environmentObject(historyData)
+                    .environmentObject(contactsData)
+                    .environmentObject(model)
+                    .environmentObject(userData)
+                
+            }
             .previewDevice(PreviewDevice(rawValue: "iPhone 13"))
             NavigationView{
-            LoginView(alert: .constant(MyAlert()))
-                .environmentObject(historyData)
-                .environmentObject(contactsData)
-                .environmentObject(model)
-                .environmentObject(userData)
-            
-        }
+                LoginView(alert: .constant(MyAlert()))
+                    .environmentObject(historyData)
+                    .environmentObject(contactsData)
+                    .environmentObject(model)
+                    .environmentObject(userData)
+                
+            }
             .previewDevice(PreviewDevice(rawValue: "iPhone 13 mini"))
         }
     }

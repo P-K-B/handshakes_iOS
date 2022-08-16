@@ -14,197 +14,165 @@ import Lottie
 @main
 struct Handshakes2App: App {
     
+    /// Main app data
+    ///
+    /// Alert object
     @State var alert = MyAlert()
+    /// Data about user
     @StateObject var userData: UserDataView = UserDataView(d: false)
+    /// Data about user's contacts
     @StateObject var contactsData: ContactsDataView = ContactsDataView(d: false)
+    /// Chat data
     @StateObject private var model = ChatScreenModel(d: false)
+    /// Search history data
     @StateObject var historyData: HistoryDataView = HistoryDataView(d: false)
-        
-    let phoneNumberKit = PhoneNumberKit()
-    @State private var phoneField: PhoneNumberTextFieldView?
-    
+    /// User's jwt token
     @AppStorage("jwt") var jwt: String = ""
+    /// Flag of app open. It is used to update contacts data on app open
     @AppStorage("reopen") var reopen: Bool = false
-
-    @State var content: Bool = false
-    @State var login: Bool = false
     
+    /// View data
+    ///
+    /// Phone number parser object
+    let phoneNumberKit = PhoneNumberKit()
+    /// Phone number parserv field
+    @State private var phoneField: PhoneNumberTextFieldView?
+    /// Flag to open ContentView
+    @AppStorage("ContentMode") var contentMode: Bool = false
+    /// Flaf to open LoginHi view
+    @AppStorage("LoginMode") var loginMode: Bool = false
+    /// Loading animation object
     @State var lot = LottieView()
+    /// Loading screen text
     @State var lotText: String = "Loading..."
     
-    @Environment(\.scenePhase) var scenePhase
+    init(){
+        contentMode = false
+        loginMode = false
+        reopen = true
+        UIView.appearance(whenContainedInInstancesOf: [UIAlertController.self]).tintColor = UIColor(named: "AccentColor")
+    }
     
     var body: some Scene {
         WindowGroup {
             VStack{
                 NavigationView{
                     VStack{
-//                        if (userData.data.loaded){
-//                                                    if (userData.data.loggedIn){
-//                                                        ContentView(alert: $alert)
-//                                                                                    .environmentObject(historyData)
-//                                                                                    .environmentObject(contactsData)
-//                                                                                    .environmentObject(model)
-//                                                                                    .environmentObject(userData)
-//                                                    }
-//                                                        else{
-//                                                            LoginHi(alert: $alert)
-//                                                                                        .environmentObject(historyData)
-//                                                                                        .environmentObject(contactsData)
-//                                                                                        .environmentObject(model)
-//                                                                                        .environmentObject(userData)
-//                                                        }
-//                                                    }
-//                        else{
-                                                        
+                        ///  App loading animation
                         appLoading
                             .transition(.scale)
-//                        }
+                        /// Navigate to main ContentView
                         NavigationLink(destination: ContentView(alert: $alert)
                             .environmentObject(historyData)
                             .environmentObject(contactsData)
                             .environmentObject(model)
                             .environmentObject(userData)
                             .transition(.asymmetric(insertion: .move(edge: .bottom), removal: .move(edge: .top)))
-                                       , isActive: $content){
-                                EmptyView()
-                            }
+                                       , isActive: $contentMode){
+                            EmptyView()
+                        }
+                        /// Navigate to LoginHi view
                         NavigationLink(destination: LoginHi(alert: $alert)
                             .environmentObject(historyData)
                             .environmentObject(contactsData)
                             .environmentObject(model)
-                            .environmentObject(userData), isActive: $login){
+                            .environmentObject(userData), isActive: $loginMode){
                                 EmptyView()
                             }
                     }
                     .navigationBarHidden(true)
                 }
                 .navigationViewStyle(StackNavigationViewStyle())
+                .accentColor(ColorTheme().accent)
             }
-//            .onChange(of: scenePhase) { newPhase in
-//                if newPhase == .active {
-//                    print("Active")
-//                    onAppear()
-//                } else if newPhase == .inactive {
-//                    print("Inactive")
-//                } else if newPhase == .background {
-//                    print("Background")
-//                }
-//            }
             .onAppear{
-                reopen = true
-                //                Login
+                /// Set a flag to app is opened
+//                reopen = true
+//                contentMode = false
+//                loginMode = false
+                /// Login with app token
                 DispatchQueue.global(qos: .userInitiated).async {
-                    print("Performing time consuming task in this background thread")
                     do{
                         let group = DispatchGroup()
                         group.enter()
-                        
-                        //                        Wait for user data to be loaded
+                        /// Wait for user data to be loaded
                         DispatchQueue.global().async {
                             while userData.data.loaded != true {
                             }
-                            
                             group.leave()
                         }
-                        
                         group.wait()
                         userData.update(newData: UserUpdate(field: .loaded, bool: false))
-                        
-//                        sleep(3)
-                        //                        Check that user has a valid phone
-                        try self.phoneNumberKit.parse(userData.data.number)
-                        do{
-                            //                            Try to sing in using app token
-                            try userData.SignInUpCallAppToken()
-                            { (reses) in
-                                print(reses)
-                                if ((reses.status_code == 0) && (reses.payload?.jwt != nil)){
-                                    userData.update(newData: UserUpdate(field: .loggedIn, bool: true))
-                                    userData.update(newData: UserUpdate(field: .jwt, string: reses.payload?.jwt?.jwt ?? ""))
-                                    jwt = reses.payload?.jwt?.jwt ?? ""
-                                    userData.update(newData: UserUpdate(field: .id, string: String(reses.payload?.jwt?.id ?? -1)))
-                                    userData.save()
-                                    lot.test(){res in
-                                        content = true
-                                        userData.update(newData: UserUpdate(field: .loaded, bool: true))
+                        /// Check that user has a valid phone
+                        if (userData.data.number != "000"){
+//                            sleep(4)
+                            try self.phoneNumberKit.parse(userData.data.number)
+                            do{
+                                /// Try to sing in using app token
+                                try userData.SignInUpCallAppToken()
+                                { (reses) in
+//                                                                    print(reses)
+                                    /// If status code is "0" and "jwt" is not nill than Login was sucessful
+                                    if ((reses.status_code == 0) && (reses.payload?.jwt != nil)){
+                                        userData.update(newData: UserUpdate(field: .loggedIn, bool: true))
+                                        userData.update(newData: UserUpdate(field: .jwt, string: reses.payload?.jwt?.jwt ?? ""))
+                                        jwt = reses.payload?.jwt?.jwt ?? ""
+                                        userData.update(newData: UserUpdate(field: .id, string: String(reses.payload?.jwt?.id ?? -1)))
+                                        userData.save()
+                                        /// Finish loading animation and proside
+                                        lot.test(){res in
+                                            contentMode = true
+                                            userData.update(newData: UserUpdate(field: .loaded, bool: true))
+                                        }
                                     }
+                                    /// Error connectiong to server
+                                    else if (reses.status_code == -1){
+                                        alert = MyAlert(active: true, alert: Alert(title: Text("Error"), message: Text("Error connectiong to server"), dismissButton: .default(Text("Ok"))))
+                                    }
+                                    /// App token is not valid and user has to Login again
+                                    else{
+                                        lot.test(){res in
+                                            loginMode = true
+                                            userData.update(newData: UserUpdate(field: .loaded, bool: true))
+                                        }                                }
                                 }
-                                else if (reses.status_code == -1){
-                                    alert = MyAlert(error: true, title: "", text: "Error connectiong to server", button: "Ok", oneButton: true)
-                                }
-                                else{
-                                    //                                    login = true
-                                    lot.test(){res in
-                                        login = true
-                                        userData.update(newData: UserUpdate(field: .loaded, bool: true))
-                                    }                                }
                             }
                         }
-                        catch{
+                        else{
+                            lot.test(){res in
+                                loginMode = true
+                                userData.update(newData: UserUpdate(field: .loaded, bool: true))
+                            }
                         }
                     }
+                    /// Catch error if saved user number is not valid
                     catch {
-                        userData.update(newData: UserUpdate(field: .loaded, bool: true))
+                        //                        alert = MyAlert(active: true, alert: Alert(title: Text(""), message: Text("Error parsing your number"), dismissButton: .default(Text("Ok"))))
+                        lot.test(){res in
+                            loginMode = true
+                            userData.update(newData: UserUpdate(field: .loaded, bool: true))
+                        }
                     }
-                    DispatchQueue.main.async {
-                        // Task consuming task has completed
-                        // Update UI from this block of code
-                        print("SignInUpCallAppToken. Time consuming task has completed. From here we are allowed to update user interface.")
-                    }
-                }
-                
-            }
-            .alert(isPresented: $alert.error) {
-                if ((alert.oneButton) && (!alert.deleteChat)){
-                    return Alert(
-                        title: Text(alert.title),
-                        message: Text(alert.text),
-                        dismissButton: .default(Text(alert.button))
-                    )
-                }
-                else if ((alert.oneButton) && (alert.deleteChat)){
-                    return Alert (
-                        title: Text(alert.title),
-                        message: Text(alert.text),
-                        dismissButton: .default(Text(alert.button),
-                                                action: {
-                                                })
-                    )
-                }
-                
-                else if (!alert.oneButton){
-                    return Alert (
-                        title: Text(alert.title),
-                        message: Text(alert.text),
-                        primaryButton: .default(Text(alert.button),
-                                                action: {
-                                                    UIApplication.shared.open(URL(string: UIApplication.openSettingsURLString)!)
-                                                }),
-                        secondaryButton: .default(Text(alert.button2))
-                    )
-                }
-                else{
-                    return Alert(
-                        title: Text(alert.title),
-                        message: Text(alert.text),
-                        dismissButton: .default(Text(alert.button))
-                    )
                 }
             }
+            /// Show alert
+            .alert(isPresented: $alert.active) {
+                return alert.alert ?? Alert(title: Text("Error showing alert"))
+            }
+            
         }
         
-    }
-    
-    private func onAppear() {
-        model.connect()
-    }
-    
-    var appLoading: some View{
         
+    }
+    
+    /// Loading view
+    var appLoading: some View{
         VStack{
+            /// Show loading animation
             lot
+            /// Show loading text
             Text (lotText)
+                .myFont(font: MyFonts().Body, type: .display, color: Color.black, weight: .regular)
         }
     }
 }
@@ -220,7 +188,6 @@ struct LottieView: UIViewRepresentable {
         
         let img = (self.colorScheme == .dark ? "handshakes_logo_dark" : "handshakes_loading")
         
-        //        print("Color scheme: ", self.colorScheme, " and img = ", img)
         let animation = Animation.named(img)
         animationView.animation = animation
         animationView.contentMode = .scaleAspectFit
@@ -241,11 +208,14 @@ struct LottieView: UIViewRepresentable {
     }
     
     func test(completion: @escaping (Bool) -> ()){
+        animationView.loopMode = LottieLoopMode.playOnce
+        animationView.play()
         animationView.play(
-            fromProgress: animationView.currentProgress,
+            fromProgress: animationView.realtimeAnimationProgress,
             toProgress: 1,
             loopMode: .playOnce,
-            completion: { [self] completed in
+            
+            completion: { completed in
                 print("Done animation")
                 
                 DispatchQueue.main.asyncAfter(deadline: .now() + 0.01) {

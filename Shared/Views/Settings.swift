@@ -17,6 +17,11 @@ struct Settings: View {
     //    @Binding var showHideAlert: Bool
     @AppStorage("selectedTab") var selectedTab: Tab = .search
     @AppStorage("big") var big: Bool = IsBig()
+    /// Flag to open ContentView
+    @AppStorage("ContentMode") var contentMode: Bool = false
+    /// Flaf to open LoginHi view
+    @AppStorage("LoginMode") var loginMode: Bool = false
+    @Binding var alert: MyAlert
     
     @Environment(\.presentationMode) private var presentationMode: Binding<PresentationMode>
     
@@ -67,7 +72,7 @@ struct Settings: View {
                         
                     }
                     
-                    .padding(.top, 20)
+                    .padding(.top, 10)
                     
                     .padding(.bottom, 10)
                     .background(.gray.opacity(0.3))
@@ -79,7 +84,7 @@ struct Settings: View {
                             .padding(.top, 10)
                         VStack(alignment: .leading, spacing: 12){
                             VStack(alignment: .leading){
-                                NavigationLink(destination: HideContacts(root: false)
+                                NavigationLink(destination: HideContacts(alert: $alert, root: false)
                                     .environmentObject(history)
                                     .environmentObject(contacts)
                                     .environmentObject(model)
@@ -95,11 +100,7 @@ struct Settings: View {
                                     
                                 }
                                 Divider()
-                                NavigationLink(destination: HideContacts(root: false)
-                                    .environmentObject(history)
-                                    .environmentObject(contacts)
-                                    .environmentObject(model)
-                                    .environmentObject(userData)
+                                NavigationLink(destination: EmptyView()
                                 ){
                                     HStack(alignment:.center){
                                         Text("Edit profile")
@@ -111,8 +112,12 @@ struct Settings: View {
                                 .disabled(true)
                                 Divider()
                             }
-                            Button(action:{history.reset()}){
-                                
+                            Button(action:{
+                                alert = MyAlert(active: true, alert: Alert(title: Text("Delete history?"), message: Text("This will delete your search history."), primaryButton: .destructive(Text("Delete")) {
+                                    history.reset()
+                                },
+                                secondaryButton: .cancel()))
+                            }){
                                 HStack(alignment:.center){
                                     Text("Clear search history")
                                         .font(Font.system(size: 18, weight: .regular, design: .default))
@@ -121,7 +126,12 @@ struct Settings: View {
                                 }
                             }
                             Divider()
-                            Button(action:{model.reset()}){
+                            Button(action:{
+                                alert = MyAlert(active: true, alert: Alert(title: Text("Delete chats?"), message: Text("This will delete all your chats."), primaryButton: .destructive(Text("Delete")) {
+                                    model.reset()
+                                },
+                                secondaryButton: .cancel()))
+                            }){
                                 HStack(alignment:.center){
                                     Text("Clear chats")
                                         .font(Font.system(size: 18, weight: .regular, design: .default))
@@ -142,7 +152,9 @@ struct Settings: View {
                                 
                             }
                             Divider()
-                            Button(action:{history.reset()}){
+                            Button(action:{
+                                
+                            }){
                                 HStack(alignment:.center){
                                     Text("Delete account")
                                         .font(Font.system(size: 18, weight: .regular, design: .default))
@@ -164,13 +176,18 @@ struct Settings: View {
     }
     
     func ResetButton(){
-        userData.reset()
+        alert = MyAlert(active: true, alert: Alert(title: Text("Logout?"), message: Text("This will reset all app data."), primaryButton: .destructive(Text("Logout")) {
+            userData.reset()
+            loginMode = true
+            contentMode = false
+        },
+        secondaryButton: .cancel()))
     }
 }
 
 struct Settings_Previews: PreviewProvider {
     static var previews: some View {
-        Settings()
+        Settings(alert: .constant(MyAlert()))
             .environmentObject(DebugData().userData)
             .environmentObject(DebugData().contactsData)
             .environmentObject(DebugData().historyData)

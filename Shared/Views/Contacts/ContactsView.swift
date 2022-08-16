@@ -22,7 +22,7 @@ struct ContactsView: View {
     @AppStorage("big") var big: Bool = IsBig()
     @State var selectedContact: String? = ""
     @State var search: Bool = false
-    @AppStorage("selectedTab") var selectedTab: Tab = .search
+    //    @AppStorage("selectedTab") var selectedTab: Tab = .search
     
     @State var stored: Int = 0
     @State var current: [Int] = []
@@ -40,11 +40,11 @@ struct ContactsView: View {
     
     var body: some View {
         
-        VStack{
+        VStack(spacing: 0){
             ZStack{
                 hardV
                     .overlay(
-                        NavigationBar(title: "Contacts", search: $search, showSearch: true, showProfile: true, hasBack: false)
+                        NavigationBar(title: "Contacts", search: $search, showSearch: true, showProfile: true, hasBack: false, alert: $alert)
                             .environmentObject(historyData)
                             .environmentObject(contactsData)
                             .environmentObject(model)
@@ -70,15 +70,19 @@ struct ContactsView: View {
                         ScrollViewReader { proxy in
                             ScrollView() {
                                 if ((!contactsData.checkAccess()) && (!self.prev)){
-                                    VStack{
+                                    VStack(spacing: 0){
                                         Button(action:{
                                             if (!contactsData.checkAccess()){
-                                                alert = MyAlert(error: true, title: "Contacts access required.", text: "Go to Settings?", button: "Settings", button2: "Cancel", oneButton: false)
+                                                alert = MyAlert(active: true, alert: Alert(title: Text("Contacts access required"), message: Text("Go to Settings?"), primaryButton: .default(Text("Settings")) {
+                                                    UIApplication.shared.open(URL(string: UIApplication.openSettingsURLString)!)
+                                                },
+                                                                                           secondaryButton: .cancel()))
                                             }
                                             else{
                                             }
                                         }){
                                             Text ("Fetch contacts")
+                                                .myFont(font: MyFonts().Body, type: .display, color: Color.black, weight: .regular)
                                         }
                                     }
                                     .frame(width: geometry.size.width)      // Make the scroll view full-width
@@ -89,9 +93,7 @@ struct ContactsView: View {
                                     if (contactsData.data.loaded){
                                         if (!contactsData.data.updated){
                                             Text ("Updating")
-                                                .onDisappear{
-                                                    print("2")
-                                                }
+                                                .myFont(font: MyFonts().Body, type: .display, color: Color.black, weight: .regular)
                                         }
                                         if (searchSelectedContact != nil){
                                             NavigationLink(destination:
@@ -105,19 +107,19 @@ struct ContactsView: View {
                                                 EmptyView()
                                             }
                                         }
-                                        LazyVStack{
+                                        LazyVStack(spacing: 0){
                                             ContactsList
                                             
                                         }
                                         .onAppear {
-                                            print("Visible!" ,visible)
-                                            
-                                            proxy.scrollTo(visible, anchor: .bottom)
+                                                                                        print("Visible!" ,visible)
+                                            proxy.scrollTo(visible == 1 ? visible : visible - 1, anchor: .bottom)
                                         }
                                         
                                     }
                                     else{
                                         Text("Loading")
+                                            .myFont(font: MyFonts().Body, type: .display, color: Color.black, weight: .regular)
                                     }
                                 }
                             }
@@ -127,7 +129,7 @@ struct ContactsView: View {
             }
         }
         .popover(isPresented: $search) {
-            SearchContacts(close: $search, selectedContact: $selectedContact, searchSelectedContact: $searchSelectedContact, selected: $selected)
+            SearchContacts(alert: $alert, close: $search, selectedContact: $selectedContact, searchSelectedContact: $searchSelectedContact, selected: $selected)
                 .environmentObject(historyData)
                 .environmentObject(contactsData)
                 .environmentObject(model)
@@ -150,11 +152,10 @@ struct ContactsView: View {
                 .filter({ (contact) -> Bool in (contact.filterindex.prefix(1).uppercased() == letter)})
             if (a.filter({!contactsData.data.hide.contains($0.id)}).count > 0){
                 Section(header: SectionLetter(text:letter)) {
-                    ForEach(a
-                    )
+                    ForEach(a)
                     { contact in
                         if (!contactsData.data.hide.contains(contact.id)){
-                            VStack{
+                            VStack(alignment: .center, spacing: 0){
                                 HStack {
                                     NavigationLink(destination:
                                                     SingleContactView2(selectedContact: contact, alert: $alert)
@@ -174,8 +175,8 @@ struct ContactsView: View {
                                         HStack{
                                             ContactRow(contact: contact, order: contactsData.order)
                                             Spacer()
-                                            
                                         }
+                                        //                                        .background(.red)
                                     })
                                     .onAppear {
                                         current.append(contact.index)
@@ -186,12 +187,15 @@ struct ContactsView: View {
                                     }
                                     .foregroundColor(.black)
                                     .padding(.leading, 13)
+                                    .padding(.vertical, 10)
                                 }
                                 Divider()
+                                //                                    .padding(0)
                             }
                             .padding(.horizontal, 10)
-                            .padding(.vertical, 3)
+                            //                            .padding(.vertical, 10)
                             .id(contact.index)
+                            //                            .background(.green)
                         }
                     }
                 }

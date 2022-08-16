@@ -31,11 +31,12 @@ struct HistoryRow: View {
                 Image(systemName: history.res ? "checkmark.circle" : "xmark.circle")
             }
         }
-        .font(Font.custom("SFProDisplay-Regular", size: 20))
+//        .font(Font.custom("SFProDisplay-Regular", size: 20))
+        .myFont(font: MyFonts().Body, type: .display, color: Color.black, weight: .regular)
 //        .opacity(0.70)
         .foregroundColor(Color("GrayGary"))
-        .padding(.horizontal, 15)
-        .padding(.vertical, 5)
+//        .padding(.horizontal, 15)
+//        .padding(.vertical, 5)
     }
 }
 

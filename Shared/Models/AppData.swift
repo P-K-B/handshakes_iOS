@@ -18,11 +18,6 @@ struct AppData {
 }
 
 struct MyAlert{
-    var error: Bool = false
-    var title: String = ""
-    var text: String = ""
-    var button: String = ""
-    var button2: String = ""
-    var oneButton: Bool = true
-    var deleteChat: Bool = false
+    var active: Bool = false
+    var alert: Alert?
 }

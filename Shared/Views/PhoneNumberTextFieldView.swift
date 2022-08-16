@@ -13,6 +13,8 @@ struct PhoneNumberTextFieldView: UIViewRepresentable {
     @Binding var phoneNumber: String
     @Binding var isEdeted: Bool
     @State var maxDigits: Int
+    @State var fontName: String
+    @State var fontSize: CGFloat
     private let textField = PhoneNumberTextField()
     
     func makeUIView(context: Context) -> PhoneNumberTextField {
@@ -20,7 +22,7 @@ struct PhoneNumberTextFieldView: UIViewRepresentable {
         textField.withFlag = true
         textField.withPrefix = true
         textField.maxDigits = self.maxDigits
-        textField.font=UIFont(name: "SFProDisplay-Regular", size: 20)
+        textField.font=UIFont(name: fontName, size: fontSize)
         textField.addTarget(context.coordinator, action: #selector(Coordinator.onTextUpdate), for: .editingChanged)
         return textField
     }
@@ -56,6 +58,6 @@ struct PhoneNumberTextFieldView: UIViewRepresentable {
 
 struct PhoneNumberTextFieldView_Previews: PreviewProvider {
     static var previews: some View {
-        PhoneNumberTextFieldView(phoneNumber: .constant("+1 888-555-1212"), isEdeted: .constant(true), maxDigits: 15)
+        PhoneNumberTextFieldView(phoneNumber: .constant("+1 888-555-1212"), isEdeted: .constant(true), maxDigits: 15, fontName: "SFProDisplay-Regular", fontSize: 20)
     }
 }

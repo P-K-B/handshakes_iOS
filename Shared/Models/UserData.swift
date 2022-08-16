@@ -216,6 +216,7 @@ class UserDataService{
                 return output.data
             }
             .receive(on: DispatchQueue.main)
+            .replaceError(with: Data("{\"status_code\": -1}".data(using: .utf8)!))
             .decode(type: StatusResponse.self, decoder: JSONDecoder())
             .sink { (completion) in
                 switch completion{
@@ -241,6 +242,7 @@ class UserDataService{
             let baseUrl="https://hand.freekiller.net"
         #endif
         guard let url = URL(string: baseUrl + "/api/session") else { fatalError("Missing URL") }
+        
         var urlRequest = URLRequest(url: url)
         
         urlRequest.httpMethod = "POST"
@@ -253,7 +255,8 @@ class UserDataService{
         print(json)
         urlRequest.httpBody = jsonData
         
-        signInUpCall = URLSession.shared.dataTaskPublisher(for: urlRequest).subscribe(on: DispatchQueue.global(qos: .default))
+        signInUpCall = URLSession.shared.dataTaskPublisher(for: urlRequest)
+            .subscribe(on: DispatchQueue.global(qos: .default))
             .tryMap { (output) -> Data in
                 print(output.response)
                 guard let response = output.response as? HTTPURLResponse,
@@ -265,7 +268,9 @@ class UserDataService{
                 }
                 return output.data
             }
+        
             .receive(on: DispatchQueue.main)
+            .replaceError(with: Data("{\"status_code\": -1}".data(using: .utf8)!))
             .decode(type: AppTokenResponse.self, decoder: JSONDecoder())
             .sink { (completion) in
                 switch completion{
@@ -273,6 +278,9 @@ class UserDataService{
                     break
                 case .failure(let error):
                     print (error.localizedDescription)
+//                    DispatchQueue.main.async {
+//                        completion(AppTokenResponse( status_code: -1))
+//                    }
                 }
             } receiveValue: { statusResponce in
                 print(statusResponce)
@@ -281,6 +289,7 @@ class UserDataService{
                 }
                 self.signInUpCall?.cancel()
             }
+            
     }
     
     
@@ -316,6 +325,7 @@ class UserDataService{
                 return output.data
             }
             .receive(on: DispatchQueue.main)
+            .replaceError(with: Data("{\"status_code\": -1}".data(using: .utf8)!))
             .decode(type: SingInSMSResponse.self, decoder: JSONDecoder())
             .sink { (completion) in
                 switch completion{
