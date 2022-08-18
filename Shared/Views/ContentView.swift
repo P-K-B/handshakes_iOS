@@ -117,16 +117,16 @@ struct ContentView: View {
                 reopen = false
             }
         }
-        .onChange(of: scenePhase) { newPhase in
-                        if newPhase == .active {
-                            print("Active")
-                            onAppear()
-                        } else if newPhase == .inactive {
-                            print("Inactive")
-                        } else if newPhase == .background {
-                            print("Background")
-                        }
-                    }
+//        .onChange(of: scenePhase) { newPhase in
+//                        if newPhase == .active {
+//                            print("Active")
+//                            onAppear()
+//                        } else if newPhase == .inactive {
+//                            print("Inactive")
+//                        } else if newPhase == .background {
+//                            print("Background")
+//                        }
+//                    }
         .onDisappear(perform: onDisappear)
         .navigationBarHidden(true)
     }

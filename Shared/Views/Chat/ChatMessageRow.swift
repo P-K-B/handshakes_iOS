@@ -43,18 +43,19 @@ struct ChatMessageRow: View {
 ////                            })
 //                            .frame(width: geometry.size.width, height: <#T##CGFloat?#>, alignment: <#T##Alignment#>)
 //                    }
-//                                            Text("\(messageWidth)")
+                                            Text("\(messageWidth)")
                     VStack(alignment: .leading, spacing: 6) {
                         let a = dateFormatter.string(from: Date(timeIntervalSince1970: Double(message.sent_on ?? 0)))
                         HStack{
                             Text(b?.first(where: {$0.message_id == message.message_id})?.body ?? "")
+//                            Text("Test ")
                                 .frame(minWidth: 94, alignment: .leading)
                                 .myFont(font: MyFonts().Body, type: .display, color: isUser ? Color.white : Color.black, weight: .regular)
                                 .background(GeometryReader {
                                     Color.clear.preference(key: MessageWidthPreferenceKey.self,
                                                            value: $0.frame(in: .local).size.width)
                                 })
-                        if (messageWidth <= 240){
+                        if (messageWidth <= 230){
                             HStack{
                             Text(a)
 //                                .font(Font.system(size: 12, weight: .regular, design: .default))
@@ -72,7 +73,7 @@ struct ChatMessageRow: View {
                                 .offset(y: 10)
                         }
                         }
-                        if (messageWidth > 240){
+                        if (messageWidth > 230){
                             HStack(alignment: .bottom){
 //                                VStack(){
 //                                    Spacer()
@@ -104,7 +105,7 @@ struct ChatMessageRow: View {
                     }
                     .padding(.horizontal, 10)
                     .padding(.top, 5)
-                    .padding(.bottom, messageWidth > 240 ? 5 : 15)
+                    .padding(.bottom, messageWidth > 230 ? 5 : 15)
                     .onPreferenceChange(MessageWidthPreferenceKey.self) { pref in
                         self.messageWidth = pref
                     }

@@ -242,7 +242,8 @@ class ContactsDataService  {
     
     func updateHide(id: [String], upload: Bool, force: Bool, completion: @escaping (Bool) -> ()){
         //        self.data.showedHide = true
-        
+        print(self.data.hide.sorted(by: {$0 > $1}))
+        print(id.sorted(by: {$0 > $1}))
         if (self.data.hide.sorted(by: {$0 > $1}) != id.sorted(by: {$0 > $1})){
             let old = self.data.hide
             let unhide = old.filter({!id.contains($0)})
@@ -350,7 +351,7 @@ class ContactsDataService  {
 
         }
         else{
-            self.GetNewContacts(upload: false, initial: false)
+//            self.GetNewContacts(upload: false, initial: false)
             //            DispatchQueue.main.async {
             completion(true)
             //            }
@@ -1110,9 +1111,6 @@ class ContactsDataService  {
     }
     
     func UploadLater(initial: Bool){
-        //        let new = self.new.filter({!self.data.hide.contains($0.id)})
-        //        let deleted = self.deleted.filter({!self.data.hide.contains($0.id)})
-        //        let update = self.update.filter({!self.data.hide.contains($0.id)})
         self.Upload(new: self.new, deleted: self.deleted, contactsFromPhone: self.contactsFromPhone, contactsFromApp: self.contactsFromApp, filterindexPhone: self.filterindexPhone, update: self.update, res: self.res, update_deleted: self.update_deleted, contactsFromPhoneAll: self.contactsFromPhone, initial: initial)
     }
     
@@ -1154,7 +1152,7 @@ class ContactsDataService  {
                 group.wait()
                 //                sleep(3)
                 do{
-                    try self.DeleteContacts(contacts: deleted, update: [])
+                    try self.DeleteContacts(contacts: deleted.filter({!self.data.hide.contains($0.id)}), update: [])
                     { (reses) in
                         //                        print(reses)
                         if (reses.status_code == 0){
@@ -1162,7 +1160,7 @@ class ContactsDataService  {
                             //                            new
                             if (!new.isEmpty){
                                 do{
-                                    try self.UploadContacts(contacts: new, initial: initial)
+                                    try self.UploadContacts(contacts: new.filter({!self.data.hide.contains($0.id)}), initial: initial)
                                     { (reses2) in
 //                                        print(reses2)
                                         //                                    self.data.time4 = Date()
@@ -1294,7 +1292,7 @@ class ContactsDataService  {
                 group.wait()
                 //                sleep(3)
                 do{
-                    try self.UploadContacts(contacts: new, initial: initial)
+                    try self.UploadContacts(contacts: new.filter({!self.data.hide.contains($0.id)}), initial: initial)
                     { (reses2) in
 //                        print(reses2)
                         //                                    self.data.time4 = Date()
@@ -1444,7 +1442,7 @@ class ContactsDataService  {
                 else{
                     //                sleep(3)
                     do{
-                        try self.UploadContacts(contacts: update, initial: initial)
+                        try self.UploadContacts(contacts: update.filter({!self.data.hide.contains($0.id)}), initial: initial)
                         { (reses3) in
                             //                                                        print(reses2)
                             //                    //                                    self.data.time4 = Date()
@@ -1628,7 +1626,7 @@ class ContactsDataService  {
             //            app.append(contentsOf: contactsFromPhoneAll.filter({self.data.hide.contains($0.id)}))
             //            app.append(contentsOf: contactsFromPhoneAll.filter({self.data.hide.contains($0.id)}))
             
-            
+//            app = app.filter({!self.data.hide.contains($0.id)})
             
             app = self.ReOrder(contacts: app, etalon: contactsFromPhoneAll)
             app = self.RestoreIndex(contacts: app, index: filterindexphone)

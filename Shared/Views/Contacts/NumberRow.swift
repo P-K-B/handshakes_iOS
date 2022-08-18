@@ -14,7 +14,7 @@ struct NumberRow: View {
         VStack(alignment: .leading, spacing: 0){
             Text ("\(number.title)")
 //                .font(Font.system(size: 16, weight: .semibold, design: .default))
-                .myFont(font: MyFonts().Callout, type: .display, color: Color.black, weight: .bold)
+                .myFont(font: MyFonts().Callout, type: .display, color: Color.gray, weight: .semibold)
                 .foregroundColor(Color.theme.contactsHeadLetter)
                 .padding(.leading, 13)
                 .padding(.bottom, 5)

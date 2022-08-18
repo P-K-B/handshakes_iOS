@@ -135,7 +135,6 @@ struct HideContacts: View {
                 ScrollViewReader { proxy in
                     SearchBarMy(searchText: $searchText)
                     ScrollView() {
-                        
                         if (!contactsData.checkAccess()){
                             VStack(spacing: 0){
                                 Button(action:{
@@ -156,16 +155,19 @@ struct HideContacts: View {
 //                            .frame(minHeight: geometry.size.height)
                         }
                         else{
-                            
                             if (contactsData.data.loaded){
                                 if (!contactsData.data.updated){
                                     Text ("Updating")
                                         .myFont(font: MyFonts().Body, type: .display, color: Color.black, weight: .regular)
                                 }
-                                LazyVStack(spacing: 0){
-//                                    ContactsList
-                                    ContactsSearchList
-                                    
+                                else{
+                                    LazyVStack(spacing: 0){
+                                        Text("Random text")
+                                            .frame(width: 0, height: 0)
+    //                                    ContactsList
+                                        ContactsSearchList
+                                        
+                                    }
                                 }
                             }
                             else{

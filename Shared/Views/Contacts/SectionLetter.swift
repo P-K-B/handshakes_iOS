@@ -18,7 +18,7 @@ struct SectionLetter: View{
 //                    .padding(5)
 //                    .font(Font.custom("Inter-Bold", size: 16))
 //                    .font(Font.system(size: 16, weight: .bold, design: .default))
-                    .myFont(font: MyFonts().Callout, type: .display, color: Color.black, weight: .bold)
+                    .myFont(font: MyFonts().Callout, type: .display, color: Color.gray, weight: .bold)
                     .foregroundColor(Color.theme.contactsHeadLetter)
                     .padding(.bottom, 5)
                 Spacer()

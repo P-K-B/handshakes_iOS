@@ -92,24 +92,29 @@ struct Settings: View {
                                 ){
                                     HStack(alignment:.center){
                                         Text("Hide contacts")
-                                            .font(Font.system(size: 18, weight: .regular, design: .default))
+//                                            .font(Font.system(size: 18, weight: .regular, design: .default))
+                                            .myFont(font: MyFonts().Body, type: .display, color: Color.black, weight: .regular)
                                             .foregroundColor(.black)
                                         Image(systemName: "eye")
                                         Spacer()
                                     }
                                     
                                 }
+                                .padding(.leading, 13)
                                 Divider()
                                 NavigationLink(destination: EmptyView()
                                 ){
                                     HStack(alignment:.center){
                                         Text("Edit profile")
-                                            .font(Font.system(size: 18, weight: .regular, design: .default))
+//                                            .font(Font.system(size: 18, weight: .regular, design: .default))
+//                                            .myFont(font: MyFonts().Body, type: .display, color: Color.black, weight: .regular)
+                                            .myFont(font: MyFonts().Body, type: .display, color: Color("GrayDisabled"), weight: .regular)
                                         Image(systemName: "person")
                                         Spacer()
                                     }
                                 }
                                 .disabled(true)
+                                .padding(.leading, 13)
                                 Divider()
                             }
                             Button(action:{
@@ -120,11 +125,13 @@ struct Settings: View {
                             }){
                                 HStack(alignment:.center){
                                     Text("Clear search history")
-                                        .font(Font.system(size: 18, weight: .regular, design: .default))
+//                                        .font(Font.system(size: 18, weight: .regular, design: .default))
+                                        .myFont(font: MyFonts().Body, type: .display, color: Color.black, weight: .regular)
                                         .foregroundColor(.black)
                                     Spacer()
                                 }
                             }
+                            .padding(.leading, 13)
                             Divider()
                             Button(action:{
                                 alert = MyAlert(active: true, alert: Alert(title: Text("Delete chats?"), message: Text("This will delete all your chats."), primaryButton: .destructive(Text("Delete")) {
@@ -134,36 +141,41 @@ struct Settings: View {
                             }){
                                 HStack(alignment:.center){
                                     Text("Clear chats")
-                                        .font(Font.system(size: 18, weight: .regular, design: .default))
+//                                        .font(Font.system(size: 18, weight: .regular, design: .default))
+                                        .myFont(font: MyFonts().Body, type: .display, color: Color.black, weight: .regular)
                                         .foregroundColor(.black)
                                     Spacer()
                                 }
                                 
                             }
+                            .padding(.leading, 13)
                             Divider()
                             Button(action:{ResetButton()}){
                                 HStack(alignment:.center){
                                     Text("Logout")
-                                        .font(Font.system(size: 18, weight: .regular, design: .default))
+//                                        .font(Font.system(size: 18, weight: .regular, design: .default))
+                                        .myFont(font: MyFonts().Body, type: .display, color: Color.black, weight: .regular)
                                         .foregroundColor(.black)
                                     Image(systemName: "rectangle.portrait.and.arrow.right")
                                     Spacer()
                                 }
                                 
                             }
+                            .padding(.leading, 13)
                             Divider()
                             Button(action:{
                                 
                             }){
                                 HStack(alignment:.center){
                                     Text("Delete account")
-                                        .font(Font.system(size: 18, weight: .regular, design: .default))
+//                                        .font(Font.system(size: 18, weight: .regular, design: .default))
+                                        .myFont(font: MyFonts().Body, type: .display, color: Color("GrayDisabled"), weight: .regular)
                                     Image(systemName: "trash")
                                     Spacer()
                                 }
-                                
                             }
                             .disabled(true)
+                            .padding(.leading, 13)
                             Divider()
                         }
                         .frame(maxWidth: .infinity, alignment: .leading)

@@ -25,6 +25,7 @@ struct LoginView: View {
     @AppStorage("big") var big: Bool = IsBig()
     @AppStorage("hideContacts") var hideContacts: Bool = false
     @AppStorage("selectedTab") var selectedTab: Tab = .search
+    @AppStorage("reopen") var reopen: Bool = false
     
     
     @Environment(\.presentationMode) private var presentationMode: Binding<PresentationMode>
@@ -343,7 +344,9 @@ struct LoginView: View {
                     withAnimation(){
                         userData.update(newData: UserUpdate(field: .loggedIn, bool: true))
                         userData.save()
-                        selectedTab = .search
+//                        selectedTab = .search
+                        reopen = true
+                        selectedTab = .hide
                         loginMode = false
                         contentMode = true
 //                        loginMode = false

@@ -45,6 +45,7 @@ struct Handshakes2App: App {
     @State var lot = LottieView()
     /// Loading screen text
     @State var lotText: String = "Loading..."
+    @Environment(\.scenePhase) var scenePhase
     
     init(){
         contentMode = false
@@ -159,10 +160,25 @@ struct Handshakes2App: App {
             .alert(isPresented: $alert.active) {
                 return alert.alert ?? Alert(title: Text("Error showing alert"))
             }
-            
+            .onChange(of: scenePhase) { newPhase in
+                                    if newPhase == .active {
+                                        print("Active")
+                                        if (reopen == false){
+                                            onAppear()
+                                        }
+                                    } else if newPhase == .inactive {
+                                        print("Inactive")
+                                    } else if newPhase == .background {
+                                        print("Background")
+                                    }
+                                }
         }
         
         
+    }
+    
+    private func onAppear() {
+        model.connect()
     }
     
     /// Loading view
