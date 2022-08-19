@@ -125,35 +125,51 @@ struct Grid_old: View{
                             if (a.count > 0){
                                 
                                 VStack(){
+//                                    Text("\(i)")
+//                                    Text("\(c)")
                                     if (i == (c - 1)){
                                         ContactRow(contact: a[0], order: contacts.order )
                                     }
                                     else{
                                         VStack{
-                                            NavigationLink(destination:
-                                                            ChatScreen(alert: $alert)
+                                            OneMore4(i: i, a: a, c: c, alert: $alert, handshake: handshake, path: path)
                                                 .environmentObject(history)
                                                 .environmentObject(contacts)
                                                 .environmentObject(model)
                                                 .environmentObject(userData)
-                                            )
-                                            {
-                                                VStack {
-                                                    OneMore(a: a, i: i, m: c - 1, order: contacts.order)
-                                                    ContactRow(contact: a[0], order: contacts.order )
-                                                }
-                                                
-                                            }
-                                            .navigationViewStyle(.stack)
-                                            .foregroundColor(Color.black)
-                                            .simultaneousGesture(TapGesture().onEnded{
-                                                model.OpenChat(chat: handshake.path_id+path.guid)
-                                                model.toGuid = path.guid
-                                                model.addChat(a: handshake.path_id+path.guid)
-                                                model.send(text: "", searchGuid: handshake.path_id, toGuid: path.guid, meta: Meta(number: history.datta.first(where: {$0.id == history.selectedHistory})?.number ?? "", asking_number: userData.data.number, res: path.number, chain: handshake.path_id))
-                                                model.send(text: "Searching info about number \(history.datta.first(where: {$0.id == history.selectedHistory})?.number ?? "")", searchGuid: handshake.path_id, toGuid: path.guid, meta: nil)
-                                                
-                                            })
+//                                            if (i == 1){
+//                                                NavigationLink(destination:
+//                                                                ChatScreen(alert: $alert)
+//                                                    .environmentObject(history)
+//                                                    .environmentObject(contacts)
+//                                                    .environmentObject(model)
+//                                                    .environmentObject(userData)
+//                                                )
+//                                                {
+//                                                    VStack {
+//                                                        OneMore(a: a, i: i, m: c - 1, order: contacts.order)
+//                                                        ContactRow(contact: a[0], order: contacts.order )
+//                                                    }
+//                                                    .background(.red)
+//
+//                                                }
+//                                                .navigationViewStyle(.stack)
+//                                                .foregroundColor(Color.black)
+//                                                .simultaneousGesture(TapGesture().onEnded{
+//                                                    model.OpenChat(chat: handshake.path_id+path.guid)
+//                                                    model.toGuid = path.guid
+//                                                    model.addChat(a: handshake.path_id+path.guid)
+//                                                    model.send(text: "", searchGuid: handshake.path_id, toGuid: path.guid, meta: Meta(number: history.datta.first(where: {$0.id == history.selectedHistory})?.number ?? "", asking_number: userData.data.number, res: path.number, chain: handshake.path_id))
+//                                                    model.send(text: "Searching info about number \(history.datta.first(where: {$0.id == history.selectedHistory})?.number ?? "")", searchGuid: handshake.path_id, toGuid: path.guid, meta: nil)
+//
+//                                                })
+//                                            }
+//                                            else{
+//                                                VStack {
+//                                                    OneMore(a: a, i: i, m: c - 1, order: contacts.order)
+//                                                    ContactRow(contact: a[0], order: contacts.order )
+//                                                }
+//                                            }
                                         }
                                         .frame(width: 300, height: 125, alignment: .center)
                                         .background(.ultraThinMaterial, in: RoundedRectangle(cornerRadius: 34, style: .continuous))
@@ -220,6 +236,61 @@ struct Grid_old: View{
     
     
     
+}
+
+struct OneMore4: View{
+
+    let i: Int
+    let a: [FetchedContact]
+    let c: Int
+    @Binding var alert: MyAlert
+    @State var handshake: SearchPathDecoded
+    @State var path: SearchPathDecodedPath
+    
+    @EnvironmentObject var history: HistoryDataView
+    @EnvironmentObject var contacts: ContactsDataView
+    @EnvironmentObject private var model: ChatScreenModel
+    @EnvironmentObject var userData: UserDataView
+
+    var body: some View{
+        if ((i == 1) || (i == c - 2)){
+            NavigationLink(destination:
+                            ChatScreen(alert: $alert)
+                .environmentObject(history)
+                .environmentObject(contacts)
+                .environmentObject(model)
+                .environmentObject(userData)
+            )
+            {
+                VStack {
+                    OneMore(a: a, i: i, m: c - 1, order: contacts.order)
+                    ContactRow(contact: a[0], order: contacts.order )
+                    Text("Tap to chat")
+//                        .padding()
+                        .myFont(font: MyFonts().Footnote, type: .display, color: ColorTheme().accent, weight: .regular)
+//                        .padding()
+                }
+//                .background(.red)
+
+            }
+            .navigationViewStyle(.stack)
+            .foregroundColor(Color.black)
+            .simultaneousGesture(TapGesture().onEnded{
+                model.OpenChat(chat: handshake.path_id+path.guid)
+                model.toGuid = path.guid
+                model.addChat(a: handshake.path_id+path.guid)
+                model.send(text: "", searchGuid: handshake.path_id, toGuid: path.guid, meta: Meta(number: history.datta.first(where: {$0.id == history.selectedHistory})?.number ?? "", asking_number: userData.data.number, res: path.number, chain: handshake.path_id))
+                model.send(text: "Searching info about number \(history.datta.first(where: {$0.id == history.selectedHistory})?.number ?? "")", searchGuid: handshake.path_id, toGuid: path.guid, meta: nil)
+
+            })
+        }
+        else{
+            VStack {
+                OneMore(a: a, i: i, m: c - 1, order: contacts.order)
+                ContactRow(contact: a[0], order: contacts.order )
+            }
+        }
+    }
 }
 
 struct OneContact: View{
@@ -361,117 +432,117 @@ struct SingleSearchView2: View {
                             
                             let a = (history.datta.first(where: {$0.id == history.selectedHistory})?.handhsakes!.sorted(by: {$0.path.count < $1.path.count}))!
                             VStack {
-//                                ZStack{
-//
-//                                                                        TabView(selection: $currentPage) {
-//                                                                            ForEach (a.indices, id: \.self){ index in
-//                                                                                let handhsake = a[index]
-//                                                                                //                                Text("Path #\(index+1)")
-//                                                                                //                                Text("\(handhsake.path.count)")
-//                                                                                ScrollView{
-//                                                                                    Grid_old(handshake: handhsake, alert: $alert)
-//                                                                                        .environmentObject(history)
-//                                                                                        .environmentObject(contacts)
-//                                                                                        .environmentObject(model)
-//                                                                                        .environmentObject(userData)
-//                                                                                        .frame(minHeight:200)
-//                                                                                    //                                                .padding()
-//                                                                                    //                                                                    .padding()
-//                                                                                        .background(.ultraThinMaterial, in: RoundedRectangle(cornerRadius: 20, style: .continuous))
-//                                                                                        .padding(.horizontal, 10)
-//                                                                                    //                                                .frame(maxHeight: 1000)
-//
-//                                                                                        .onAppear{print(handhsake)}
-//
-//                                                                                        .padding(.top, 45)
-//                                                                                    //                                                                                                    .offset(y: 45)
-//                                                                                }
-//                                                                                //                                                .padding(.top, 45)
-//                                                                                //                                                .offset(y: 45)
-//                                                                                .tag(index)
-//                                                                                .safeAreaInset(edge: .bottom, content: {
-//                                                                                                            Color.clear.frame(height: big ? 45: 75)
-//                                                                                }
-//                                                                                               )
-//                                                                            }
-//                                                                        }
-//                                                                        .tabViewStyle(.page(indexDisplayMode: .never))
-//                                                                        .indexViewStyle(.page(backgroundDisplayMode: .always))
-//                                                                        //                                        .background(.red)
-//                                                                        VStack{
-//                                                                            PageControlView(currentPage: $currentPage, numberOfPages: a.count)
-//                                                                                .padding(10)
-//                                                                            Spacer()
-//                                                                            HStack{
-//                                                                                Image(systemName: "info.circle")
-//                                                                                    .foregroundColor(ColorTheme().accent)
-//                                                                                Text("Tap on a search card to start a chat")
-//                                                                            }
-//                                                                            .padding(30)
-//                                                                            .frame(maxWidth: .infinity)
-//                                //                                            .background(.green)
-//                                                                            //                                                .background(.blue)
-//                                                                            .background(.ultraThinMaterial)
-//                                                                            .mask(
-//                                                                                LinearGradient(gradient: Gradient(stops: [
-//                                                                                    Gradient.Stop(color: Color(white: 0, opacity: 0),
-//                                                                                                  location: 0),
-//                                                                                    Gradient.Stop(color: Color(white: 0, opacity: 1),
-//                                                                                                  location: 0.5),
-//                                                                                ]), startPoint: .top, endPoint: .bottom)
-//                                                                            )
-//                                                                        }
-//                                                                        .ignoresSafeArea()
-//                                                                    }
-                                                                   
                                 ZStack{
-                                    TabView(selection: $currentPage) {
-                                        ForEach (a.indices, id: \.self){ index in
-                                            let handhsake = a[index]
-                                            ScrollView{
-                                                PageControlView(currentPage: $currentPage, numberOfPages: a.count)
-                                                    .padding(10)
-//                                                    .matchedGeometryEffect(id: "Dots", in: namespace)
-                                                Grid_old(handshake: handhsake, alert: $alert)
-                                                    .environmentObject(history)
-                                                    .environmentObject(contacts)
-                                                    .environmentObject(model)
-                                                    .environmentObject(userData)
-                                                    .frame(minHeight:200)
-                                                    .background(.ultraThinMaterial, in: RoundedRectangle(cornerRadius: 20, style: .continuous))
-                                                    .padding(.horizontal, 10)
-                                                    .onAppear{print(handhsake)}
-                                            }
-                                            .tag(index)
-                                            .safeAreaInset(edge: .bottom, content: {
-                                                Color.clear.frame(height: big ? 45: 75)
-                                            }
-                                            )
-                                        }
-                                    }
-                                    .tabViewStyle(.page(indexDisplayMode: .never))
-                                    .indexViewStyle(.page(backgroundDisplayMode: .always))
-                                    VStack{
-                                        Spacer()
-                                        HStack{
-                                            Image(systemName: "info.circle")
-                                                .foregroundColor(ColorTheme().accent)
-                                            Text("Tap on a search card to start a chat")
-                                        }
-                                        .padding(30)
-                                        .frame(maxWidth: .infinity)
-                                        .background(.ultraThinMaterial)
-                                        .mask(
-                                            LinearGradient(gradient: Gradient(stops: [
-                                                Gradient.Stop(color: Color(white: 0, opacity: 0),
-                                                              location: 0),
-                                                Gradient.Stop(color: Color(white: 0, opacity: 1),
-                                                              location: 0.5),
-                                            ]), startPoint: .top, endPoint: .bottom)
-                                        )
-                                    }
-                                    .ignoresSafeArea()
-                                }
+
+                                                                        TabView(selection: $currentPage) {
+                                                                            ForEach (a.indices, id: \.self){ index in
+                                                                                let handhsake = a[index]
+                                                                                //                                Text("Path #\(index+1)")
+                                                                                //                                Text("\(handhsake.path.count)")
+                                                                                ScrollView{
+                                                                                    Grid_old(handshake: handhsake, alert: $alert)
+                                                                                        .environmentObject(history)
+                                                                                        .environmentObject(contacts)
+                                                                                        .environmentObject(model)
+                                                                                        .environmentObject(userData)
+                                                                                        .frame(minHeight:200)
+                                                                                    //                                                .padding()
+                                                                                    //                                                                    .padding()
+                                                                                        .background(.ultraThinMaterial, in: RoundedRectangle(cornerRadius: 20, style: .continuous))
+                                                                                        .padding(.horizontal, 10)
+                                                                                    //                                                .frame(maxHeight: 1000)
+
+                                                                                        .onAppear{print(handhsake)}
+
+                                                                                        .padding(.top, 45)
+                                                                                    //                                                                                                    .offset(y: 45)
+                                                                                }
+                                                                                //                                                .padding(.top, 45)
+                                                                                //                                                .offset(y: 45)
+                                                                                .tag(index)
+                                                                                .safeAreaInset(edge: .bottom, content: {
+                                                                                                            Color.clear.frame(height: big ? 45: 75)
+                                                                                }
+                                                                                               )
+                                                                            }
+                                                                        }
+                                                                        .tabViewStyle(.page(indexDisplayMode: .never))
+                                                                        .indexViewStyle(.page(backgroundDisplayMode: .always))
+                                                                        //                                        .background(.red)
+                                                                        VStack{
+                                                                            PageControlView(currentPage: $currentPage, numberOfPages: a.count)
+                                                                                .padding(10)
+                                                                            Spacer()
+                                                                            HStack{
+                                                                                Image(systemName: "info.circle")
+                                                                                    .foregroundColor(ColorTheme().accent)
+                                                                                Text("Tap on a search card to start a chat")
+                                                                            }
+                                                                            .padding(30)
+                                                                            .frame(maxWidth: .infinity)
+                                //                                            .background(.green)
+                                                                            //                                                .background(.blue)
+                                                                            .background(.ultraThinMaterial)
+                                                                            .mask(
+                                                                                LinearGradient(gradient: Gradient(stops: [
+                                                                                    Gradient.Stop(color: Color(white: 0, opacity: 0),
+                                                                                                  location: 0),
+                                                                                    Gradient.Stop(color: Color(white: 0, opacity: 1),
+                                                                                                  location: 0.5),
+                                                                                ]), startPoint: .top, endPoint: .bottom)
+                                                                            )
+                                                                        }
+                                                                        .ignoresSafeArea()
+                                                                    }
+                                                                   
+//                                ZStack{
+//                                    TabView(selection: $currentPage) {
+//                                        ForEach (a.indices, id: \.self){ index in
+//                                            let handhsake = a[index]
+//                                            ScrollView{
+//                                                PageControlView(currentPage: $currentPage, numberOfPages: a.count)
+//                                                    .padding(10)
+////                                                    .matchedGeometryEffect(id: "Dots", in: namespace)
+//                                                Grid_old(handshake: handhsake, alert: $alert)
+//                                                    .environmentObject(history)
+//                                                    .environmentObject(contacts)
+//                                                    .environmentObject(model)
+//                                                    .environmentObject(userData)
+//                                                    .frame(minHeight:200)
+//                                                    .background(.ultraThinMaterial, in: RoundedRectangle(cornerRadius: 20, style: .continuous))
+//                                                    .padding(.horizontal, 10)
+//                                                    .onAppear{print(handhsake)}
+//                                            }
+//                                            .tag(index)
+//                                            .safeAreaInset(edge: .bottom, content: {
+//                                                Color.clear.frame(height: big ? 45: 75)
+//                                            }
+//                                            )
+//                                        }
+//                                    }
+//                                    .tabViewStyle(.page(indexDisplayMode: .never))
+//                                    .indexViewStyle(.page(backgroundDisplayMode: .always))
+//                                    VStack{
+//                                        Spacer()
+//                                        HStack{
+//                                            Image(systemName: "info.circle")
+//                                                .foregroundColor(ColorTheme().accent)
+//                                            Text("Tap on a search card to start a chat")
+//                                        }
+//                                        .padding(30)
+//                                        .frame(maxWidth: .infinity)
+//                                        .background(.ultraThinMaterial)
+//                                        .mask(
+//                                            LinearGradient(gradient: Gradient(stops: [
+//                                                Gradient.Stop(color: Color(white: 0, opacity: 0),
+//                                                              location: 0),
+//                                                Gradient.Stop(color: Color(white: 0, opacity: 1),
+//                                                              location: 0.5),
+//                                            ]), startPoint: .top, endPoint: .bottom)
+//                                        )
+//                                    }
+//                                    .ignoresSafeArea()
+//                                }
                             }
                         }
                     }

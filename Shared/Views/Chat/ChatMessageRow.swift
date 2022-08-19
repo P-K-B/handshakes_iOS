@@ -48,7 +48,7 @@ struct ChatMessageRow: View {
                         let a = dateFormatter.string(from: Date(timeIntervalSince1970: Double(message.sent_on ?? 0)))
                         HStack{
                             Text(b?.first(where: {$0.message_id == message.message_id})?.body ?? "")
-//                            Text("Test ")
+//                            Text("")
                                 .frame(minWidth: 94, alignment: .leading)
                                 .myFont(font: MyFonts().Body, type: .display, color: isUser ? Color.white : Color.black, weight: .regular)
                                 .background(GeometryReader {
@@ -109,7 +109,7 @@ struct ChatMessageRow: View {
                     .onPreferenceChange(MessageWidthPreferenceKey.self) { pref in
                         self.messageWidth = pref
                     }
-                    .frame(minWidth: 100, alignment: isUser ? .trailing : .leading)
+                    .frame(alignment: isUser ? .trailing : .leading)
                     
                     .foregroundColor(isUser ? .white : .black)
                     .background(isUser ? Color.blue : Color.theme.contactsHeadLetter.opacity(0.30))

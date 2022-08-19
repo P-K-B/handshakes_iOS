@@ -108,6 +108,8 @@ struct ContactsView: View {
                                             }
                                         }
                                         LazyVStack(spacing: 0){
+                                            Text("Random text")
+                                                .frame(width: 0, height: 0)
                                             ContactsList
                                             
                                         }

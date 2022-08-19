@@ -179,7 +179,11 @@ final class ChatScreenService  {
     
     func reset(){
         //        self.messages = []
-        self.chats = Chats()
+        for chat in self.chats.allChats{
+            print(chat)
+            self.chats.allChats[chat.key] = chat.value.filter({$0.marker == "new_chat_meta"})
+        }
+//        self.chats = Chats()
         self.toGuid = ""
         self.openChat = ""
         self.save()

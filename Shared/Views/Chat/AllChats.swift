@@ -35,7 +35,8 @@ struct AllChats: View{
                     ScrollView() {
                         let a = model.chats.allChats
                             .sorted(by: {$0.value.last?.sent_on ?? 0 > $1.value.last?.sent_on ?? 0})
-                        if (a.count > 0){
+                        let b = a.filter({$0.value.contains(where: {$0.marker == "new_message"})})
+                        if (b.count > 0){
                             Divider()
                             ForEach(a, id: \.key) { chatKey, val in
                                 let chat = model.chats.allChats[chatKey]
@@ -132,80 +133,86 @@ struct ChatItem: View {
         }
     }
     var body: some View {
-        VStack{
-            VStack(spacing: 5){
-                let s = GetChatTitle()
-                HStack{
-                    Text(s.0)
-//                        .font(Font.system(size: 22, weight: .semibold, design: .default))
-                        .myFont(font: MyFonts().Title2, type: .display, color: Color.black, weight: .bold)
-//                        .myFont(font: MyFonts().SubTitle, color: .black)
-                        .multilineTextAlignment(.leading)
-                        .lineLimit(2)
-                    Spacer()
-                    if (lastMessage != nil) {
-                        let a = dateFormatter.string(from: Date(timeIntervalSince1970: Double(lastMessage?.sent_on ?? 0)))
-                        Text(a)
-//                            .font(Font.system(size: 16, weight: .regular, design: .default))
-                            .myFont(font: MyFonts().Subhead, type: .display, color: Color.black, weight: .regular)
-                            .multilineTextAlignment(.leading)
-                    }
-                }
-                HStack{
-                    Image(systemName: "number.circle")
-                        .resizable()
-                        .frame(width: 18, height: 18, alignment: .center)
-                        .foregroundColor(Color.theme.accent)
-                    Text(s.1)
-//                        .font(Font.system(size: 18, weight: .regular, design: .default))
-                        .myFont(font: MyFonts().Subhead, type: .display, color: Color.black, weight: .regular)
-                        .multilineTextAlignment(.leading)
-                        .lineLimit(2)
-                    Spacer()
-                }
-                HStack{
-                    
-                    if (lastMessage != nil) {
-                        Text(lastMessage!.body)
-                            .truncationMode(.tail)
-                            .foregroundColor(.gray)
-                            .frame(maxHeight: 50)
-                            .multilineTextAlignment(.leading)
-                            .lineLimit(2)
-//                            .font(Font.system(size: 18, weight: .regular, design: .default))
-                            .myFont(font: MyFonts().Body, type: .display, color: Color.black, weight: .regular)
-                    }
-                    Spacer()
-                    let unread = chat?.filter({$0.read != true})
-                    let b = unread?.count ?? 0
-                    if (lastMessage?.is_sender != true){
-                        
-                        if (lastMessage?.read == false){
-                            if (b != 0){
-                                Text("\(b)")
-                                    .foregroundColor(.white)
-                                    .frame(width: 15, height: 15, alignment: .center)
-                                    .background(Color.theme.accent)
-                                    .cornerRadius(10)
-                                    
+        if ((self.chat?.filter({$0.marker == "new_message"}))?.count ?? 0 > 0) {
+            VStack {
+                VStack{
+                    VStack(spacing: 5){
+                        let s = GetChatTitle()
+                        HStack{
+                            Text(s.0)
+        //                        .font(Font.system(size: 22, weight: .semibold, design: .default))
+                                .myFont(font: MyFonts().Title2, type: .display, color: Color.black, weight: .bold)
+        //                        .myFont(font: MyFonts().SubTitle, color: .black)
+                                .multilineTextAlignment(.leading)
+                                .lineLimit(2)
+                            Spacer()
+                            if (lastMessage != nil) {
+                                let a = dateFormatter.string(from: Date(timeIntervalSince1970: Double(lastMessage?.sent_on ?? 0)))
+                                Text(a)
+        //                            .font(Font.system(size: 16, weight: .regular, design: .default))
+                                    .myFont(font: MyFonts().Subhead, type: .display, color: Color.black, weight: .regular)
+                                    .multilineTextAlignment(.leading)
                             }
-//                            Circle()
-//                                .fill(Color.theme.accent)
-//                                .frame(width: 10, height: 10, alignment: .center)
+                        }
+                        HStack{
+                            Image(systemName: "number.circle")
+                                .resizable()
+                                .frame(width: 18, height: 18, alignment: .center)
+                                .foregroundColor(Color.theme.accent)
+                            Text(s.1)
+        //                        .font(Font.system(size: 18, weight: .regular, design: .default))
+                                .myFont(font: MyFonts().Subhead, type: .display, color: Color.black, weight: .regular)
+                                .multilineTextAlignment(.leading)
+                                .lineLimit(2)
+                            Spacer()
+                        }
+                        HStack{
+                            
+                            if (lastMessage != nil) {
+                                Text(lastMessage!.body)
+                                    .truncationMode(.tail)
+                                    .foregroundColor(.gray)
+                                    .frame(maxHeight: 50)
+                                    .multilineTextAlignment(.leading)
+                                    .lineLimit(2)
+        //                            .font(Font.system(size: 18, weight: .regular, design: .default))
+                                    .myFont(font: MyFonts().Body, type: .display, color: Color.black, weight: .regular)
+                            }
+                            Spacer()
+                            let unread = chat?.filter({$0.read != true})
+                            let b = unread?.count ?? 0
+                            if (lastMessage?.is_sender != true){
+                                
+                                if (lastMessage?.read == false){
+                                    if (b != 0){
+                                        Text("\(b)")
+                                            .foregroundColor(.white)
+                                            .frame(width: 15, height: 15, alignment: .center)
+                                            .background(Color.theme.accent)
+                                            .cornerRadius(10)
+                                            
+                                    }
+        //                            Circle()
+        //                                .fill(Color.theme.accent)
+        //                                .frame(width: 10, height: 10, alignment: .center)
+                                }
+                            }
                         }
                     }
+                    .padding(.horizontal, 13.0)
                 }
-            }
-            .padding(.horizontal, 13.0)
+            
             Divider()
         }
-        .frame(
-            minWidth: 0,
-            maxWidth: .infinity,
-            minHeight: 0,
-            maxHeight: 80,
-            alignment: .topLeading
-        )
+            .frame(
+                minWidth: 0,
+                maxWidth: .infinity,
+                minHeight: 0,
+                maxHeight: 80,
+                alignment: .topLeading
+            )
+        }
+            
     }
     
 }
