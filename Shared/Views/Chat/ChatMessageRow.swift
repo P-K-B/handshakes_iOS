@@ -43,7 +43,7 @@ struct ChatMessageRow: View {
 ////                            })
 //                            .frame(width: geometry.size.width, height: <#T##CGFloat?#>, alignment: <#T##Alignment#>)
 //                    }
-                                            Text("\(messageWidth)")
+//                                            Text("\(messageWidth)")
                     VStack(alignment: .leading, spacing: 6) {
                         let a = dateFormatter.string(from: Date(timeIntervalSince1970: Double(message.sent_on ?? 0)))
                         HStack{
