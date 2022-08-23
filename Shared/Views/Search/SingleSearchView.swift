@@ -199,7 +199,10 @@ struct Grid_old: View{
                                     model.toGuid = path.guid
                                     model.addChat(a: handshake.path_id+path.guid)
                                     model.send(text: "", searchGuid: handshake.path_id, toGuid: path.guid, meta: Meta(number: history.datta.first(where: {$0.id == history.selectedHistory})?.number ?? "", asking_number: userData.data.number, res: path.number, chain: handshake.path_id))
-                                    model.send(text: "Searching info about number \(history.datta.first(where: {$0.id == history.selectedHistory})?.number ?? "")", searchGuid: handshake.path_id, toGuid: path.guid, meta: nil)
+//                                    print(model.chats.allChats[handshake.path_id+path.guid])
+                                    if (model.chats.allChats[handshake.path_id+path.guid]?.filter({$0.marker != "new_chat_meta"}).count ?? 0 <= 0){
+                                        model.send(text: "Searching info about number \(history.datta.first(where: {$0.id == history.selectedHistory})?.number ?? "")", searchGuid: handshake.path_id, toGuid: path.guid, meta: nil)
+                                    }
                                     
                                 })
                             }
@@ -280,7 +283,10 @@ struct OneMore4: View{
                 model.toGuid = path.guid
                 model.addChat(a: handshake.path_id+path.guid)
                 model.send(text: "", searchGuid: handshake.path_id, toGuid: path.guid, meta: Meta(number: history.datta.first(where: {$0.id == history.selectedHistory})?.number ?? "", asking_number: userData.data.number, res: path.number, chain: handshake.path_id))
-                model.send(text: "Searching info about number \(history.datta.first(where: {$0.id == history.selectedHistory})?.number ?? "")", searchGuid: handshake.path_id, toGuid: path.guid, meta: nil)
+//                print(model.chats.allChats[handshake.path_id+path.guid]?.filter({$0.marker != "new_chat_meta"}).count)
+                if (model.chats.allChats[handshake.path_id+path.guid]?.filter({$0.marker != "new_chat_meta"}).count ?? 0 <= 0){
+                    model.send(text: "Searching info about number \(history.datta.first(where: {$0.id == history.selectedHistory})?.number ?? "")", searchGuid: handshake.path_id, toGuid: path.guid, meta: nil)
+                }
 
             })
         }

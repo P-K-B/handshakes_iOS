@@ -29,7 +29,7 @@ struct ChatScreen: View, KeyboardReadable {
         if (metaMsg?.is_sender == true){
             let a = contacts.data.contacts.filter({$0.telephone.contains(where: {$0.phone == metaMsg?.meta?.res})})
             let s = "You'r asking " +
-            (a.count > 0 ? a[0].firstName : "Unknown person") +
+            (a.count > 0 ? a[0].firstName + " " + a[0].lastName : "Unknown person") +
             (" about ") +
             (metaMsg?.meta?.number ?? "No number")
             return s
@@ -37,7 +37,7 @@ struct ChatScreen: View, KeyboardReadable {
         else{
             let a = contacts.data.contacts.filter({$0.telephone.contains(where: {$0.phone == metaMsg?.meta?.asking_number})})
                         return
-                            (a.count > 0 ? a[0].firstName : "Unknown person") +
+            (a.count > 0 ? a[0].firstName + " " + a[0].lastName : "Unknown person") +
                             (" is asking about ") +
                             (metaMsg?.meta?.number ?? "No number")
         }

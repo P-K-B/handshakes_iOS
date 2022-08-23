@@ -124,12 +124,12 @@ struct ChatItem: View {
         let metaMsg = self.chat?.first(where: {$0.marker == "new_chat_meta"})
         if (metaMsg?.is_sender == true){
             let a = contacts.data.contacts.filter({$0.telephone.contains(where: {$0.phone == metaMsg?.meta?.res})})
-            return ((a.count > 0 ? a[0].firstName : "Unknown person"), (metaMsg?.meta?.number ?? "No number"))
+            return ((a.count > 0 ? a[0].firstName + " " + a[0].lastName : "Unknown person"), (metaMsg?.meta?.number ?? "No number"))
         }
         else{
             let a = contacts.data.contacts.filter({$0.telephone.contains(where: {$0.phone == metaMsg?.meta?.asking_number})})
             return
-            ((a.count > 0 ? a[0].firstName : "Unknown person"), (metaMsg?.meta?.number ?? "No number"))
+            ((a.count > 0 ? a[0].firstName + " " + a[0].lastName : "Unknown person"), (metaMsg?.meta?.number ?? "No number"))
         }
     }
     var body: some View {
