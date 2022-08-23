@@ -263,10 +263,9 @@ struct HideContacts: View {
                                     //                                    contacts.addHide(id: contact.id)
                                 }
                                 else{
-                                    alert = MyAlert(active: true, alert: Alert(title: Text("Limit"), message: Text("Maximum number of hidden contacts achieved"), primaryButton: .default(Text("Ok")) {
+                                    alert = MyAlert(active: true, alert: Alert(title: Text("Limit"), message: Text("Maximum number of hidden contacts achieved"), dismissButton: .default(Text("Ok")) {
 //                                        UIApplication.shared.open(URL(string: UIApplication.openSettingsURLString)!)
-                                    },
-                                    secondaryButton: .cancel()))
+                                    }))
 
                                     //                                                alert = MyAlert(error: true, title: "", text: "Maximum number of hidden contacts achieved", button: "Ok", oneButton: true)
                                     //                                                alert = MyAlert(error: true, title: "", text: "Please enter a valid phone number", button: "Ok", oneButton: true)

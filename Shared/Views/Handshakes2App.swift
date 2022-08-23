@@ -65,6 +65,7 @@ struct Handshakes2App: App {
         jwt = "nil"
         ans_token_change = false
         ans_token_done = false
+//        showHowFlag = false
         UIView.appearance(whenContainedInInstancesOf: [UIAlertController.self]).tintColor = UIColor(named: "AccentColor")
     }
     
@@ -100,6 +101,7 @@ struct Handshakes2App: App {
                 .navigationViewStyle(StackNavigationViewStyle())
                 .accentColor(ColorTheme().accent)
             }
+            .preferredColorScheme(.light)
             .popover(isPresented: $showHow) {
                 PDFView
             }
@@ -242,6 +244,7 @@ struct Handshakes2App: App {
                     }
     //                .font(Font.custom("SFProDisplay-Regular", size: 20))
                     .myFont(font: MyFonts().Body, type: .display, color: ColorTheme().accent, weight: .regular)
+                    .padding(.leading, 5)
                 Button(action:{
                     showHowFlag = true
                 },
@@ -266,7 +269,12 @@ struct Handshakes2App: App {
                     }
                 })
             }
-            PDFKitView(url: URL(string: "http://www.africau.edu/images/default/sample.pdf")!)
+#if DEBUG
+    let url=URL(string: "https://develop.freekiller.net/content/instruction.pdf")
+#else
+    let url=URL(string: "https://hand.freekiller.net/content/instruction.pdf")
+#endif
+            PDFKitView(url: url!)
         }
     }
 }
