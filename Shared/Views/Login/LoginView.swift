@@ -98,9 +98,9 @@ struct LoginView: View {
                     VStack {
                         numberField
                         
-                        if (validNumber){
+//                        if (validNumber){
                             codeField
-                        }
+//                        }
                     }
                     //                    Nuber validation
                     VStack{
@@ -156,6 +156,7 @@ struct LoginView: View {
             .padding(.horizontal, 10)
     }
     var codeField: some View{
+        VStack{
         SuperTextField(
             placeholder: Text("000000").foregroundColor(.secondary),
             all: .constant(Alignment (horizontal: .leading, vertical: .center)),
@@ -168,6 +169,9 @@ struct LoginView: View {
         .background(.ultraThinMaterial, in: RoundedRectangle(cornerRadius: 20, style: .continuous))
         .padding(.vertical, big ? 10 : 3)
         .padding(.horizontal, 10)
+            Text("Use code 111111 for beta test")
+                .myFont(font: MyFonts().Callout, type: .display, color: Color.black, weight: .regular)
+        }
     }
     
     var userAgrimentField: some View{
