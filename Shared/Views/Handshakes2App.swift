@@ -9,6 +9,7 @@ import SwiftUI
 import PhoneNumberKit
 import Combine
 import Lottie
+import UserNotifications
 
 
 @main
@@ -46,6 +47,8 @@ struct Handshakes2App: App {
     /// Loading screen text
     @State var lotText: String = "Loading..."
     @Environment(\.scenePhase) var scenePhase
+    
+    @UIApplicationDelegateAdaptor(AppDelegate.self) var appDelegate
     
     init(){
         contentMode = false
@@ -446,5 +449,44 @@ struct PageControlView: UIViewRepresentable {
     func updateUIView(_ uiView: UIPageControl, context: Context) {
         uiView.currentPage = currentPage
         uiView.numberOfPages = numberOfPages
+    }
+}
+
+class AppDelegate: NSObject, UIApplicationDelegate {
+    
+    func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey : Any]? = nil) -> Bool {
+        UNUserNotificationCenter.current()
+          .requestAuthorization(
+            options: [.alert, .sound, .badge]) { granted, _ in
+            print("Permission granted: \(granted)")
+            guard granted else { return }
+            UNUserNotificationCenter.current().getNotificationSettings { settings in
+                print("Notification settings: \(settings)")
+                guard settings.authorizationStatus == .authorized else { return }
+                DispatchQueue.main.async {
+                  application.registerForRemoteNotifications()
+                }
+              }
+          }
+        return true
+    }
+    
+    func application(_ application: UIApplication, didReceiveRemoteNotification userInfo: [AnyHashable : Any], fetchCompletionHandler completionHandler: @escaping (UIBackgroundFetchResult) -> Void) {
+        guard let aps = userInfo["aps"] as? [String: AnyObject] else {
+            completionHandler(.failed)
+            return
+          }
+        print("got something, aka the \(aps)")
+    }
+    
+    func application(_ application: UIApplication, didRegisterForRemoteNotificationsWithDeviceToken deviceToken: Data) {
+        print("device token")
+        let tokenParts = deviceToken.map { data in String(format: "%02.2hhx", data) }
+        let token = tokenParts.joined()
+        print("Device Token: \(token)")
+    }
+
+    func application(_ application: UIApplication, didFailToRegisterForRemoteNotificationsWithError error: Error) {
+        print("Device Token not found.")
     }
 }

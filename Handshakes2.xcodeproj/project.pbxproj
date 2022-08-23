@@ -201,6 +201,7 @@
 		057F970C2835708200B454DD /* ContactsData.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContactsData.swift; sourceTree = "<group>"; };
 		057F970F283570DF00B454DD /* FetchedContact.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FetchedContact.swift; sourceTree = "<group>"; };
 		057F9712283575D800B454DD /* ContactsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContactsView.swift; sourceTree = "<group>"; };
+		05864F9B28B53DEE00FF5CD1 /* Handshakes2 (iOS).entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = "Handshakes2 (iOS).entitlements"; sourceTree = "<group>"; };
 		058659EF285A677D00D919CE /* Inter-Light.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Inter-Light.ttf"; sourceTree = "<group>"; };
 		058659F0285A677D00D919CE /* Inter-Bold.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Inter-Bold.ttf"; sourceTree = "<group>"; };
 		058659F1285A677D00D919CE /* Inter-Regular.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Inter-Regular.ttf"; sourceTree = "<group>"; };
@@ -355,6 +356,7 @@
 		0578AB9328341C6F00810E70 = {
 			isa = PBXGroup;
 			children = (
+				05864F9B28B53DEE00FF5CD1 /* Handshakes2 (iOS).entitlements */,
 				0568518C284E69B500A79A34 /* Handshakes2--iOS--Info.plist */,
 				DEBF70E9285924F6001D0EB5 /* handshakes_loading.json */,
 				DEBFFBAF2859CE6D00CE741F /* handshakes_logo_dark.json */,
@@ -805,6 +807,7 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_ENTITLEMENTS = "Handshakes2 (iOS).entitlements";
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 2;
 				DEVELOPMENT_TEAM = BRGBJ222RD;
@@ -839,6 +842,7 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_ENTITLEMENTS = "Handshakes2 (iOS).entitlements";
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 2;
 				DEVELOPMENT_TEAM = BRGBJ222RD;

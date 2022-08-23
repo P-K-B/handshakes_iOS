@@ -2,6 +2,8 @@
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
+	<key></key>
+	<string></string>
 	<key>UIAppFonts</key>
 	<array>
 		<string>SFProDisplay-Regular.ttf</string>
@@ -55,6 +57,10 @@
 		<string>SF-Pro-Display-ThinItalic.otf</string>
 		<string>SF-Pro-Display-Ultralight.otf</string>
 		<string>SF-Pro-Display-UltralightItalic.otf</string>
+	</array>
+	<key>UIBackgroundModes</key>
+	<array>
+		<string>remote-notification</string>
 	</array>
 </dict>
 </plist>
