@@ -87,7 +87,7 @@ struct Handshakes2App: App {
                 .accentColor(ColorTheme().accent)
             }
             .onAppear{
-                alert = MyAlert(active: true, alert: Alert(title: Text("Disclaimer"), message: Text("This is a beta build. It doesn't have notifications. Please check your chats this app from time to time. All bugs and suggestions can be submitted with TestFlight app."), dismissButton: .default(Text("Ok"))))
+                alert = MyAlert(active: true, alert: Alert(title: Text("Disclaimer!"), message: Text("This is a beta build. It doesn't have notifications. Please check your chats this app from time to time. All bugs and suggestions can be submitted with TestFlight app."), dismissButton: .default(Text("Ok"))))
                 /// Set a flag to app is opened
 //                reopen = true
 //                contentMode = false
