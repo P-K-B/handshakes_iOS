@@ -25,6 +25,10 @@ struct UserUpdate{
     var bool: Bool?
 }
 
+struct Token: Encodable{
+    var token: String
+}
+
 struct UserData: Decodable, Encodable, Identifiable {
     var id: String = ""
     var jwt: String = ""
@@ -103,6 +107,12 @@ class UserDataView: ObservableObject {
         }
     }
     
+    func UploadToken(token: String, completion: @escaping (StatusResponse) -> ()) throws {
+        try userDataService.UploadToken(token: token){ (reses) in
+            completion(reses)
+        }
+    }
+    
 }
 
 class UserDataService{
@@ -114,6 +124,7 @@ class UserDataService{
     var verifySingUpCall: AnyCancellable?
     var verifySingUpCallResend: AnyCancellable?
     var signInUpCall: AnyCancellable?
+    var uploadToken: AnyCancellable?
     
     init() {
         self.data.loaded = false
@@ -231,6 +242,58 @@ class UserDataService{
                     completion(statusResponce)
                 }
                 self.signInUpCall?.cancel()
+            }
+    }
+    
+    func UploadToken(token: String, completion: @escaping (StatusResponse) -> ()) throws {
+        #if DEBUG
+            let baseUrl="https://develop.freekiller.net"
+        #else
+            let baseUrl="https://hand.freekiller.net"
+        #endif
+        guard let url = URL(string: baseUrl + "/api/session/token") else { fatalError("Missing URL") }
+        var urlRequest = URLRequest(url: url)
+        
+        urlRequest.httpMethod = "POST"
+        // Set HTTP Request Header
+        urlRequest.setValue("application/json", forHTTPHeaderField: "Accept")
+        urlRequest.setValue("application/json", forHTTPHeaderField: "Content-Type")
+        urlRequest.setValue( "Bearer \(data.jwt)", forHTTPHeaderField: "Authorization")
+
+        
+        let json = Token(token: token)
+        let jsonData = try JSONEncoder().encode(json)
+        print(json)
+        urlRequest.httpBody = jsonData
+        
+        uploadToken = URLSession.shared.dataTaskPublisher(for: urlRequest).subscribe(on: DispatchQueue.global(qos: .default))
+            .tryMap { (output) -> Data in
+                print(output.response)
+                guard let response = output.response as? HTTPURLResponse,
+                      response.statusCode >= 200 && response.statusCode < 300 else{
+                    DispatchQueue.main.async {
+                        completion(StatusResponse(status_code: -1))
+                    }
+                    throw URLError(.badServerResponse)
+                }
+                return output.data
+            }
+            .receive(on: DispatchQueue.main)
+            .replaceError(with: Data("{\"status_code\": -1}".data(using: .utf8)!))
+            .decode(type: StatusResponse.self, decoder: JSONDecoder())
+            .sink { (completion) in
+                switch completion{
+                case .finished:
+                    break
+                case .failure(let error):
+                    print (error.localizedDescription)
+                }
+            } receiveValue: { statusResponce in
+                print(statusResponce)
+                DispatchQueue.main.async {
+                    completion(statusResponce)
+                }
+                self.uploadToken?.cancel()
             }
     }
     

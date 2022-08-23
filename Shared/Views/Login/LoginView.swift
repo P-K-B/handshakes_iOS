@@ -26,6 +26,7 @@ struct LoginView: View {
     @AppStorage("hideContacts") var hideContacts: Bool = false
     @AppStorage("selectedTab") var selectedTab: Tab = .search
     @AppStorage("reopen") var reopen: Bool = false
+    @AppStorage("ans_token") var ans_token: String = ""
     
     
     @Environment(\.presentationMode) private var presentationMode: Binding<PresentationMode>
@@ -341,6 +342,18 @@ struct LoginView: View {
                     model.reset()
                     historyData.reset()
                     self.hideContacts = false
+                    
+                    do{
+                        /// Try to sing in using app token
+                        try userData.UploadToken(token: ans_token)
+                        { (reses2) in
+
+                        }
+                    }
+                    catch{
+                        
+                    }
+                    
                     withAnimation(){
                         userData.update(newData: UserUpdate(field: .loggedIn, bool: true))
                         userData.save()

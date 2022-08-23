@@ -32,6 +32,14 @@ struct Handshakes2App: App {
     /// Flag of app open. It is used to update contacts data on app open
     @AppStorage("reopen") var reopen: Bool = false
     
+    @AppStorage("ans_token") var ans_token: String = ""
+    @AppStorage("ans_token_change") var ans_token_change: Bool = false
+    @AppStorage("ans_token_done") var ans_token_done: Bool = false
+    @AppStorage("showHowFlag") var showHowFlag: Bool = false
+    
+    @State var showHow: Bool = false
+
+    
     /// View data
     ///
     /// Phone number parser object
@@ -54,6 +62,9 @@ struct Handshakes2App: App {
         contentMode = false
         loginMode = false
         reopen = true
+        jwt = "nil"
+        ans_token_change = false
+        ans_token_done = false
         UIView.appearance(whenContainedInInstancesOf: [UIAlertController.self]).tintColor = UIColor(named: "AccentColor")
     }
     
@@ -89,8 +100,11 @@ struct Handshakes2App: App {
                 .navigationViewStyle(StackNavigationViewStyle())
                 .accentColor(ColorTheme().accent)
             }
+            .popover(isPresented: $showHow) {
+                PDFView
+            }
             .onAppear{
-                alert = MyAlert(active: true, alert: Alert(title: Text("Disclaimer!"), message: Text("This is a beta build. It doesn't have notifications. Please check your chats this app from time to time. All bugs and suggestions can be submitted with TestFlight app."), dismissButton: .default(Text("Ok"))))
+                alert = MyAlert(active: true, alert: Alert(title: Text("Disclaimer!"), message: Text("This is a beta build. It doesn't have notifications. Please check your chats this app from time to time. All bugs and suggestions can be submitted with TestFlight app."), dismissButton: .default(Text("Ok"), action: {if (showHowFlag == false){showHow = true}})))
                 /// Set a flag to app is opened
 //                reopen = true
 //                contentMode = false
@@ -107,6 +121,16 @@ struct Handshakes2App: App {
                             group.leave()
                         }
                         group.wait()
+                        
+                        group.enter()
+                        /// Wait for user data to be loaded
+                        DispatchQueue.global().async {
+                            while ans_token_done != true {
+                            }
+                            group.leave()
+                        }
+                        group.wait()
+                        print("Got token")
                         userData.update(newData: UserUpdate(field: .loaded, bool: false))
                         /// Check that user has a valid phone
                         if (userData.data.number != "000"){
@@ -124,6 +148,18 @@ struct Handshakes2App: App {
                                         jwt = reses.payload?.jwt?.jwt ?? ""
                                         userData.update(newData: UserUpdate(field: .id, string: String(reses.payload?.jwt?.id ?? -1)))
                                         userData.save()
+                                        
+                                        do{
+                                            /// Try to sing in using app token
+                                            try userData.UploadToken(token: ans_token)
+                                            { (reses2) in
+
+                                            }
+                                        }
+                                        catch{
+                                            
+                                        }
+                                        
                                         /// Finish loading animation and proside
                                         lot.test(){res in
                                             contentMode = true
@@ -193,6 +229,44 @@ struct Handshakes2App: App {
             /// Show loading text
             Text (lotText)
                 .myFont(font: MyFonts().Body, type: .display, color: Color.black, weight: .regular)
+        }
+    }
+    
+    var PDFView:some View{
+        VStack{
+            HStack{
+                Image(systemName: showHowFlag ? "checkmark.square" : "square")
+                    .foregroundColor(showHowFlag ? Color.theme.accent : Color.secondary)
+                    .onTapGesture {
+                        showHowFlag.toggle()
+                    }
+    //                .font(Font.custom("SFProDisplay-Regular", size: 20))
+                    .myFont(font: MyFonts().Body, type: .display, color: ColorTheme().accent, weight: .regular)
+                Button(action:{
+                    showHowFlag = true
+                },
+                       label: {
+                    Text("Don't show again")
+    //                    .font(Font.custom("SFProDisplay-Regular", size: 20))
+//                        .underline()
+                        .myFont(font: MyFonts().Body, type: .display, color: ColorTheme().accent, weight: .regular)
+                        .foregroundColor(Color.theme.accent)
+                }
+                )
+                .foregroundColor(Color.theme.accent)
+            
+//            .padding()
+//            HStack{
+                Button(action:{showHow = false}, label: {
+                    HStack{
+                        Spacer()
+                        Image(systemName: "xmark.circle")
+                            .padding()
+                            .foregroundColor(ColorTheme().accent)
+                    }
+                })
+            }
+            PDFKitView(url: URL(string: "http://www.africau.edu/images/default/sample.pdf")!)
         }
     }
 }
@@ -454,6 +528,10 @@ struct PageControlView: UIViewRepresentable {
 
 class AppDelegate: NSObject, UIApplicationDelegate {
     
+    @AppStorage("ans_token") var ans_token: String = ""
+    @AppStorage("ans_token_change") var ans_token_change: Bool = false
+    @AppStorage("ans_token_done") var ans_token_done: Bool = false
+    
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey : Any]? = nil) -> Bool {
         UNUserNotificationCenter.current()
           .requestAuthorization(
@@ -484,9 +562,25 @@ class AppDelegate: NSObject, UIApplicationDelegate {
         let tokenParts = deviceToken.map { data in String(format: "%02.2hhx", data) }
         let token = tokenParts.joined()
         print("Device Token: \(token)")
+        if (ans_token != token){
+            ans_token = token
+            ans_token_change = true
+        }
+        ans_token_done = true
     }
 
     func application(_ application: UIApplication, didFailToRegisterForRemoteNotificationsWithError error: Error) {
         print("Device Token not found.")
+        ans_token_done = true
     }
+}
+
+
+enum NotificationAction: String {
+    case dimiss
+    case reminder
+}
+
+enum NotificationCategory: String {
+    case general
 }
