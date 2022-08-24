@@ -98,9 +98,9 @@ struct LoginView: View {
                     VStack {
                         numberField
                         
-//                        if (validNumber){
+                        if (validNumber){
                             codeField
-//                        }
+                        }
                     }
                     //                    Nuber validation
                     VStack{

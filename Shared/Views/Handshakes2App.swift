@@ -10,6 +10,7 @@ import PhoneNumberKit
 import Combine
 import Lottie
 import UserNotifications
+import os
 
 
 @main
@@ -64,7 +65,7 @@ struct Handshakes2App: App {
         reopen = true
         jwt = "nil"
         ans_token_change = false
-        ans_token_done = false
+//        ans_token_done = false
 //        showHowFlag = false
         UIView.appearance(whenContainedInInstancesOf: [UIAlertController.self]).tintColor = UIColor(named: "AccentColor")
     }
@@ -106,7 +107,10 @@ struct Handshakes2App: App {
                 PDFView
             }
             .onAppear{
-                alert = MyAlert(active: true, alert: Alert(title: Text("Disclaimer!"), message: Text("This is a beta build. It doesn't have notifications. Please check your chats this app from time to time. All bugs and suggestions can be submitted with TestFlight app."), dismissButton: .default(Text("Ok"), action: {if (showHowFlag == false){showHow = true}})))
+//                NSLog("Test")
+                let logger = Logger(subsystem: Bundle.main.bundleIdentifier!, category: "App")
+                logger.log("This is a test")
+                alert = MyAlert(active: true, alert: Alert(title: Text("Disclaimer!"), message: Text("This is a beta build. All bugs and suggestions can be submitted with TestFlight app."), dismissButton: .default(Text("Ok"), action: {if (showHowFlag == false){showHow = true}})))
                 /// Set a flag to app is opened
 //                reopen = true
 //                contentMode = false
@@ -118,30 +122,35 @@ struct Handshakes2App: App {
                         group.enter()
                         /// Wait for user data to be loaded
                         DispatchQueue.global().async {
-                            while userData.data.loaded != true {
+//                            while ((userData.data.loaded != true) && (ans_token_done != true)){
+                                while userData.data.loaded != true{
                             }
                             group.leave()
                         }
                         group.wait()
-                        
-                        group.enter()
+                        logger.log("User data loaded")
+//                        group.enter()
                         /// Wait for user data to be loaded
-                        DispatchQueue.global().async {
-                            while ans_token_done != true {
-                            }
-                            group.leave()
-                        }
-                        group.wait()
+//                        DispatchQueue.global().async {
+//                            while ans_token_done != true {
+//                            }
+//                            group.leave()
+//                        }
+//                        group.wait()
+//                        logger.log("Got token")
                         print("Got token")
                         userData.update(newData: UserUpdate(field: .loaded, bool: false))
                         /// Check that user has a valid phone
                         if (userData.data.number != "000"){
+                            logger.log("Number not 000")
 //                            sleep(4)
                             try self.phoneNumberKit.parse(userData.data.number)
                             do{
                                 /// Try to sing in using app token
+                                logger.log("Before singup")
                                 try userData.SignInUpCallAppToken()
                                 { (reses) in
+                                    logger.log("In singup")
 //                                                                    print(reses)
                                     /// If status code is "0" and "jwt" is not nill than Login was sucessful
                                     if ((reses.status_code == 0) && (reses.payload?.jwt != nil)){
@@ -539,13 +548,20 @@ class AppDelegate: NSObject, UIApplicationDelegate {
     @AppStorage("ans_token") var ans_token: String = ""
     @AppStorage("ans_token_change") var ans_token_change: Bool = false
     @AppStorage("ans_token_done") var ans_token_done: Bool = false
+    let logger = Logger(subsystem: Bundle.main.bundleIdentifier!, category: "App")
     
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey : Any]? = nil) -> Bool {
+//        ans_token_done = false
         UNUserNotificationCenter.current()
           .requestAuthorization(
             options: [.alert, .sound, .badge]) { granted, _ in
             print("Permission granted: \(granted)")
-            guard granted else { return }
+                self.logger.log("Permission granted: \(granted)")
+                guard granted else {
+//                    self.ans_token_done = true
+                    return
+                    
+                }
             UNUserNotificationCenter.current().getNotificationSettings { settings in
                 print("Notification settings: \(settings)")
                 guard settings.authorizationStatus == .authorized else { return }
@@ -569,17 +585,19 @@ class AppDelegate: NSObject, UIApplicationDelegate {
         print("device token")
         let tokenParts = deviceToken.map { data in String(format: "%02.2hhx", data) }
         let token = tokenParts.joined()
+        logger.log("Device Token: \(token)")
         print("Device Token: \(token)")
         if (ans_token != token){
             ans_token = token
             ans_token_change = true
         }
-        ans_token_done = true
+//        ans_token_done = true
     }
 
     func application(_ application: UIApplication, didFailToRegisterForRemoteNotificationsWithError error: Error) {
         print("Device Token not found.")
-        ans_token_done = true
+        logger.log("Device Token not found.")
+//        ans_token_done = true
     }
 }
 
