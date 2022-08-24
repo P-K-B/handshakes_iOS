@@ -39,7 +39,7 @@ struct Handshakes2App: App {
     @AppStorage("showHowFlag") var showHowFlag: Bool = false
     
     @State var showHow: Bool = false
-
+    
     
     /// View data
     ///
@@ -65,8 +65,8 @@ struct Handshakes2App: App {
         reopen = true
         jwt = "nil"
         ans_token_change = false
-//        ans_token_done = false
-//        showHowFlag = false
+        //        ans_token_done = false
+        //        showHowFlag = false
         UIView.appearance(whenContainedInInstancesOf: [UIAlertController.self]).tintColor = UIColor(named: "AccentColor")
     }
     
@@ -107,14 +107,14 @@ struct Handshakes2App: App {
                 PDFView
             }
             .onAppear{
-//                NSLog("Test")
+                //                NSLog("Test")
                 let logger = Logger(subsystem: Bundle.main.bundleIdentifier!, category: "App")
                 logger.log("This is a test")
                 alert = MyAlert(active: true, alert: Alert(title: Text("Disclaimer!"), message: Text("This is a beta build. All bugs and suggestions can be submitted with TestFlight app."), dismissButton: .default(Text("Ok"), action: {if (showHowFlag == false){showHow = true}})))
                 /// Set a flag to app is opened
-//                reopen = true
-//                contentMode = false
-//                loginMode = false
+                //                reopen = true
+                //                contentMode = false
+                //                loginMode = false
                 /// Login with app token
                 DispatchQueue.global(qos: .userInitiated).async {
                     do{
@@ -122,28 +122,28 @@ struct Handshakes2App: App {
                         group.enter()
                         /// Wait for user data to be loaded
                         DispatchQueue.global().async {
-//                            while ((userData.data.loaded != true) && (ans_token_done != true)){
-                                while userData.data.loaded != true{
+                            //                            while ((userData.data.loaded != true) && (ans_token_done != true)){
+                            while userData.data.loaded != true{
                             }
                             group.leave()
                         }
                         group.wait()
                         logger.log("User data loaded")
-//                        group.enter()
+                        //                        group.enter()
                         /// Wait for user data to be loaded
-//                        DispatchQueue.global().async {
-//                            while ans_token_done != true {
-//                            }
-//                            group.leave()
-//                        }
-//                        group.wait()
-//                        logger.log("Got token")
+                        //                        DispatchQueue.global().async {
+                        //                            while ans_token_done != true {
+                        //                            }
+                        //                            group.leave()
+                        //                        }
+                        //                        group.wait()
+                        //                        logger.log("Got token")
                         print("Got token")
                         userData.update(newData: UserUpdate(field: .loaded, bool: false))
                         /// Check that user has a valid phone
                         if (userData.data.number != "000"){
                             logger.log("Number not 000")
-//                            sleep(4)
+                            //                            sleep(4)
                             try self.phoneNumberKit.parse(userData.data.number)
                             do{
                                 /// Try to sing in using app token
@@ -151,7 +151,7 @@ struct Handshakes2App: App {
                                 try userData.SignInUpCallAppToken()
                                 { (reses) in
                                     logger.log("In singup")
-//                                                                    print(reses)
+                                    //                                                                    print(reses)
                                     /// If status code is "0" and "jwt" is not nill than Login was sucessful
                                     if ((reses.status_code == 0) && (reses.payload?.jwt != nil)){
                                         userData.update(newData: UserUpdate(field: .loggedIn, bool: true))
@@ -164,7 +164,7 @@ struct Handshakes2App: App {
                                             /// Try to sing in using app token
                                             try userData.UploadToken(token: ans_token)
                                             { (reses2) in
-
+                                                
                                             }
                                         }
                                         catch{
@@ -212,17 +212,17 @@ struct Handshakes2App: App {
                 return alert.alert ?? Alert(title: Text("Error showing alert"))
             }
             .onChange(of: scenePhase) { newPhase in
-                                    if newPhase == .active {
-                                        print("Active")
-                                        if (reopen == false){
-                                            onAppear()
-                                        }
-                                    } else if newPhase == .inactive {
-                                        print("Inactive")
-                                    } else if newPhase == .background {
-                                        print("Background")
-                                    }
-                                }
+                if newPhase == .active {
+                    print("Active")
+                    if (reopen == false){
+                        onAppear()
+                    }
+                } else if newPhase == .inactive {
+                    print("Inactive")
+                } else if newPhase == .background {
+                    print("Background")
+                }
+            }
         }
         
         
@@ -251,7 +251,7 @@ struct Handshakes2App: App {
                     .onTapGesture {
                         showHowFlag.toggle()
                     }
-    //                .font(Font.custom("SFProDisplay-Regular", size: 20))
+                //                .font(Font.custom("SFProDisplay-Regular", size: 20))
                     .myFont(font: MyFonts().Body, type: .display, color: ColorTheme().accent, weight: .regular)
                     .padding(.leading, 5)
                 Button(action:{
@@ -259,16 +259,16 @@ struct Handshakes2App: App {
                 },
                        label: {
                     Text("Don't show again")
-    //                    .font(Font.custom("SFProDisplay-Regular", size: 20))
-//                        .underline()
+                    //                    .font(Font.custom("SFProDisplay-Regular", size: 20))
+                    //                        .underline()
                         .myFont(font: MyFonts().Body, type: .display, color: ColorTheme().accent, weight: .regular)
                         .foregroundColor(Color.theme.accent)
                 }
                 )
                 .foregroundColor(Color.theme.accent)
-            
-//            .padding()
-//            HStack{
+                
+                //            .padding()
+                //            HStack{
                 Button(action:{showHow = false}, label: {
                     HStack{
                         Spacer()
@@ -279,9 +279,9 @@ struct Handshakes2App: App {
                 })
             }
 #if DEBUG
-    let url=URL(string: "https://develop.freekiller.net/content/instruction.pdf")
+            let url=URL(string: "https://develop.freekiller.net/content/instruction.pdf")
 #else
-    let url=URL(string: "https://hand.freekiller.net/content/instruction.pdf")
+            let url=URL(string: "https://hand.freekiller.net/content/instruction.pdf")
 #endif
             PDFKitView(url: url!)
         }
@@ -543,43 +543,65 @@ struct PageControlView: UIViewRepresentable {
     }
 }
 
-class AppDelegate: NSObject, UIApplicationDelegate {
+class AppDelegate: UIResponder, UIApplicationDelegate {
     
     @AppStorage("ans_token") var ans_token: String = ""
     @AppStorage("ans_token_change") var ans_token_change: Bool = false
     @AppStorage("ans_token_done") var ans_token_done: Bool = false
+    @AppStorage("selectedTab") var selectedTab: Tab = .search
+    
     let logger = Logger(subsystem: Bundle.main.bundleIdentifier!, category: "App")
     
+    
+    
+    func scene(_ scene: UIScene, willConnectTo session: UISceneSession, options connectionOptions: UIScene.ConnectionOptions) {
+    //look for remote notification response
+       if let response = connectionOptions.notificationResponse{
+           self.logger.log("AAAAAAAAAAAA")
+            print(response.notification.request.content.userInfo)
+       }
+
+       guard let _ = (scene as? UIWindowScene) else { return }
+    }
+
+    
+    
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey : Any]? = nil) -> Bool {
-//        ans_token_done = false
+        //        ans_token_done = false
         UNUserNotificationCenter.current()
-          .requestAuthorization(
-            options: [.alert, .sound, .badge]) { granted, _ in
-            print("Permission granted: \(granted)")
-                self.logger.log("Permission granted: \(granted)")
-                guard granted else {
-//                    self.ans_token_done = true
-                    return
-                    
+            .requestAuthorization(
+                options: [.alert, .sound, .badge]) { granted, _ in
+                    print("Permission granted: \(granted)")
+                    self.logger.log("Permission granted: \(granted)")
+                    guard granted else {
+                        //                    self.ans_token_done = true
+                        return
+                        
+                    }
+                    UNUserNotificationCenter.current().getNotificationSettings { settings in
+                        print("Notification settings: \(settings)")
+                        guard settings.authorizationStatus == .authorized else { return }
+                        DispatchQueue.main.async {
+                            application.registerForRemoteNotifications()
+                        }
+                    }
                 }
-            UNUserNotificationCenter.current().getNotificationSettings { settings in
-                print("Notification settings: \(settings)")
-                guard settings.authorizationStatus == .authorized else { return }
-                DispatchQueue.main.async {
-                  application.registerForRemoteNotifications()
-                }
-              }
-          }
+        
+        UNUserNotificationCenter.current().delegate = self
+        self.logger.log("Notification1")
+        if (launchOptions == nil){
+            self.logger.log("nil")
+        }
+        else{
+            self.logger.log("not nil")
+        }
+        if ((launchOptions) != nil){
+            print("app opened from PushNotification tap")
+            self.logger.log("AAAAAAAAAAAA")
+        }
         return true
     }
     
-    func application(_ application: UIApplication, didReceiveRemoteNotification userInfo: [AnyHashable : Any], fetchCompletionHandler completionHandler: @escaping (UIBackgroundFetchResult) -> Void) {
-        guard let aps = userInfo["aps"] as? [String: AnyObject] else {
-            completionHandler(.failed)
-            return
-          }
-        print("got something, aka the \(aps)")
-    }
     
     func application(_ application: UIApplication, didRegisterForRemoteNotificationsWithDeviceToken deviceToken: Data) {
         print("device token")
@@ -591,22 +613,81 @@ class AppDelegate: NSObject, UIApplicationDelegate {
             ans_token = token
             ans_token_change = true
         }
-//        ans_token_done = true
+        //        ans_token_done = true
     }
-
+    
     func application(_ application: UIApplication, didFailToRegisterForRemoteNotificationsWithError error: Error) {
         print("Device Token not found.")
         logger.log("Device Token not found.")
-//        ans_token_done = true
+        //        ans_token_done = true
     }
+    
+    func application(_ application: UIApplication, didReceiveRemoteNotification userInfo: [AnyHashable : Any], fetchCompletionHandler completionHandler: @escaping (UIBackgroundFetchResult) -> Void) {
+        guard let aps = userInfo["aps"] as? [String: AnyObject] else {
+            completionHandler(.failed)
+            return
+        }
+        print("got something, aka the \(aps)")
+        print(aps["badge"])
+        self.logger.log("Notification")
+        completionHandler(.newData)
+    }
+    
+    
 }
 
 
-enum NotificationAction: String {
-    case dimiss
-    case reminder
-}
+extension AppDelegate: UNUserNotificationCenterDelegate {
+    
+    func userNotificationCenter(_ center: UNUserNotificationCenter, didReceive response: UNNotificationResponse) async {
+//        logger.log(response)
+        print(response.notification.request.content.body)
+        let userInfo = response.notification.request.content.userInfo
+        guard let aps = userInfo["aps"] as? [String: AnyObject] else {
+            return
+        }
 
-enum NotificationCategory: String {
-    case general
+        logger.log("NOTIFICATION")
+        logger.log("\(userInfo)")
+        logger.log("\(aps)")
+        
+//        selectedTab = .contacts
+        
+        UIApplication.shared.applicationIconBadgeNumber = aps["badge"] as! Int
+        
+    }
+    
+    func userNotificationCenter(_ center: UNUserNotificationCenter,
+           willPresent notification: UNNotification,
+           withCompletionHandler completionHandler: @escaping (UNNotificationPresentationOptions) -> Void)
+    {
+        
+        let userInfo = notification.request.content.userInfo
+        guard let aps = userInfo["aps"] as? [String: AnyObject] else {
+            return
+        }
+        logger.log("Logger")
+        logger.log("\(userInfo)")
+        logger.log("\(aps)")
+        UIApplication.shared.applicationIconBadgeNumber = aps["badge"] as! Int
+        completionHandler(.banner)
+//        application.applicationIconBadgeNumber =
+
+    }
+    
+//    func userNotificationCenter(_ center: UNUserNotificationCenter, didReceive response: UNNotificationResponse, withCompletionHandler completionHandler: @escaping () -> Void) {
+//            let actionIdentifier = response.actionIdentifier
+//
+//            switch actionIdentifier {
+//            case UNNotificationDismissActionIdentifier: // Notification was dismissed by user
+//                // Do something
+//                completionHandler()
+//            case UNNotificationDefaultActionIdentifier: // App was opened from notification
+//                // Do something
+//                completionHandler()
+//            default:
+//                completionHandler()
+//            }
+//        }
+    
 }
