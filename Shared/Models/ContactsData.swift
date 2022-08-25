@@ -799,8 +799,8 @@ class ContactsDataService  {
         var allContacts: [ContactWithInfo] = []
         for contact in contacts{
             for number in contact.telephone{
-//                allContacts.append(ContactWithInfo(phone: number.phone, uuid: number.uuid, contact_info: String(data: try JSONEncoder().encode(contact.fullContact), encoding: .utf8) ?? ""))
-                allContacts.append(ContactWithInfo(phone: number.phone, uuid: number.uuid, contact_info: ""))
+                allContacts.append(ContactWithInfo(phone: number.phone, uuid: number.uuid, contact_info: String(data: try JSONEncoder().encode(contact.fullContact), encoding: .utf8) ?? ""))
+//                allContacts.append(ContactWithInfo(phone: number.phone, uuid: number.uuid, contact_info: ""))
             }
         }
 //        initial_upload добавить флаг
